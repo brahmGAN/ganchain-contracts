@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity >=0.8.20;
+pragma solidity ^0.8.20;
 interface IGPU {
     // Enums
     enum ConsumerStatus { ACTIVE, DISABLED }
@@ -14,6 +14,7 @@ interface IGPU {
         string userName;
         QueenStatus status;
         bool exists;
+        address stakingAddress;
     }
 
     struct Provider {
@@ -27,6 +28,7 @@ interface IGPU {
         uint256 lastDrillTime;
         bool exists;
         ProviderStatus status;
+        address stakingAddress;
     }
     
     struct Consumer {
