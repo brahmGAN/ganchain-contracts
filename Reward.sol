@@ -51,7 +51,7 @@ contract Reward is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeab
         if (totalComputeScore > 0) { // Avoid division by zero
             for (uint256 i = 0; i < providers.length; i++) {
                 // P’s reward per day = (Pcs / ∑Pcs )  * 1152  GP
-                uint256 todaysReward = (computeScores[i] * rewardGPsPerDay * 10**18) / (totalComputeScore * 10**4); // In wei
+                uint256 todaysReward = (computeScores[i] * rewardGPsPerDay * 10**18) / (totalComputeScore); // In wei
                 address providerNFTAddress = GPUInstance.getNFTAddress(providers[i]);
                 providerRewards[providerNFTAddress] += todaysReward;
             }
