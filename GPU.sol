@@ -26,12 +26,9 @@ contract GPU is IGPU, OwnableUpgradeable, UUPSUpgradeable {
     uint public maxMachineUnavailability;
     uint public gracePeriod;
     
-
-    // Arrays
     address[] public queensList;
     address[] public providersList;
 
-    // Mappings
     mapping(address => bool) public nftCheck;
     mapping(uint => Gpu) public gpus;
     mapping(uint => User) public users;
@@ -42,18 +39,15 @@ contract GPU is IGPU, OwnableUpgradeable, UUPSUpgradeable {
     mapping(uint => MachineInfo) public machineInfo;
     mapping(uint => Job) public jobs;
     mapping(address => uint[]) public queenMachines;
-    mapping(address => uint[]) public drillQueenMachines; 
+    mapping(address => uint[]) public drillQueenMachines;
+    mapping(address => uint[]) public healthCheckQueenMachines;
 
-
-    // Modifiers
     modifier haveNft(address nftAddress){
         IERC721 nftContract = IERC721(nftContractAddress);
         require(nftContract.balanceOf(nftAddress) > 0, "Do not have NFT");
         _;
     }
 
-
-    // Events
     event Initialized(address owner, address nftContractAddress, uint16 tickSeconds, uint gpuID, uint userID, uint machineID, uint machineInfoID, uint jobID);
     event InitializedDrillTestValues(uint minDrillTestRange, uint minMachineAvailability, uint maxMachineUnavailability, uint256 gracePeriod);
     event AmountWithdrawal(address user, uint amount);
@@ -107,8 +101,7 @@ contract GPU is IGPU, OwnableUpgradeable, UUPSUpgradeable {
         payable(msg.sender).transfer(amount);
         emit AmountWithdrawal(msg.sender, amount);
     }
-  
-    //SETTER Functions
+
     function addGpuType(string calldata gpuName, uint256 priceInWei, uint computeUnit) external onlyOwner {
         gpus[gpuID] = Gpu({
             name : gpuName,
@@ -169,33 +162,33 @@ contract GPU is IGPU, OwnableUpgradeable, UUPSUpgradeable {
         emit ConsumerAdded(consumerAddress, userName, organisation);
     }
 
-    function addProvider(address providerNFTAddress) external {
-        require(!nftCheck[providerNFTAddress],"Staking address already used");
-        require(!providers[msg.sender].exists, "Provider already present");
-        require(!queens[msg.sender].exists, "Already a Queen");
+    function addProvider(address providerAddress) external {
+        require(!nftCheck[msg.sender],"NFT address already used");
+        require(!providers[providerAddress].exists, "Provider already present");
+        require(!queens[providerAddress].exists, "Already a Queen");
         
-        nftCheck[providerNFTAddress] = true;
-        providers[msg.sender] = Provider({
-            nftAddress : providerNFTAddress,
+        nftCheck[msg.sender] = true;
+        providers[providerAddress] = Provider({
+            nftAddress : msg.sender,
             machineIDs : new uint[](0),
             exists : true
         });
 
         users[userID] = User({
-            userAddress : msg.sender,
+            userAddress : providerAddress,
             userType : UserType.Provider
         });
         userID++;
 
         users[userID] = User({
-            userAddress : providerNFTAddress,
+            userAddress : msg.sender,
             userType : UserType.NFTAddress
         });
         userID++;
 
-        providersList.push(msg.sender);
+        providersList.push(providerAddress);
 
-        emit ProviderAdded(msg.sender, providerNFTAddress);
+        emit ProviderAdded(providerAddress, msg.sender);
     }
 
     function addMachine(MachineInfo memory machineDetails) external {
@@ -206,14 +199,14 @@ contract GPU is IGPU, OwnableUpgradeable, UUPSUpgradeable {
         require(bytes(machineDetails.connectionType).length > 0, "Connection type not found");
         require(bytes(machineDetails.cpuName).length > 0, "CPU name not found");
         require(machineDetails.cpuCoreCount > 0, "CPU core count required");
-        require(machineDetails.uploadBandWidth > 0 && machineDetails.downloadBandWidth > 0, "Upload or download bandwidth not found");
+        require(machineDetails.uploadBandWidth > 0 && machineDetails.downloadBandWidth > 0, "bandwidth not found");
         require(bytes(machineDetails.storageType).length > 0, "GPU storage not found");
         require(machineDetails.storageAvailable > 0, "Available storage value not found");
         require(machineDetails.portsOpen.length > 0, "Ports not found");
         require(bytes(machineDetails.region).length > 0, "Region not found");
 
         machineInfo[machineInfoID] = machineDetails;
-        address queenValidationAddress = getRandomQueen(); //Here Queen Will be Added For Drill When Entry
+        address queenValidationAddress = getRandomQueen();
 
         machines[machineID] = Machine({
             machineInfoID : machineInfoID,
@@ -242,30 +235,67 @@ contract GPU is IGPU, OwnableUpgradeable, UUPSUpgradeable {
     function updateMachineStatus(uint machineId,uint16 value) public {
         require(msg.sender == machines[machineId].currentQueen, "Only assigned queen can call");
         if(drillTest(value)) {
+            if(machines[machineId].status == MachineStatus.NEW){
+                machines[machineId].entryTime = block.timestamp;
+            }
+            machines[machineId].status = MachineStatus.AVAILABLE;
             updateMachineHealthScore(machineId, 1, true);
-            machines[machineId].status = MachineStatus.AVAILABLE; 
         } else {
             updateMachineHealthScore(machineId, 3, false);
+            machines[machineId].entryTime = block.timestamp;
         }
         machines[machineId].currentQueen = address(0);
         machines[machineId].lastDrillResult = value;
         machines[machineId].lastDrillTime = block.timestamp;
-        machines[machineId].entryTime = block.timestamp;
         machines[machineId].lastChecked  = block.timestamp;
 
         emit MachineStatusUpdated(msg.sender, machineId, value);
     }
 
-    function machineDrillRequest(uint machineId) external {
+    function randomDrillTest(uint machineId) external onlyOwner{
         require(machines[machineId].exists, "Machine not present");
-        require(machines[machineId].providerAddress == msg.sender, "Not your machine");
-        if(block.timestamp - machines[machineId].lastDrillTime > tickSeconds) {
-            address queenValidationAddress = getRandomQueen();
-            machines[machineId].currentQueen = queenValidationAddress;
-            drillQueenMachines[queenValidationAddress].push(machineId);
+        require(machines[machineId].status == MachineStatus.NEW || machines[machineId].status == MachineStatus.AVAILABLE,"Machine busy");
+        address queenValidationAddress = getRandomQueen();
+        machines[machineId].currentQueen = queenValidationAddress;
+        drillQueenMachines[queenValidationAddress].push(machineId);
+        if(!(machines[machineId].status == MachineStatus.NEW))
+            machines[machineId].status == MachineStatus.VERIFYING;
+    }
+
+    function randomHealthCheck(uint machineId) external onlyOwner {
+        require(machines[machineId].exists,"Machine not present");
+        require(block.timestamp >= machines[machineId].lastChecked + 3 hours, "every 3 hrs");
+        require(machines[machineId].status == MachineStatus.AVAILABLE ,"Machine is busy");
+        address queenValidationAddress = getRandomQueen();
+        machines[machineId].currentQueen = queenValidationAddress;
+        machines[data.machineID].status = MachineStatus.VERIFYING;
+        healthCheckQueenMachines[queenValidationAddress].push(machineId);
+    }
+
+    function randomHealthCheckReport(HealthCheckData calldata data) internal {
+        require(msg.sender == machines[data.machineID].currentQueen, "Only assigned queen can call");
+            if (healthCheckTest(data.availabilityData)) {
+                machines[data.machineID].sucessfulConsecutiveHealthChecks += 1;
+                if(machines[data.machineID].sucessfulConsecutiveHealthChecks == 3) {
+                    updateMachineHealthScore(data.machineID, 1, true);
+                    machines[data.machineID].sucessfulConsecutiveHealthChecks = 0;
+                }
+            } else {
+                updateMachineHealthScore(data.machineID, 1, false);
+                machines[data.machineID].sucessfulConsecutiveHealthChecks = 0;
+            }
+            machines[data.machineID].lastChecked  = block.timestamp;
+            machines[data.machineID].status = MachineStatus.AVAILABLE;
+            machines[data.machineID].currentQueen = address(0);
+            }
+    }
+
+    function randomHealthCheckBundle(HealthCheckData[] calldata healthCheckDataArray) external {
+        for (uint256 i = 0; i < healthCheckDataArray.length; i++) {
+            randomHealthCheckReport(healthCheckDataArray[i]);
         }
 
-        emit MachineDrillRequested(msg.sender, machineId);
+        emit HealthCheckDataBundle(healthCheckDataArray);
     }
 
     function createJob(uint machineId, uint gpuHours, string calldata sshPublicKey, bool requireDrill ) external payable {
@@ -346,8 +376,6 @@ contract GPU is IGPU, OwnableUpgradeable, UUPSUpgradeable {
             machines[machineId].currentQueen = address(0);
             machines[machineId].currentJobID = 0;
             jobs[machines[machineId].currentJobID].status = JobStatus.DISABLED;
-            // can provide refund
-            //add condition to check whether contract has that amount
             payable(jobs[machines[machineId].currentJobID].consumerAddress).transfer(jobs[machines[machineId].currentJobID].price);
             emit AmountRefunded(jobs[machines[machineId].currentJobID].consumerAddress, jobs[machines[machineId].currentJobID].price);
         }
@@ -548,6 +576,10 @@ contract GPU is IGPU, OwnableUpgradeable, UUPSUpgradeable {
 
     function getProviderMachines() public view returns (uint[] memory){
         return providers[msg.sender].machineIDs;
+    }
+
+    function getHealthQueenMachines(address queenAddress) public view returns(uint[] memory){
+        return healthCheckQueenMachines[queenAddress];
     }
 
 }
