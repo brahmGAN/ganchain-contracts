@@ -66,6 +66,7 @@ contract GPU is IGPU, OwnableUpgradeable, UUPSUpgradeable {
     event JobCompleted(address indexed consumerAddress, uint indexed machineId, address indexed currentQueenAddress, uint jobID);
     event QueenReassign(address indexed consumerAddress, uint indexed machineId, address indexed queenAddress, uint jobId);
     event HealthCheckDataBundle(HealthCheckData[] healthCheckDataArray);
+    event RandomHealthCheckDataBundle(HealthCheckData[] healthCheckDataArray);
     event AmountRefunded(address indexed consumerAddress, uint amount);
 
     event UpdatedInitializedValues(address owner, address nftContractAddress, uint16 tickSeconds, uint gpuID, uint userID, uint machineID, uint machineInfoID, uint jobID);
@@ -268,26 +269,25 @@ contract GPU is IGPU, OwnableUpgradeable, UUPSUpgradeable {
         require(machines[machineId].status == MachineStatus.AVAILABLE ,"Machine is busy");
         address queenValidationAddress = getRandomQueen();
         machines[machineId].currentQueen = queenValidationAddress;
-        machines[data.machineID].status = MachineStatus.VERIFYING;
+        machines[machineId].status = MachineStatus.VERIFYING;
         healthCheckQueenMachines[queenValidationAddress].push(machineId);
     }
 
     function randomHealthCheckReport(HealthCheckData calldata data) internal {
         require(msg.sender == machines[data.machineID].currentQueen, "Only assigned queen can call");
-            if (healthCheckTest(data.availabilityData)) {
-                machines[data.machineID].sucessfulConsecutiveHealthChecks += 1;
-                if(machines[data.machineID].sucessfulConsecutiveHealthChecks == 3) {
-                    updateMachineHealthScore(data.machineID, 1, true);
-                    machines[data.machineID].sucessfulConsecutiveHealthChecks = 0;
-                }
-            } else {
-                updateMachineHealthScore(data.machineID, 1, false);
+        if (healthCheckTest(data.availabilityData)) {
+            machines[data.machineID].sucessfulConsecutiveHealthChecks += 1;
+            if(machines[data.machineID].sucessfulConsecutiveHealthChecks == 3) {
+                updateMachineHealthScore(data.machineID, 1, true);
                 machines[data.machineID].sucessfulConsecutiveHealthChecks = 0;
             }
-            machines[data.machineID].lastChecked  = block.timestamp;
-            machines[data.machineID].status = MachineStatus.AVAILABLE;
-            machines[data.machineID].currentQueen = address(0);
-            }
+        } else {
+            updateMachineHealthScore(data.machineID, 1, false);
+            machines[data.machineID].sucessfulConsecutiveHealthChecks = 0;
+        }
+        machines[data.machineID].lastChecked  = block.timestamp;
+        machines[data.machineID].status = MachineStatus.AVAILABLE;
+        machines[data.machineID].currentQueen = address(0);
     }
 
     function randomHealthCheckBundle(HealthCheckData[] calldata healthCheckDataArray) external {
@@ -295,7 +295,7 @@ contract GPU is IGPU, OwnableUpgradeable, UUPSUpgradeable {
             randomHealthCheckReport(healthCheckDataArray[i]);
         }
 
-        emit HealthCheckDataBundle(healthCheckDataArray);
+        emit RandomHealthCheckDataBundle(healthCheckDataArray);
     }
 
     function createJob(uint machineId, uint gpuHours, string calldata sshPublicKey, bool requireDrill ) external payable {
