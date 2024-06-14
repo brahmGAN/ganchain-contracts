@@ -149,8 +149,8 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
     mapping(address => uint256[]) queenMachines;
     mapping(address => uint256[]) drillQueenMachines;
     mapping(address => uint256[]) healthCheckQueenMachines;
-    mapping(address => bool) public isProvider;
-    mapping(address => bool) public isValidator;
+    mapping(address => bool) isProvider;
+    mapping(address => bool) isValidator;
 
     modifier haveNft(address nftAddress) {
         IERC721 nftContract = IERC721(nftContractAddress);
@@ -249,6 +249,23 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
     event UpdatedMinMachineAvailability(uint256 newMinAvailability);
     event UpdatedMaxMachineUnavailability(uint256 newMaxUnavailability);
     event UpdatedLatencyPeriod(uint256 newGracePeriod);
+
+    event UpdatedInitializedValues(
+        address owner,
+        address nftContractAddress,
+        uint16 tickSeconds,
+        uint256 gpuID,
+        uint256 userID,
+        uint256 machineID,
+        uint256 machineInfoID,
+        uint256 jobID
+    );
+    event UpdatedInitializedDrillTestValues(
+        uint256 minDrillTestRange,
+        uint256 minMachineAvailability,
+        uint256 maxMachineUnavailability,
+        uint256 gracePeriod
+    );
 
     function _authorizeUpgrade(address newImplementation)
         internal

@@ -43,10 +43,26 @@ contract GPU is AddProvider, AddQueen, AddJobs, AddConsumer {
 
         emit AddedGpuType(gpuName, priceInWei, computeUnit);
     }
-    
+
     function updateGpuPrice(uint16 gpuMappedID, uint256 updatedPriceInWei) public onlyOwner {
         gpus[gpuMappedID].price = updatedPriceInWei;
         emit UpdatedGpuPrice(gpuMappedID, updatedPriceInWei); 
     }
-}
 
+    function updateInitializedValues(address newNftContractAddress, uint16 newTickSeconds, uint newGpuID, uint newUserID, uint newMachineID, uint newMachineInfoID, uint newJobID,
+        uint newMinDrillTestRange, uint newMinMachineAvailability, uint newMaxMachineUnavailability, uint newGracePeriod) external onlyOwner {
+        nftContractAddress = newNftContractAddress;
+        tickSeconds = newTickSeconds;
+        gpuID = newGpuID;
+        userID = newUserID;
+        machineID = newMachineID;
+        machineInfoID = newMachineInfoID;
+        jobID = newJobID;
+        minDrillTestRange = newMinDrillTestRange;
+        minMachineAvailability = newMinMachineAvailability;
+        maxMachineUnavailability = newMaxMachineUnavailability;
+        gracePeriod = newGracePeriod;
+        emit UpdatedInitializedValues(msg.sender, nftContractAddress, tickSeconds, gpuID, userID, machineID, machineInfoID, jobID);
+        emit UpdatedInitializedDrillTestValues(minDrillTestRange, minMachineAvailability, maxMachineUnavailability, gracePeriod);
+    }
+}
