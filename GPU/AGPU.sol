@@ -290,6 +290,10 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
                 machines[machineId].status == MachineStatus.AVAILABLE,
             "Machine busy"
         );
+        require(
+            block.timestamp >= machines[machineId].lastDrillTime + 24 hours,
+            "every 24 hrs"
+        );
         address queenValidationAddress = getRandomQueen();
         machines[machineId].currentQueen = queenValidationAddress;
         drillQueenMachines[queenValidationAddress].push(machineId);
@@ -300,7 +304,7 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
     function randomHealthCheck(uint256 machineId) external onlyOwner {
         require(machines[machineId].exists, "Machine not present");
         require(
-            block.timestamp >= machines[machineId].lastChecked + 3 minutes,
+            block.timestamp >= machines[machineId].lastChecked + 3 hours,
             "every 3 hrs"
         );
         require(
