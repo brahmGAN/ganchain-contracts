@@ -6,7 +6,8 @@ import "./AGPU.sol";
 
 contract AddConsumer is IGPU {
     
-    function addConsumer(address consumerAddress, string calldata userName, string calldata organisation) external onlyOwner {
+    function addConsumer(address consumerAddress, string calldata userName, string calldata organisation) external  {
+        require(helper == msg.sender,"OH");
         require(!consumers[consumerAddress].exists, "Exists");
 
         consumers[consumerAddress] = Consumer({

@@ -7,10 +7,10 @@ import "./AGPU.sol";
 contract AddProvider is IGPU {
 
     function addProvider(address providerAddress) external {
-        require(!isRegistered(providerAddress), "Not a provider");
-        require(!nftCheck[msg.sender], "Address already used");
-        require(!providers[providerAddress].exists, "Provider exists");
-        require(!queens[providerAddress].exists, "Already a Queen");
+        require(!isRegistered(providerAddress), "!Provider");
+        require(!nftCheck[msg.sender], "AddressUsed");
+        require(!providers[providerAddress].exists, "Exists");
+        require(!queens[providerAddress].exists, "AlreadyQueen");
 
         nftCheck[msg.sender] = true;
         providers[providerAddress] = Provider({
@@ -47,12 +47,12 @@ contract AddProvider is IGPU {
             bytes(machineDetails.connectionType).length > 0,
             "!ConnectionType"
         );
-        require(bytes(machineDetails.cpuName).length > 0, "!name");
-        require(machineDetails.cpuCoreCount > 0, "!corecount");
+        require(bytes(machineDetails.cpuName).length > 0, "!Name");
+        require(machineDetails.cpuCoreCount > 0, "!Corecount");
         require(
             machineDetails.uploadBandWidth > 0 &&
                 machineDetails.downloadBandWidth > 0,
-            "!bandwidth"
+            "!Bandwidth"
         );
         require(
             bytes(machineDetails.storageType).length > 0,

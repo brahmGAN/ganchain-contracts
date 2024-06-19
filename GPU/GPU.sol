@@ -8,12 +8,12 @@ import "./Jobs.sol";
 import "./AddConsumer.sol";
 
 contract GPU is AddProvider, AddQueen, AddJobs, AddConsumer {
-    function initialize(address NftContractAddress, uint16 TickSeconds, uint GpuID, uint UserID, uint MachineID, uint MachineInfoID, uint JobID, 
-        uint MinDrillTestRange, uint MinMachineAvailability, uint MaxMachineUnavailability, uint GracePeriod) public initializer {
+    function initialize(address NftAddress, uint16 TickSeconds, uint GpuID, uint UserID, uint MachineID, uint MachineInfoID, uint JobID, 
+        uint MinDrillTestRange, uint MinMachineAvailability, uint MaxMachineUnavailability, uint GracePeriod, address Helper, address Scheduler) public initializer {
         require(!initialized, "ContractInitialized");
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
-        nftContractAddress = NftContractAddress;
+        nftAddress = NftAddress;
         tickSeconds = TickSeconds;
         gpuID = GpuID;
         userID = UserID;
@@ -25,10 +25,13 @@ contract GPU is AddProvider, AddQueen, AddJobs, AddConsumer {
         minMachineAvailability = MinMachineAvailability;
         maxMachineUnavailability = MaxMachineUnavailability;
         gracePeriod = GracePeriod;
+        helper = Helper;
+        scheduler = Scheduler;
+
 
         initialized = true;
 
-        emit Initialized(msg.sender, nftContractAddress, tickSeconds, gpuID, userID, machineID, machineInfoID, jobID);
+        emit Initialized(msg.sender, nftAddress, tickSeconds, gpuID, userID, machineID, machineInfoID, jobID);
         emit InitializedDrillTestValues(minDrillTestRange, minMachineAvailability, maxMachineUnavailability, gracePeriod);
     }
 
@@ -49,9 +52,9 @@ contract GPU is AddProvider, AddQueen, AddJobs, AddConsumer {
         emit UpdatedGpuPrice(gpuMappedID, updatedPriceInWei); 
     }
 
-    function updateInitializedValues(address newNftContractAddress, uint16 newTickSeconds, uint newGpuID, uint newUserID, uint newMachineID, uint newMachineInfoID, uint newJobID,
+    function updateInitializedValues(address newNftAddress, uint16 newTickSeconds, uint newGpuID, uint newUserID, uint newMachineID, uint newMachineInfoID, uint newJobID,
         uint newMinDrillTestRange, uint newMinMachineAvailability, uint newMaxMachineUnavailability, uint newGracePeriod) external onlyOwner {
-        nftContractAddress = newNftContractAddress;
+        nftAddress = newNftAddress;
         tickSeconds = newTickSeconds;
         gpuID = newGpuID;
         userID = newUserID;
@@ -62,7 +65,7 @@ contract GPU is AddProvider, AddQueen, AddJobs, AddConsumer {
         minMachineAvailability = newMinMachineAvailability;
         maxMachineUnavailability = newMaxMachineUnavailability;
         gracePeriod = newGracePeriod;
-        emit UpdatedInitializedValues(msg.sender, nftContractAddress, tickSeconds, gpuID, userID, machineID, machineInfoID, jobID);
+        emit UpdatedInitializedValues(msg.sender, nftAddress, tickSeconds, gpuID, userID, machineID, machineInfoID, jobID);
         emit UpdatedInitializedDrillTestValues(minDrillTestRange, minMachineAvailability, maxMachineUnavailability, gracePeriod);
     }
 }

@@ -121,13 +121,15 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
     }
 
     bool public initialized;
-    address public nftContractAddress;
+    address public nftAddress;
     uint16 public tickSeconds;
     uint256 public gpuID;
     uint256 public userID;
     uint256 public machineID;
     uint256 public machineInfoID;
     uint256 public jobID;
+    address public scheduler;
+    address public helper;
 
     uint256 public minDrillTestRange;
     uint256 public minMachineAvailability;
@@ -152,9 +154,9 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
     mapping(address => bool) isProvider;
     mapping(address => bool) isValidator;
 
-    modifier haveNft(address nftAddress) {
-        IERC721 nftContract = IERC721(nftContractAddress);
-        require(nftContract.balanceOf(nftAddress) > 0, "Do not have NFT");
+    modifier haveNft(address NftAddress) {
+        IERC721 nftContract = IERC721(nftAddress);
+        require(nftContract.balanceOf(nftAddress) > 0, "NoNFT");
         _;
     }
 
@@ -283,16 +285,17 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         return randomQueen;
     }
 
-    function randomDrillTest(uint256 machineId) external onlyOwner {
-        require(machines[machineId].exists, "Machine not present");
+    function randomDrillTest(uint256 machineId) external {
+        require(scheduler == msg.sender,"OS");
+        require(machines[machineId].exists, "!Machine");
         require(
             machines[machineId].status == MachineStatus.NEW ||
                 machines[machineId].status == MachineStatus.AVAILABLE,
-            "Machine busy"
+            "MachineBusy"
         );
         require(
             block.timestamp >= machines[machineId].lastDrillTime + 24 hours,
-            "every 24 hrs"
+            "Every24hrs"
         );
         address queenValidationAddress = getRandomQueen();
         machines[machineId].currentQueen = queenValidationAddress;
@@ -301,15 +304,16 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
             machines[machineId].status == MachineStatus.VERIFYING;
     }
 
-    function randomHealthCheck(uint256 machineId) external onlyOwner {
-        require(machines[machineId].exists, "Machine not present");
+    function randomHealthCheck(uint256 machineId) external {
+        require(scheduler == msg.sender,"OS");
+        require(machines[machineId].exists, "!Machine");
         require(
             block.timestamp >= machines[machineId].lastChecked + 3 hours,
-            "every 3 hrs"
+            "every3hrs"
         );
         require(
             machines[machineId].status == MachineStatus.AVAILABLE,
-            "Machine is busy"
+            "MachineBusy"
         );
         address queenValidationAddress = getRandomQueen();
         machines[machineId].currentQueen = queenValidationAddress;
@@ -320,7 +324,7 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
     function randomHealthCheckReport(HealthCheckData calldata data) internal {
         require(
             msg.sender == machines[data.machineID].currentQueen,
-            "Only assigned queen can call"
+            "OAQueenCall"
         );
         if (healthCheckTest(data.availabilityData)) {
             machines[data.machineID].sucessfulConsecutiveHealthChecks += 1;
