@@ -156,7 +156,7 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
 
     modifier haveNft(address NftAddress) {
         IERC721 nftContract = IERC721(nftAddress);
-        require(nftContract.balanceOf(nftAddress) > 0, "NoNFT");
+        require(nftContract.balanceOf(NftAddress) > 0, "NoNFT");
         _;
     }
 
