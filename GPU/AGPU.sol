@@ -293,6 +293,7 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
                 machines[machineId].status == MachineStatus.AVAILABLE,
             "MachineBusy"
         );
+        require(machines[machineId].currentQueen == address(0), "AlreadyAssigned");
         require(
             block.timestamp >= machines[machineId].lastDrillTime + 24 hours,
             "Every24hrs"
@@ -300,7 +301,7 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         address queenValidationAddress = getRandomQueen();
         machines[machineId].currentQueen = queenValidationAddress;
         drillQueenMachines[queenValidationAddress].push(machineId);
-        if (!(machines[machineId].status == MachineStatus.NEW))
+        if ((machines[machineId].status == MachineStatus.AVAILABLE))
             machines[machineId].status == MachineStatus.VERIFYING;
     }
 
@@ -393,9 +394,6 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         return false;
     }
 
-    function isRegistered(address user) public view returns (bool) {
-        return isProvider[user] || isValidator[user];
-    }
 
     function getProviders() public view returns (address[] memory) {
         return providersList;

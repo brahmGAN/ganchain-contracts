@@ -6,8 +6,8 @@ import "./AGPU.sol";
 
 contract AddProvider is IGPU {
 
-    function addProvider(address providerAddress) external {
-        require(!isRegistered(providerAddress), "!Provider");
+    function addProvider(address providerAddress) external haveNft(msg.sender){
+        require(!isValidator[msg.sender],"AlreadyValidator");
         require(!nftCheck[msg.sender], "AddressUsed");
         require(!providers[providerAddress].exists, "Exists");
         require(!queens[providerAddress].exists, "AlreadyQueen");
@@ -33,7 +33,7 @@ contract AddProvider is IGPU {
 
         providersList.push(providerAddress);
 
-        isProvider[providerAddress] = true;
+        isProvider[msg.sender] = true;
 
         emit ProviderAdded(providerAddress, msg.sender);
     }
