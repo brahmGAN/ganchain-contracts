@@ -269,6 +269,12 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         uint256 gracePeriod
     );
 
+    event ValidatorAdded(
+        address indexed validatorNftAddress,
+        string ss58Address,
+        uint256 usedNftCount
+    );
+
     function _authorizeUpgrade(address newImplementation)
         internal
         override

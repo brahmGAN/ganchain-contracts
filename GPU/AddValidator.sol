@@ -24,6 +24,8 @@ contract AddValidator is IGPU {
         }
         validators[msg.sender].ss58Addresses.push(validatorSS58Address);
         validators[msg.sender].usedNFTCount += 1;
+
+        emit ValidatorAdded(msg.sender, validatorSS58Address, validators[msg.sender].usedNFTCount);
     }
 
     function calculateNFT(address validatorAddress) internal view returns(uint) {
