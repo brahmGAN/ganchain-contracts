@@ -5,7 +5,6 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 contract AddValidator is IGPU {
-    address NFTAddress;
     address[] ValidatorNFTAddresses;
     struct ValidatorInfo {
         string[] ss58Addresses;
@@ -28,7 +27,7 @@ contract AddValidator is IGPU {
     }
 
     function calculateNFT(address validatorAddress) internal view returns(uint) {
-        IERC721 nftContract = IERC721(NFTAddress);
+        IERC721 nftContract = IERC721(nftAddress);
         return nftContract.balanceOf(validatorAddress);
     }
     function getValidators() public view returns(address[] memory){
