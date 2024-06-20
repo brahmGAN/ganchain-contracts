@@ -13,12 +13,8 @@ contract AddValidator is IGPU {
         uint usedNFTCount;
     }
     mapping(address => ValidatorInfo) public validators;
-    modifier haveNFT(address validatorAddress){
-        IERC721 nftContract = IERC721(NFTAddress);
-        require(nftContract.balanceOf(validatorAddress) > 0, "NoNFT");
-        _;
-    }
-    function addValidator(string calldata validatorSS58Address) public haveNFT(msg.sender) {
+   
+    function addValidator(string calldata validatorSS58Address) public haveNft(msg.sender) {
         require(!isProvider[msg.sender], "AlreadyProvider");
         uint nftBalance = calculateNFT(msg.sender);
         require(validators[msg.sender].ss58Addresses.length < nftBalance, "LimitReached");
