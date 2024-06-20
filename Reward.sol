@@ -78,9 +78,9 @@ contract Reward is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeab
         require(block.timestamp >= lastWithdrawalTime[msg.sender] + LOCK_PERIOD, "Withdrawal locked for 30 days");
         //require(amount <= providerRewards[msg.sender], "Insufficient reward balance");
         require(address(this).balance >= providerRewards[msg.sender], "Contract balance is insufficient");
+        payable(msg.sender).transfer(providerRewards[msg.sender]);
         providerRewards[msg.sender] = 0;
         lastWithdrawalTime[msg.sender] = block.timestamp;
-        payable(msg.sender).transfer(providerRewards[msg.sender]);
         emit RewardWithdrawn(msg.sender, providerRewards[msg.sender]);
     }
 
