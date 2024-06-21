@@ -35,6 +35,8 @@ contract AddProvider is IGPU {
 
         isProvider[msg.sender] = true;
 
+        nftAddressToProviderAddress[msg.sender] = providerAddress;
+
         emit ProviderAdded(providerAddress, msg.sender);
     }
 
