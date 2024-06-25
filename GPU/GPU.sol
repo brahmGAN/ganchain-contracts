@@ -43,9 +43,11 @@ contract GPU is AddProvider, AddQueen, AddJobs, AddConsumer, AddValidator {
             computeUnit : computeUnit,
             exists : true
         });
+
+        emit AddedGpuType(gpuID, gpuName, priceInWei, computeUnit);
+
         gpuID++;
 
-        emit AddedGpuType(gpuName, priceInWei, computeUnit);
     }
 
     function updateGpuPrice(uint16 gpuMappedID, uint256 updatedPriceInWei) public onlyOwner {
@@ -54,7 +56,7 @@ contract GPU is AddProvider, AddQueen, AddJobs, AddConsumer, AddValidator {
     }
 
     function updateInitializedValues(address newNftAddress, uint16 newTickSeconds, uint newGpuID, uint newUserID, uint newMachineID, uint newMachineInfoID, uint newJobID,
-        uint newMinDrillTestRange, uint newMinMachineAvailability, uint newMaxMachineUnavailability, uint newGracePeriod) external onlyOwner {
+        uint newMinDrillTestRange, uint newMinMachineAvailability, uint newMaxMachineUnavailability, uint newGracePeriod, address newHelper, address newScheduler) external onlyOwner {
         nftAddress = newNftAddress;
         tickSeconds = newTickSeconds;
         gpuID = newGpuID;
@@ -66,7 +68,9 @@ contract GPU is AddProvider, AddQueen, AddJobs, AddConsumer, AddValidator {
         minMachineAvailability = newMinMachineAvailability;
         maxMachineUnavailability = newMaxMachineUnavailability;
         gracePeriod = newGracePeriod;
-        emit UpdatedInitializedValues(msg.sender, nftAddress, tickSeconds, gpuID, userID, machineID, machineInfoID, jobID);
+        helper = newHelper;
+        scheduler = newScheduler;
+        emit UpdatedInitializedValues(msg.sender, nftAddress, tickSeconds, gpuID, userID, machineID, machineInfoID, jobID, helper, scheduler);
         emit UpdatedInitializedDrillTestValues(minDrillTestRange, minMachineAvailability, maxMachineUnavailability, gracePeriod);
     }
 }

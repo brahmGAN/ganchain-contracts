@@ -61,13 +61,13 @@ contract Reward is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeab
     }
 
     function getComputeMultiplier(uint256 computeUnits) public pure returns(uint256) {
-        if (computeUnits < 8) {
+        if (computeUnits < 81) {
             return 100;
-        } else if (computeUnits < 65) {
+        } else if (computeUnits < 641) {
             return 125;
-        } else if (computeUnits < 513) {
+        } else if (computeUnits < 5121) {
             return 150;
-        } else if (computeUnits < 4097) {
+        } else if (computeUnits < 40961) {
             return 175;
         } else {
             return 200;
@@ -78,7 +78,8 @@ contract Reward is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeab
         require(block.timestamp >= lastWithdrawalTime[msg.sender] + LOCK_PERIOD, "Withdrawal locked for 30 days");
         //require(amount <= providerRewards[msg.sender], "Insufficient reward balance");
         require(address(this).balance >= providerRewards[msg.sender], "Contract balance is insufficient");
-        payable(msg.sender).transfer(providerRewards[msg.sender]);
+        (bool success,) = payable(msg.sender).call{value: providerRewards[msg.sender]}("");
+        require(success, "TransferFailed");
         providerRewards[msg.sender] = 0;
         lastWithdrawalTime[msg.sender] = block.timestamp;
         emit RewardWithdrawn(msg.sender, providerRewards[msg.sender]);

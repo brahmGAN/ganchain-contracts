@@ -88,14 +88,15 @@ contract AddProvider is IGPU {
 
         drillQueenMachines[queenValidationAddress].push(machineID);
         providers[msg.sender].machineIDs.push(machineID);
-        machineInfoID++;
-        machineID++;
 
         emit MachineAdded(
             msg.sender,
-            machineDetails.gpuID,
-            machineDetails.gpuQuantity
+            machineID
         );
+        machineInfoID++;
+        machineID++;
+
+        
     }
 
     function updateMachineStatus(uint machineId,uint16 value) public {
@@ -119,7 +120,7 @@ contract AddProvider is IGPU {
 
     function disableMachine(uint256 machineId) public {
         require(
-            msg.sender == machines[machineId].providerAddress,
+            msg.sender == machines[machineId].providerAddress || msg.sender == scheduler,
             "!Machine"
         );
         machines[machineId].status = MachineStatus.DISABLED;

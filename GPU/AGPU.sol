@@ -178,7 +178,7 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         uint256 gracePeriod
     );
     event AmountWithdrawal(address user, uint256 amount);
-    event AddedGpuType(string gpuType, uint256 priceInWei, uint256 computeUnit);
+    event AddedGpuType(uint256 gpuID,string gpuType, uint256 priceInWei, uint256 computeUnit);
     event UpdatedGpuPrice(uint256 gpuID, uint256 updatedPriceInWei);
     event QueenAdded(address sender, string publicKey, string userName);
     event ConsumerAdded(
@@ -192,8 +192,7 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
     );
     event MachineAdded(
         address indexed providerAddress,
-        uint256 indexed gpuID,
-        uint256 indexed gpuQuantity
+        uint256 indexed machineId
     );
     event MachineStatusUpdated(
         address indexed providerAddress,
@@ -261,7 +260,9 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         uint256 userID,
         uint256 machineID,
         uint256 machineInfoID,
-        uint256 jobID
+        uint256 jobID,
+        address helper,
+        address scheduler
     );
     event UpdatedInitializedDrillTestValues(
         uint256 minDrillTestRange,
@@ -275,6 +276,10 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         string ss58Address,
         uint256 usedNftCount
     );
+
+    event RandomDrillTestTriggered(address queenValidationAddress, uint256 machineId);
+
+    event RandomHealthCheckTriggered(address queenValidationAddress, uint256 machineId);
 
     function _authorizeUpgrade(address newImplementation)
         internal
@@ -300,7 +305,6 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
                 machines[machineId].status == MachineStatus.AVAILABLE,
             "MachineBusy"
         );
-        require(machines[machineId].currentQueen == address(0), "AlreadyAssigned");
         require(
             block.timestamp >= machines[machineId].lastDrillTime + 24 hours,
             "Every24hrs"
@@ -310,6 +314,8 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         drillQueenMachines[queenValidationAddress].push(machineId);
         if ((machines[machineId].status == MachineStatus.AVAILABLE))
             machines[machineId].status == MachineStatus.VERIFYING;
+
+        emit RandomDrillTestTriggered(queenValidationAddress, machineId);
     }
 
     function randomHealthCheck(uint256 machineId) external {
@@ -327,6 +333,8 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         machines[machineId].currentQueen = queenValidationAddress;
         machines[machineId].status = MachineStatus.VERIFYING;
         healthCheckQueenMachines[queenValidationAddress].push(machineId);
+
+        emit RandomHealthCheckTriggered(queenValidationAddress, machineId);
     }
 
     function randomHealthCheckReport(HealthCheckData calldata data) internal {
@@ -458,8 +466,8 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         return queenMachines[queenAddress];
     }
 
-    function getProviderMachines() public view returns (uint256[] memory) {
-        return providers[msg.sender].machineIDs;
+    function getProviderMachines(address providerAddress) public view returns (uint256[] memory) {
+        return providers[providerAddress].machineIDs;
     }
 
     function getHealthQueenMachines(address queenAddress)

@@ -15,6 +15,8 @@ contract AddValidator is IGPU {
    
     function addValidator(string calldata validatorSS58Address) public haveNft(msg.sender) {
         require(!isProvider[msg.sender], "AlreadyProvider");
+        require(bytes(validatorSS58Address).length > 0, "!SS58");
+
         uint nftBalance = calculateNFT(msg.sender);
         require(validators[msg.sender].ss58Addresses.length < nftBalance, "LimitReached");
         if (!isValidator[msg.sender]) {
