@@ -241,19 +241,6 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
     event RandomHealthCheckDataBundle(HealthCheckData[] healthCheckDataArray);
     event AmountRefunded(address indexed consumerAddress, uint256 amount);
 
-    event UpdatedNftAddress(address newNftAddress);
-    event UpdatedTickSeconds(uint256 newTickSeconds);
-    event UpdatedGpuId(uint256 newGpuID);
-    event UpdatedUserId(uint256 newUserId);
-    event UpdatedMachineId(uint256 newMachineId);
-    event UpdatedMachineInfoId(uint256 machineInfoId);
-    event UpdatedJobId(uint256 newJobId);
-
-    event UpdatedMinDrillTestValue(uint256 newMinDrillTestRange);
-    event UpdatedMinMachineAvailability(uint256 newMinAvailability);
-    event UpdatedMaxMachineUnavailability(uint256 newMaxUnavailability);
-    event UpdatedLatencyPeriod(uint256 newGracePeriod);
-
     event UpdatedInitializedValues(
         address owner,
         address nftContractAddress,
