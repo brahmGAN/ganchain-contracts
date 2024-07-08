@@ -69,6 +69,7 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
     }
 
     struct MachineInfo {
+        uint256 machineInfoId;
         uint256 gpuID;
         uint256 gpuQuantity;
         uint64 gpuMemory;
@@ -85,6 +86,7 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
     }
 
     struct Machine {
+        uint256 machineId;
         uint256 machineInfoID;
         address providerAddress;
         uint16 lastDrillResult;

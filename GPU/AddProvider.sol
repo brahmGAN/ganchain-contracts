@@ -67,10 +67,12 @@ contract AddProvider is IGPU {
         require(machineDetails.portsOpen.length > 0, "!Ports");
         require(bytes(machineDetails.region).length > 0, "!Region");
 
+        machineDetails.machineInfoId = machineInfoID;
         machineInfo[machineInfoID] = machineDetails;
         address queenValidationAddress = getRandomQueen();
 
         machines[machineID] = Machine({
+            machineId: machineID,
             machineInfoID: machineInfoID,
             providerAddress: msg.sender,
             lastDrillResult: 0,
