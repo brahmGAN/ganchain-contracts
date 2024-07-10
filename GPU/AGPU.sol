@@ -136,7 +136,7 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
     uint256 public minDrillTestRange;
     uint256 public minMachineAvailability;
     uint256 public maxMachineUnavailability;
-    uint256 public gracePeriod;
+    uint256 gracePeriod;
 
     address[] public queensList;
     address[] public providersList;
@@ -268,6 +268,7 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
 
     event UpdatedValidatorNFTCount(
         address validator,
+        string ss58Address,
         uint nftCount
     );
 
