@@ -268,6 +268,7 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
 
     event UpdatedValidatorNFTCount(
         address validator,
+        string ss58Address,
         uint nftCount
     );
 
