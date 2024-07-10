@@ -26,7 +26,7 @@ contract AddValidator is IGPU {
         return nftContract.balanceOf(validatorAddress);
     }
     function updateValidatorNFTCount(address validator)public {
-        require(isValidator[validator], "Not a Validator");
+        require(isValidator[validator], "!Validator");
         validators[validator].NFTCount = calculateNFT(validator);
         emit UpdatedValidatorNFTCount(validator, validators[validator].ss58Address ,validators[validator].NFTCount);
     }

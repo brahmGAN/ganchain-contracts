@@ -11,7 +11,7 @@ import "./AddValidator.sol";
 contract GPU is AddProvider, AddQueen, AddJobs, AddConsumer, AddValidator {
     function initialize(address NftAddress, uint16 TickSeconds, uint GpuID, uint UserID, uint MachineID, uint MachineInfoID, uint JobID, 
         uint MinDrillTestRange, uint MinMachineAvailability, uint MaxMachineUnavailability, uint GracePeriod, address Helper, address Scheduler) public initializer {
-        require(!initialized, "ContractInitialized");
+        require(!initialized, "Initialized");
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
         nftAddress = NftAddress;
