@@ -122,7 +122,7 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         uint16[] availabilityData;
     }
 
-    bool public initialized;
+    bool initialized;
     address public nftAddress;
     uint16 public tickSeconds;
     uint256 public gpuID;
@@ -138,8 +138,8 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
     uint256 public maxMachineUnavailability;
     uint256 gracePeriod;
 
-    address[] public queensList;
-    address[] public providersList;
+    address[] queensList;
+    address[] providersList;
 
     mapping(address => bool) public nftCheck;
     mapping(uint256 => Gpu) public gpus;
@@ -164,9 +164,9 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
     }
 
     event Initialized(
-        address owner,
-        address nftContractAddress,
-        uint16 tickSeconds,
+        address indexed owner,
+        address indexed nftContractAddress,
+        uint16 indexed tickSeconds,
         uint256 gpuID,
         uint256 userID,
         uint256 machineID,
@@ -174,14 +174,14 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         uint256 jobID
     );
     event InitializedDrillTestValues(
-        uint256 minDrillTestRange,
-        uint256 minMachineAvailability,
-        uint256 maxMachineUnavailability,
+        uint256 indexed minDrillTestRange,
+        uint256 indexed minMachineAvailability,
+        uint256 indexed maxMachineUnavailability,
         uint256 gracePeriod
     );
-    event AmountWithdrawal(address user, uint256 amount);
-    event AddedGpuType(uint256 gpuID,string gpuType, uint256 priceInWei, uint256 computeUnit);
-    event UpdatedGpuPrice(uint256 gpuID, uint256 updatedPriceInWei);
+    event AmountWithdrawal(address indexed user, uint256 indexed amount);
+    event AddedGpuType(uint256 indexed gpuID,string indexed gpuType, uint256 indexed priceInWei, uint256 computeUnit);
+    event UpdatedGpuPrice(uint256 indexed gpuID, uint256 indexed updatedPriceInWei);
     event QueenAdded(address sender, string publicKey, string userName);
     event ConsumerAdded(
         address consumerAddress,
@@ -198,22 +198,22 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
     );
     event MachineStatusUpdated(
         address indexed providerAddress,
-        uint256 machineId,
-        uint16 lastDrillResult
+        uint256 indexed machineId,
+        uint16 indexed lastDrillResult
     );
     event MachineDrillRequested(
         address indexed providerAddress,
-        uint256 machineId
+        uint256 indexed machineId
     );
     event MachineHealthScoreUpdated(
         uint256 indexed machineId,
         uint256 indexed newHealthScore
     );
-    event MachineDisabled(address indexed providerAddress, uint256 machineId);
+    event MachineDisabled(address indexed providerAddress, uint256 indexed machineId);
     event JobCreated(
         address indexed consumerAddress,
         uint256 indexed machineId,
-        address queenValidationAddress,
+        address indexed queenValidationAddress,
         uint256 jobId,
         uint256 gpuHoursInSeconds,
         uint256 price
@@ -237,14 +237,14 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         address indexed queenAddress,
         uint256 jobId
     );
-    event HealthCheckDataBundle(HealthCheckData[] healthCheckDataArray);
-    event RandomHealthCheckDataBundle(HealthCheckData[] healthCheckDataArray);
-    event AmountRefunded(address indexed consumerAddress, uint256 amount);
+    event HealthCheckDataBundle(HealthCheckData[] indexed healthCheckDataArray);
+    event RandomHealthCheckDataBundle(HealthCheckData[] indexed healthCheckDataArray);
+    event AmountRefunded(address indexed consumerAddress, uint256 indexed amount);
 
     event UpdatedInitializedValues(
-        address owner,
-        address nftContractAddress,
-        uint16 tickSeconds,
+        address indexed owner,
+        address indexed nftContractAddress,
+        uint16 indexed tickSeconds,
         uint256 gpuID,
         uint256 userID,
         uint256 machineID,
@@ -254,27 +254,27 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         address scheduler
     );
     event UpdatedInitializedDrillTestValues(
-        uint256 minDrillTestRange,
-        uint256 minMachineAvailability,
-        uint256 maxMachineUnavailability,
+        uint256 indexed minDrillTestRange,
+        uint256 indexed minMachineAvailability,
+        uint256 indexed maxMachineUnavailability,
         uint256 gracePeriod
     );
 
     event ValidatorAdded(
         address indexed validatorNftAddress,
-        string ss58Address,
-        uint256 usedNftCount
+        string indexed ss58Address,
+        uint256 indexed usedNftCount
     );
 
     event UpdatedValidatorNFTCount(
-        address validator,
-        string ss58Address,
-        uint nftCount
+        address indexed validator,
+        string indexed ss58Address,
+        uint indexed nftCount
     );
 
-    event RandomDrillTestTriggered(address queenValidationAddress, uint256 machineId);
+    event RandomDrillTestTriggered(address indexed queenValidationAddress, uint256 indexed machineId);
 
-    event RandomHealthCheckTriggered(address queenValidationAddress, uint256 machineId);
+    event RandomHealthCheckTriggered(address indexed queenValidationAddress, uint256 indexed machineId);
 
     function _authorizeUpgrade(address newImplementation)
         internal
@@ -365,10 +365,7 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
     }
 
     function drillTest(uint256 value) internal view returns (bool) {
-        if (value > minDrillTestRange) {
-            return true;
-        }
-        return false;
+        return value > minDrillTestRange;
     }
 
     function updateMachineHealthScore(
@@ -395,13 +392,10 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         view
         returns (bool)
     {
-        if (
+        return (
             value[0] > minMachineAvailability &&
             value[1] < maxMachineUnavailability
-        ) {
-            return true;
-        }
-        return false;
+        );
     }
 
 
