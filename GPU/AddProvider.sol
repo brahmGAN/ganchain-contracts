@@ -8,11 +8,10 @@ contract AddProvider is IGPU {
 
     function addProvider(address providerAddress) external haveNft(msg.sender){
         require(!isValidator[msg.sender],"AlreadyValidator");
-        require(!nftCheck[msg.sender], "AddressUsed");
+        require(!isProvider[msg.sender], "AddressUsed");
         require(!providers[providerAddress].exists, "Exists");
         require(!queens[providerAddress].exists, "AlreadyQueen");
 
-        nftCheck[msg.sender] = true;
         providers[providerAddress] = Provider({
             nftAddress: msg.sender,
             machineIDs: new uint256[](0),

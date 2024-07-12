@@ -141,7 +141,6 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
     address[] queensList;
     address[] providersList;
 
-    mapping(address => bool) public nftCheck;
     mapping(uint256 => Gpu) public gpus;
     mapping(uint256 => User) public users;
     mapping(address => Queen) public queens;
@@ -180,7 +179,7 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         uint256 gracePeriod
     );
     event AmountWithdrawal(address indexed user, uint256 indexed amount);
-    event AddedGpuType(uint256 indexed gpuID,string indexed gpuType, uint256 indexed priceInWei, uint256 computeUnit);
+    event AddedGpuType(uint256 indexed gpuID,string  gpuType, uint256 indexed priceInWei, uint256 computeUnit);
     event UpdatedGpuPrice(uint256 indexed gpuID, uint256 indexed updatedPriceInWei);
     event QueenAdded(address sender, string publicKey, string userName);
     event ConsumerAdded(
@@ -262,13 +261,13 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
 
     event ValidatorAdded(
         address indexed validatorNftAddress,
-        string indexed ss58Address,
+        string  ss58Address,
         uint256 indexed usedNftCount
     );
 
     event UpdatedValidatorNFTCount(
         address indexed validator,
-        string indexed ss58Address,
+        string ss58Address,
         uint indexed nftCount
     );
 
