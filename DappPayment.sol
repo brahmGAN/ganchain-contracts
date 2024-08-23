@@ -37,7 +37,7 @@ contract DappPayment is Ownable, ReentrancyGuard {
     
     function usdcTransfer(uint256 _amount) external {
         require(IERC20(usdcTokenAddress).balanceOf(msg.sender) >= _amount, "Insufficient token");
-        require(IERC20(usdcTokenAddress).allowance(msg.sender,fundsHandler) >= _amount,"Not approved");
+        require(IERC20(usdcTokenAddress).allowance(msg.sender,address(this)) >= _amount,"Not approved");
         IERC20(usdcTokenAddress).safeTransferFrom(msg.sender, fundsHandler, _amount);
         if(!paymentInfo[msg.sender].exists){
             tokenPayers.push(msg.sender);
@@ -49,7 +49,7 @@ contract DappPayment is Ownable, ReentrancyGuard {
 
     function usdtTransfer(uint256 _amount) external {
         require(IERC20(usdtTokenAddress).balanceOf(msg.sender) >= _amount, "Insufficient token");
-        require(IERC20(usdtTokenAddress).allowance(msg.sender, fundsHandler) >= _amount,"Not approved");
+        require(IERC20(usdtTokenAddress).allowance(msg.sender, address(this)) >= _amount,"Not approved");
         IERC20(usdtTokenAddress).safeTransferFrom(msg.sender, fundsHandler, _amount);
         if(!paymentInfo[msg.sender].exists){
             tokenPayers.push(msg.sender);
