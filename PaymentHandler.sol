@@ -42,7 +42,7 @@ contract PaymentHandler is Ownable, ReentrancyGuard {
     
     function usdcTransferH160(uint256 _amount) external {
         require(IERC20(usdcTokenAddress).balanceOf(msg.sender) >= _amount, "Insufficient token");
-        require(IERC20(usdcTokenAddress).allowance(msg.sender,fundsHandler) >= _amount,"Not approved");
+        require(IERC20(usdcTokenAddress).allowance(msg.sender, address(this)) >= _amount,"Not approved");
         IERC20(usdcTokenAddress).safeTransferFrom(msg.sender, fundsHandler, _amount);
         if(!H160Info[msg.sender].exists){
             tokenPayers.push(msg.sender);
@@ -54,7 +54,7 @@ contract PaymentHandler is Ownable, ReentrancyGuard {
 
     function usdtTransferH160(uint256 _amount) external {
         require(IERC20(usdtTokenAddress).balanceOf(msg.sender) >= _amount, "Insufficient token");
-        require(IERC20(usdtTokenAddress).allowance(msg.sender, fundsHandler) >= _amount,"Not approved");
+        require(IERC20(usdtTokenAddress).allowance(msg.sender, address(this)) >= _amount,"Not approved");
         IERC20(usdtTokenAddress).safeTransferFrom(msg.sender, fundsHandler, _amount);
         if(!H160Info[msg.sender].exists){
             tokenPayers.push(msg.sender);
@@ -66,7 +66,7 @@ contract PaymentHandler is Ownable, ReentrancyGuard {
 
     function usdcTransferSS58(uint256 _amount, string calldata _ss58Address) external {
         require(IERC20(usdcTokenAddress).balanceOf(msg.sender) >= _amount, "Insufficient token balance");
-        require(IERC20(usdcTokenAddress).allowance(msg.sender,fundsHandler) >= _amount,"Not approved");
+        require(IERC20(usdcTokenAddress).allowance(msg.sender, address(this)) >= _amount,"Not approved");
         require(bytes(_ss58Address).length == 48, "Invalid SS58 address");
         IERC20(usdcTokenAddress).safeTransferFrom(msg.sender, fundsHandler, _amount);
         if(!SS58Info[_ss58Address].exists){
@@ -83,7 +83,7 @@ contract PaymentHandler is Ownable, ReentrancyGuard {
 
     function usdtTransferSS58(uint256 _amount, string calldata _ss58Address) external {
         require(IERC20(usdtTokenAddress).balanceOf(msg.sender) >= _amount, "Insufficient token balance");
-        require(IERC20(usdtTokenAddress).allowance(msg.sender,fundsHandler) >= _amount,"Not approved");
+        require(IERC20(usdtTokenAddress).allowance(msg.sender, address(this)) >= _amount,"Not approved");
         require(bytes(_ss58Address).length == 48, "Invalid SS58 address");
         IERC20(usdtTokenAddress).safeTransferFrom(msg.sender, fundsHandler, _amount);
         if(!SS58Info[_ss58Address].exists){
