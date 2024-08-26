@@ -34,15 +34,7 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable {
         string remarks;
     }
 
-    struct RefundTransaction {
-        string id;
-        string userId;
-        string amount;
-        uint256 timestamp;
-        string remarks;
-    }
-
-    struct PreBookTransaction{
+    struct PreBookTransaction {
         string id;
         string userId;
         string config;
@@ -55,16 +47,62 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable {
         string remarks;
     }
 
+    struct Transaction {
+        string id;
+        string userId; 
+        uint256 amount; 
+        uint256 balanceRemaining;
+        bool isDebit; 
+        string notes; 
+        uint256 createdAt;
+        uint256 updatedAt; 
+    }
+
+    struct Booking {
+        string id; 
+        string userId; 
+        string machineId; 
+        uint256 startTime; 
+        uint256 endTime; 
+        uint256 baseCost;
+        uint256 totalCost; 
+        string sshKeyId; 
+        string status; 
+        string notes; 
+        uint256 createdAt; 
+        uint256 updatedAt; 
+    }
+
+    struct Rental {
+        string id; 
+        string userId; 
+        string machineId; 
+        uint256 machineCount; 
+        uint256 startTime; 
+        uint256 endTime;
+        uint256 advancePaid; 
+        uint256 totalCost; 
+        string sshKeyId; 
+        string status; 
+        string notes; 
+        uint256 createdAt; 
+        uint256 updatedAt;  
+    }
+
     //Mappings
 
     mapping(string => CreditTransaction) public creditTransactions;
     mapping(string => BookingTransaction) public bookingTransactions;
-    mapping(string => RefundTransaction) public refundTransactions;
     mapping(string => PreBookTransaction) public preBookTransactions;
+    mapping(string => Transaction) public transactions;
+    mapping(string => Booking) public bookings;
+    mapping(string => Rental) public rentals;
     mapping(string => bool) public creditTransactionExists;
     mapping(string => bool) public bookingTransactionExists;
-    mapping(string => bool) public refundTransactionExists;
     mapping(string => bool) public preBookTransactionExists;
+    mapping(string => bool) public transactionExists;
+    mapping(string => bool) public bookingExists;
+    mapping(string => bool) public rentalExists;
 
 
     //Events
@@ -90,14 +128,6 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable {
         string remarks
     );
 
-    event RefundTransactionEvent(
-        string id,
-        string userId,
-        string amount,
-        uint256 indexed timestamp,
-        string remarks
-    );
-
     event PreBookTransactionEvent(
         string id,
         string userId,
@@ -109,6 +139,48 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable {
         string amount,
         uint256 indexed timestamp,
         string remarks
+    );
+
+    event TransactionEvent(
+        string id,
+        string userId, 
+        uint256 indexed amount, 
+        uint256 indexed balanceRemaining,
+        bool isDebit,
+        string notes, 
+        uint256 indexed createdAt,
+        uint256 updatedAt 
+    );
+
+    event BookingEvent(
+        string id, 
+        string userId, 
+        string machineId, 
+        uint256 indexed startTime, 
+        uint256 endTime,
+        uint256 baseCost,
+        uint256 totalCost, 
+        string sshKeyId,
+        string status, 
+        string notes, 
+        uint256 indexed createdAt, 
+        uint256 updatedAt
+    );
+
+    event RentalEvent(
+        string id, 
+        string userId, 
+        string machineId, 
+        uint256 machineCount, 
+        uint256 startTime, 
+        uint256 endTime,
+        uint256 advancePaid, 
+        uint256 totalCost, 
+        string sshKeyId, 
+        string status, 
+        string notes, 
+        uint256 createdAt, 
+        uint256 updatedAt
     );
 
     /// @notice Initializes the contract
@@ -218,36 +290,6 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable {
             timestamp,
             remarks
         );
-    }
-
-    /// @notice Adds a new refund transaction
-    /// @param id Unique identifier for the transaction
-    /// @param userId Identifier of the user
-    /// @param amount Amount refunded
-    /// @param timestamp Time of the transaction
-    /// @param remarks Additional notes about the transaction
-    function refundTransaction(
-        string calldata id,
-        string calldata userId,
-        string calldata amount,
-        uint256 timestamp,
-        string calldata remarks
-    ) external onlyOwner {
-
-        if(refundTransactionExists[id]) 
-            revert TransactionAlreadyExists();
-        if(bytes(id).length == 0 || bytes(userId).length == 0)
-            revert InvalidId();
-
-        refundTransactions[id] = RefundTransaction(
-            id,
-            userId,
-            amount,
-            timestamp,
-            remarks
-        );
-        refundTransactionExists[id] = true;
-        emit RefundTransactionEvent(id, userId, amount, block.timestamp, remarks);
     }
 
     /// @notice Adds a new pre-book transaction
@@ -366,30 +408,6 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable {
             amountDeducted,
             durationInHours,
             ratePerHour,
-            timestamp,
-            remarks
-        );
-    }
-
-    /// @notice Updates an existing refund transaction
-    /// @param id Unique identifier for the transaction to update
-    /// @param userId Updated user identifier
-    /// @param amount Updated refund amount
-    /// @param timestamp Updated time of the transaction
-    /// @param remarks Updated additional notes
-    /// @dev Reverts if the transaction does not exist
-    function updateRefundTransaction(
-        string calldata id,
-        string calldata userId,
-        string calldata amount,
-        uint256 timestamp,
-        string calldata remarks
-    ) external onlyOwner {
-        if(!refundTransactionExists[id]) revert TransactionDoesNotExist();
-        refundTransactions[id] = RefundTransaction(
-            id,
-            userId,
-            amount,
             timestamp,
             remarks
         );
