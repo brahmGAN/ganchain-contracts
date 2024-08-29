@@ -24,23 +24,23 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable {
         bytes32 balanceRemaining;
         bool isDebit; 
         bytes32 notes; 
-        uint256 createdAt;
-        uint256 updatedAt; 
+        bytes32 createdAt;
+        bytes32 updatedAt; 
     }
 
     struct Booking {
         bytes32 id; 
         bytes32 userId; 
         bytes32 machineId; 
-        uint256 startTime; 
-        uint256 endTime; 
-        uint256 baseCost;
-        uint256 totalCost; 
+        bytes32 startTime; 
+        bytes32 endTime; 
+        bytes32 baseCost;
+        bytes32 totalCost; 
         bytes32 sshKeyId; 
         bytes32 status; 
         bytes32 notes; 
-        uint256 createdAt; 
-        uint256 updatedAt; 
+        bytes32 createdAt; 
+        bytes32 updatedAt; 
     }
 
     struct Rental {
@@ -48,15 +48,15 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable {
         bytes32 userId; 
         bytes32 machineId; 
         uint256 machineCount; 
-        uint256 startTime; 
-        uint256 endTime;
-        uint256 advancePaid; 
-        uint256 totalCost; 
+        bytes32 startTime; 
+        bytes32 endTime;
+        bytes32 advancePaid; 
+        bytes32 totalCost; 
         bytes32 sshKeyId; 
         bytes32 status; 
         bytes32 notes; 
-        uint256 createdAt; 
-        uint256 updatedAt;  
+        bytes32 createdAt; 
+        bytes32 updatedAt;  
     }
 
     //Mappings
@@ -78,23 +78,23 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable {
         bytes32 balanceRemaining,
         bool isDebit, 
         bytes32 notes, 
-        uint256 indexed createdAt,
-        uint256 updatedAt  
+        bytes32 createdAt,
+        bytes32 updatedAt  
     );
 
     event BookingEvent(
         bytes32 id, 
         bytes32 userId, 
         bytes32 machineId, 
-        uint256 startTime, 
-        uint256 endTime, 
-        uint256 baseCost,
-        uint256 totalCost, 
+        bytes32 startTime, 
+        bytes32 endTime, 
+        bytes32 baseCost,
+        bytes32 totalCost, 
         bytes32 sshKeyId,
         bytes32 status, 
         bytes32 notes, 
-        uint256 createdAt, 
-        uint256 updatedAt 
+        bytes32 createdAt, 
+        bytes32 updatedAt 
     );
 
     event RentalEvent(
@@ -102,15 +102,15 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable {
         bytes32 userId, 
         bytes32 machineId, 
         uint256 machineCount, 
-        uint256 startTime, 
-        uint256 endTime,
-        uint256 advancePaid, 
-        uint256 totalCost, 
+        bytes32 startTime, 
+        bytes32 endTime,
+        bytes32 advancePaid, 
+        bytes32 totalCost, 
         bytes32 sshKeyId, 
         bytes32 status, 
         bytes32 notes, 
-        uint256 createdAt, 
-        uint256 updatedAt 
+        bytes32 createdAt, 
+        bytes32 updatedAt 
     );
 
     /// @notice Initializes the contract
@@ -146,8 +146,8 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable {
         bytes32  balanceRemaining,
         bool isDebit,
         bytes32  notes,  
-        uint256 createdAt,
-        uint256 updatedAt
+        bytes32 createdAt,
+        bytes32 updatedAt
     ) external onlyOwner {
 
         if(transactionExists[id]) 
@@ -195,15 +195,15 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable {
         bytes32  id, 
         bytes32  userId, 
         bytes32  machineId, 
-        uint256 startTime, 
-        uint256 endTime, 
-        uint256 baseCost,
-        uint256 totalCost, 
+        bytes32 startTime, 
+        bytes32 endTime, 
+        bytes32 baseCost,
+        bytes32 totalCost, 
         bytes32  sshKeyId, 
         bytes32  status, 
         bytes32  notes, 
-        uint256 createdAt, 
-        uint256 updatedAt 
+        bytes32 createdAt, 
+        bytes32 updatedAt 
     ) external onlyOwner {
 
         if(bookingExists[id]) 
@@ -261,15 +261,15 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable {
         bytes32  userId, 
         bytes32  machineId, 
         uint256 machineCount, 
-        uint256 startTime, 
-        uint256 endTime,
-        uint256 advancePaid, 
-        uint256 totalCost, 
+        bytes32 startTime, 
+        bytes32 endTime,
+        bytes32 advancePaid, 
+        bytes32 totalCost, 
         bytes32  sshKeyId, 
         bytes32  status, 
         bytes32  notes,
-        uint256 createdAt, 
-        uint256 updatedAt  
+        bytes32 createdAt, 
+        bytes32 updatedAt  
     ) external onlyOwner {
 
         if(rentalExists[id]) 
@@ -328,8 +328,8 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable {
         bytes32  balanceRemaining,
         bool isDebit,
         bytes32  notes, 
-        uint256 createdAt,
-        uint256 updatedAt
+        bytes32 createdAt,
+        bytes32 updatedAt
     ) external onlyOwner {
 
         if(!transactionExists[id]) revert TransactionDoesNotExist();
@@ -373,15 +373,15 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable {
         bytes32  id, 
         bytes32  userId, 
         bytes32  machineId, 
-        uint256 startTime, 
-        uint256 endTime, 
-        uint256 baseCost,
-        uint256 totalCost, 
+        bytes32 startTime, 
+        bytes32 endTime, 
+        bytes32 baseCost,
+        bytes32 totalCost, 
         bytes32  sshKeyId, 
         bytes32  status, 
         bytes32  notes, 
-        uint256 createdAt, 
-        uint256 updatedAt 
+        bytes32 createdAt, 
+        bytes32 updatedAt 
     ) external onlyOwner {
 
         if(!bookingExists[id]) revert BookingDoesNotExist();
@@ -435,15 +435,15 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable {
         bytes32  userId, 
         bytes32  machineId, 
         uint256 machineCount, 
-        uint256 startTime, 
-        uint256 endTime,
-        uint256 advancePaid, 
-        uint256 totalCost, 
+        bytes32 startTime, 
+        bytes32 endTime,
+        bytes32 advancePaid, 
+        bytes32 totalCost, 
         bytes32  sshKeyId, 
         bytes32  status, 
         bytes32  notes,
-        uint256 createdAt, 
-        uint256 updatedAt  
+        bytes32 createdAt, 
+        bytes32 updatedAt  
     ) external onlyOwner {
 
         if(!rentalExists[id]) revert RentalDoesNotExist();
