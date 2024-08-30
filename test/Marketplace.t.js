@@ -119,7 +119,7 @@ describe("Market Place:", () => {
           updatedAt,
         );
     });
-    it("Check the `transactions` mapping", async () => {
+    it("Check the `bookings` mapping", async () => {
       const bookingsMapping = await marketPlaceProxy.bookings(id);
       expect(bookingsMapping[0]).to.be.equals(id);
       expect(bookingsMapping[1]).to.be.equals(userId);
@@ -215,7 +215,7 @@ describe("Market Place:", () => {
       ).to.be.reverted;
     });
 
-    it("Should revert when transaction exists", async () => {
+    it("Should revert when rental exists", async () => {
       await marketPlaceProxy
         .connect(owner)
         .rental(
@@ -254,7 +254,7 @@ describe("Market Place:", () => {
       ).to.be.revertedWithCustomError(marketPlaceProxy, "RentalAlreadyExists");
     });
 
-    it("Should revert when transaction exists", async () => {
+    it("Should revert when rental does not exist", async () => {
       await expect(
         marketPlaceProxy
           .connect(owner)
