@@ -4,34 +4,36 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import "./interfaces/IErrors.sol";
-import "./interfaces/IERC721.sol"; 
-
+import "./interfaces/IErrors.sol"; 
+import "./GPU/GPU.sol";
 
 contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable,IErrors {
 
-    /// @dev The last rewards calculated for the queen at 
-    /// @dev Can hold upto 30,000 years of timestamp
-    uint40 _lastRewardAt; 
+    /// @dev Timestamp of the last rewards calculated at 
+    uint40 public _lastRewardCalculated; 
 
     /// @dev The rewards set aside for the entire queen nodes pool per day 
-    /// @dev Can hold up to 100 million rewards in GPoints per day, denominated in wei.
-    uint88 _rewardsPerDay; 
+    /// @dev Can hold up to 100 million rewards in GPoints per day, denominated in wei
+    uint88 public _rewardsPerDay; 
 
     /// @dev Instance of the NFT contract that holds the node keys 
     IERC721 public _nftContract; 
 
+    /// @dev Instance of the GPU contract 
+    //GPU public GPUInstance;
+
     // Not yet finalized 
-    mapping(address => uint) stakeHealth; 
+    mapping(address => uint) _stakeHealth; 
 
     /// @dev Maps the amount staked by a particular queen node 
-    mapping(address => uint88) stakedAmount;
+    mapping(address => uint88) _stakedAmount;
 
-    /// @dev Total stakes in the staking pool.
+    /// @dev Total stakes in the staking pool
     /// @dev Can hold upto 10 Billion GPoints in wei 
     uint96 _totalStakes; 
 
-    // Functions
+    /// @dev Queen's rewards which is calculated every day
+    mapping(address => uint) _queenRewards;
 
     /// @dev Authorizes the upgrade to a new implementation. Only callable by the owner.
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
@@ -43,27 +45,41 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         __UUPSUpgradeable_init();
         __ReentrancyGuard_init();
         _nftContract = IERC721(nftContract);
-        _lastRewardAt = uint40(block.timestamp);
+        //_lastRewardAt = uint40(block.timestamp);
         _rewardsPerDay = uint88(rewardsPerDay);
+        _lastRewardCalculated = uint40(block.timestamp); 
     }
 
     /// @dev Allows the users to stake and become a queen node.
     /// @dev Anyone with the NFT node key can become a queen by staking a minimum of 1000 GPoints initially. 
     function stake() public payable {
         if(_nftContract.balanceOf(msg.sender) < 1) revert BuyNodeNFT();
-        if(stakedAmount[msg.sender] > 0) {
-            //claimRewards();
+        if(_stakedAmount[msg.sender] > 0) {
+            claimRewards();
         }
         else {
-            if(msg.value < 1000000000000000000000) revert InsufficientStakes();
+            if(msg.value < 1e21) revert InsufficientStakes();
         }
         _totalStakes += uint96(msg.value); 
-        stakedAmount[msg.sender] += uint88(msg.value); 
+        _stakedAmount[msg.sender] += uint88(msg.value); 
+        //@note emit
     }  
 
-    //unstake
+    function claimRewards() public {
+        uint rewards = _queenRewards[msg.sender]; 
+        if(rewards == 0) revert NoRewards(); 
+        _queenRewards[msg.sender] = 0; 
+        (bool success,) = payable(msg.sender).call{value: rewards}("");
+        if(!success) revert TransferFailed(); 
+        //@note emit
+    }
 
-    //claim rewards
+    function accumulateDailyQueenRewards() public onlyOwner {
+        if(block.timestamp < _lastRewardCalculated + 24 hours) revert InComplete24Hours();
+        
+    }
+
+    //unstake
 
     // add staking health 
 }
