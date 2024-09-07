@@ -58,13 +58,30 @@ describe("Queen Staking",() => {
 
     describe("Claim",()=>{
         it("Should let Queens claim rewards",async()=>{
-            await queenStakeProxy.connect(queen1).claimRewards();
+            const rewards = await queenStakeProxy.connect(queen1).getMyRewards();
+            await expect(queenStakeProxy.connect(queen1).claimRewards())
+            .to.emit(queenStakeProxy,"claimedRewards")
+            .withArgs(queen1,rewards);
+        });
+        it("Should revert when there are no reeards to claim",async()=>{
+            await expect(queenStakeProxy.connect(queen4).claimRewards())
+            .to.be.revertedWithCustomError(queenStakeProxy,"NoRewards");
         });
     });
 
     describe("Unstake",()=>{
         it("Should let queens unstake",async()=>{
-            await queenStakeProxy.connect(queen3).unStake(ethers.parseEther("7000"));
+            await expect(queenStakeProxy.connect(queen2).unStake(ethers.parseEther("7000")))
+            .to.emit(queenStakeProxy,"unStaked")
+            .withArgs(queen2,ethers.parseEther("7000"));
+        });
+        it("Should revert when there's nothing to unstake",async()=>{
+            await expect(queenStakeProxy.connect(queen3).unStake(0))
+            .to.be.revertedWithCustomError(queenStakeProxy,"ZeroUnstakeAmount");
+        });
+        it("Should revert when unstaking amount is greater than what's staked",async()=>{
+            await expect(queenStakeProxy.connect(queen3).unStake(ethers.parseEther("10000")))
+            .to.be.revertedWithCustomError(queenStakeProxy,"ExceedsStakedAmount");
         });
     });
 });

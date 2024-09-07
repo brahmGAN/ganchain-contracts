@@ -127,6 +127,8 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         emit unStaked(msg.sender, amount);
     }
 
+    /// @notice Getter functions
+    
     function getLastRewardCalculated() external view onlyOwner() returns(uint40) {
         return _lastRewardCalculated;
     }
