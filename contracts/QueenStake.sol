@@ -13,9 +13,6 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     /// @dev Timestamp of the last rewards calculated at 
     uint40 public _lastRewardCalculated; 
 
-    /// @dev Timestamp of staking health last set 
-    uint40 public _stakingHealthSetAt; 
-
     /// @dev The rewards set aside for the entire queen nodes pool per day 
     /// @dev Can hold up to 100 million rewards in GPoints per day, denominated in wei
     uint88 public _rewardsPerDay; 
@@ -48,7 +45,6 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         _nftContract = IERC721(nftContract);
         _rewardsPerDay = uint88(rewardsPerDay);
         _lastRewardCalculated = uint40(block.timestamp); 
-        _stakingHealthSetAt = uint40(block.timestamp);
     }
 
     /// @notice Minimum staking amount is 1000 GPoints.
