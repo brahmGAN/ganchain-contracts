@@ -46,10 +46,14 @@ describe("Queen Staking",() => {
     });
 
     describe("Accumulate rewards",()=>{
+        const stakingHealth = [100, 200, 300];
         it("Should let owner calculate daily queen rewards",async()=>{
-            const stakingHealth = [100, 200, 300];
             await queenStakeProxy.connect(owner).accumulateDailyQueenRewards(stakingHealth);
-            //await queenStakeProxy.connect(owner).accumulateDailyQueenRewards(stakingHealth);
+        });
+        it("Should revert when it hasn't been 24 hours since last rewards calculated",async()=>{
+            await nftContract.connect(owner).safeMint(queen4,1);
+            await expect(queenStakeProxy.connect(owner).accumulateDailyQueenRewards(stakingHealth))
+            .to.be.revertedWithCustomError(queenStakeProxy,"InComplete24Hours");
         });
     });
 

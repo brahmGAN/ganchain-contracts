@@ -11,7 +11,7 @@ import "./interfaces/IERC721.sol";
 contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable,IErrors,IQueenStake {
 
     /// @dev Timestamp of the last rewards calculated at 
-    uint40 public _lastRewardCalculated; 
+    uint40 _lastRewardCalculated; 
 
     /// @dev The rewards set aside for the entire queen nodes pool per day 
     /// @dev Can hold up to 100 million rewards in GPoints per day, denominated in wei
