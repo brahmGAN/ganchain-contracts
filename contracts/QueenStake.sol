@@ -59,12 +59,12 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     /// @dev Allows the users to stake and become a queen node.
     /// @dev Anyone with the NFT node key can become a queen by staking a minimum of 1000 GPoints initially. 
     function stake() public payable {
-        if(_nftContract.balanceOf(msg.sender) < 1) revert BuyNodeNFT();
-        if(_stakedAmount[msg.sender] > 0) {
+        if (_nftContract.balanceOf(msg.sender) < 1) revert BuyNodeNFT();
+        if (_stakedAmount[msg.sender] > 0) {
             claimRewards();
         }
         else {
-            if(msg.value < 1e21) revert InsufficientStakes();
+            if (msg.value < 1e21) revert InsufficientStakes();
         }
         _totalStakes += uint96(msg.value); 
         _stakedAmount[msg.sender] += uint88(msg.value); 
@@ -74,49 +74,62 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
 
     function claimRewards() public {
         uint rewards = _queenRewards[msg.sender]; 
-        if(rewards == 0) revert NoRewards(); 
+        if (rewards == 0) revert NoRewards(); 
         _queenRewards[msg.sender] = 0; 
         (bool success,) = payable(msg.sender).call{value: rewards}("");
-        if(!success) revert TransferFailed(); 
+        if (!success) revert TransferFailed(); 
         //@note emit
     }
 
     function setStakingHealth(uint[] memory stakingHealth) public onlyOwner {
-        if(block.timestamp < _stakingHealthSetAt + 24 hours) revert InComplete24Hours();
+        if (block.timestamp < _stakingHealthSetAt + 24 hours) revert InComplete24Hours();
         address[] memory queens = _queens; 
         uint queensLength = queens.length; 
-        for(uint i = 0; i < queensLength; i++) {
+        for (uint i = 0; i < queensLength; i++) {
             _stakingHealth[queens[i]] = stakingHealth[i];
         }
         _stakingHealthSetAt = uint40(block.timestamp);
     }
 
-    function accumulateDailyQueenRewards() public view onlyOwner {
-        if(block.timestamp < _lastRewardCalculated + 24 hours) revert InComplete24Hours();
+    function accumulateDailyQueenRewards() public onlyOwner {
+        if (block.timestamp < _lastRewardCalculated + 24 hours) revert InComplete24Hours();
         address[] memory queens = _queens; 
         uint totalQueens = queens.length; 
         uint256[] memory stakeScores = new uint256[](totalQueens); 
         uint stakeMultiplier;  
         uint256 totalStakeScore;
-        /// @dev Calculate the SS = su * sm * sh;  
-        for(uint i = 0; i < totalQueens; i++) {
+        /// @dev Calculates the SS = su * sm * sh 
+        for (uint i = 0; i < totalQueens; i++) {
+            /// @dev Stores su
             stakeMultiplier = _stakedAmount[_queens[i]];
+            /// @dev Calculates the su * sm 
             if (stakeMultiplier < 7000000000000000000000 ) {
-                stakeMultiplier = 125; 
+                stakeMultiplier *= 125; 
             }
             else if (stakeMultiplier < 25000000000000000000000 ) {
-                stakeMultiplier = 150; 
+                stakeMultiplier *= 150; 
             }
             else if (stakeMultiplier < 100000000000000000000000) {
-                stakeMultiplier = 175; 
+                stakeMultiplier *= 175; 
             }
             else {
-                stakeMultiplier = 200; 
+                stakeMultiplier *= 200; 
             }
-            // Stake score = SU * SM * SH 
-            stakeScores[i] = _stakedAmount[msg.sender] * stakeMultiplier * _stakingHealth[queens[i]]; 
+            /// @dev Multiplies the already calculated (su * sm) with sh
+            stakeScores[i] = stakeMultiplier * _stakingHealth[queens[i]]; 
+            /// @dev ∑SS
             totalStakeScore += stakeScores[i]; 
         }
+        /// @dev Calculates the queen rewards 
+        if (totalStakeScore > 0) {
+            uint rewardsPerDay = _rewardsPerDay;
+            for (uint i = 0; i < totalQueens; i++) {
+                /// @dev queen rewards = (ss * _rewardsPerDay) / ∑SS
+                _queenRewards[queens[i]] += (stakeScores[i] * rewardsPerDay) / (totalStakeScore);
+            } 
+        }
+        _lastRewardCalculated = uint40(block.timestamp); 
+        // @note emit
     }
 
     //unstake
