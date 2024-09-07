@@ -5,9 +5,10 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import "./interfaces/IErrors.sol"; 
-import "./interfaces/IERC721.sol"; 
+import "./interfaces/IQueenStake.sol"; 
+import "./interfaces/IERC721.sol";
 
-contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable,IErrors {
+contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable,IErrors,IQueenStake {
 
     /// @dev Timestamp of the last rewards calculated at 
     uint40 public _lastRewardCalculated; 
@@ -22,9 +23,6 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     /// @dev Instance of the NFT contract that holds the node keys 
     IERC721 public _nftContract; 
 
-    // Not yet finalized 
-    mapping(address => uint) _stakingHealth; 
-
     /// @dev Maps the amount staked by a particular queen node 
     mapping(address => uint88) _stakedAmount;
 
@@ -33,7 +31,7 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     uint96 _totalStakes; 
 
     /// @dev Queen's rewards which is calculated every day
-    mapping(address => uint) _queenRewards;
+    mapping(address => uint96) _queenRewards;
 
     /// @dev List of queens that stakes
     address[] public _queens; 
@@ -58,7 +56,7 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     /// @dev Anyone with the NFT node key can become a queen by staking a minimum of 1000 GPoints initially. 
     function stake() public payable {
         if (_nftContract.balanceOf(msg.sender) < 1) revert BuyNodeNFT();
-        if (_stakedAmount[msg.sender] > 0) {
+        if (_queenRewards[msg.sender] > 0) {
             claimRewards();
         }
         else {
@@ -67,35 +65,24 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         _totalStakes += uint96(msg.value); 
         _stakedAmount[msg.sender] += uint88(msg.value); 
         _queens.push(msg.sender);
-        //@note emit
+        emit staked(msg.sender, uint88(msg.value));
     }  
 
     function claimRewards() public {
-        uint rewards = _queenRewards[msg.sender]; 
+        uint96 rewards = _queenRewards[msg.sender]; 
         if (rewards == 0) revert NoRewards(); 
         _queenRewards[msg.sender] = 0; 
         (bool success,) = payable(msg.sender).call{value: rewards}("");
         if (!success) revert TransferFailed(); 
-        //@note emit
+        emit claimedRewards(msg.sender, rewards);
     }
 
-    function setStakingHealth(uint[] memory stakingHealth) public onlyOwner {
-        if (block.timestamp < _stakingHealthSetAt + 24 hours) revert InComplete24Hours();
-        address[] memory queens = _queens; 
-        uint queensLength = queens.length; 
-        for (uint i = 0; i < queensLength; i++) {
-            _stakingHealth[queens[i]] = stakingHealth[i];
-        }
-        _stakingHealthSetAt = uint40(block.timestamp);
-        //@note emit
-    }
-
-    function accumulateDailyQueenRewards() public onlyOwner {
+    function accumulateDailyQueenRewards(uint[] calldata stakingHealth) public onlyOwner {
         if (block.timestamp < _lastRewardCalculated + 24 hours) revert InComplete24Hours();
         address[] memory queens = _queens; 
-        uint totalQueens = queens.length; 
+        uint256 totalQueens = queens.length; 
         uint256[] memory stakeScores = new uint256[](totalQueens); 
-        uint stakeMultiplier;  
+        uint256 stakeMultiplier;  
         uint256 totalStakeScore;
         /// @dev Calculates the SS = su * sm * sh 
         for (uint i = 0; i < totalQueens; i++) {
@@ -115,20 +102,20 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
                 stakeMultiplier *= 200; 
             }
             /// @dev Multiplies the already calculated (su * sm) with sh
-            stakeScores[i] = stakeMultiplier * _stakingHealth[queens[i]]; 
+            stakeScores[i] = stakeMultiplier * stakingHealth[i]; 
             /// @dev ∑SS
             totalStakeScore += stakeScores[i]; 
         }
         /// @dev Calculates the queen rewards 
         if (totalStakeScore > 0) {
-            uint rewardsPerDay = _rewardsPerDay;
+            uint256 rewardsPerDay = _rewardsPerDay;
             for (uint i = 0; i < totalQueens; i++) {
                 /// @dev queen rewards = (ss * _rewardsPerDay) / ∑SS
-                _queenRewards[queens[i]] += (stakeScores[i] * rewardsPerDay) / (totalStakeScore);
+                _queenRewards[queens[i]] += uint96((stakeScores[i] * rewardsPerDay) / (totalStakeScore));
             } 
         }
         _lastRewardCalculated = uint40(block.timestamp); 
-        // @note emit
+        emit accumulatedDailyQueenRewards(_lastRewardCalculated);
     }
 
     /// @notice No rewards for staking below 1000 GPoints
@@ -136,10 +123,12 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     function unStake(uint amount) public {
         if (amount == 0) revert ZeroUnstakeAmount();
         if (_stakedAmount[msg.sender] < amount) revert ExceedsStakedAmount();
-        claimRewards();
+        if (_queenRewards[msg.sender] > 0) {
+            claimRewards();
+        }
         _stakedAmount[msg.sender] = 0;
         (bool success,) = payable(msg.sender).call{value: amount}("");
         if (!success) revert TransferFailed(); 
-        //@note emit
+        emit unStaked(msg.sender, amount);
     }
 }
