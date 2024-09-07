@@ -31,7 +31,7 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     mapping(address => uint96) _queenRewards;
 
     /// @dev List of queens that stakes
-    address[] public _queens; 
+    address[] _queens; 
 
     /// @dev Authorizes the upgrade to a new implementation. Only callable by the owner.
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
@@ -125,5 +125,33 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         (bool success,) = payable(msg.sender).call{value: amount}("");
         if (!success) revert TransferFailed(); 
         emit unStaked(msg.sender, amount);
+    }
+
+    function getLastRewardCalculated() external view onlyOwner() returns(uint40) {
+        return _lastRewardCalculated;
+    }
+
+    function getStakedAmount(address queen) external view onlyOwner() returns(uint88) {
+        return _stakedAmount[queen]; 
+    } 
+
+    function getMyStakedAmount() external view returns(uint88) {
+        return _stakedAmount[msg.sender]; 
+    }
+
+    function getTotalStakes() external view onlyOwner() returns(uint96) {
+        return _totalStakes;
+    }
+
+    function getQueenRewards(address queen) external view onlyOwner() returns(uint96) {
+        return _queenRewards[queen]; 
+    } 
+
+    function getMyRewards() external view returns(uint96) {
+        return _queenRewards[msg.sender]; 
+    }
+
+    function getAllQueens() external view returns(address[] memory) {
+        return _queens; 
     }
 }

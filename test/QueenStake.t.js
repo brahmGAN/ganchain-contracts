@@ -51,7 +51,6 @@ describe("Queen Staking",() => {
             await queenStakeProxy.connect(owner).accumulateDailyQueenRewards(stakingHealth);
         });
         it("Should revert when it hasn't been 24 hours since last rewards calculated",async()=>{
-            await nftContract.connect(owner).safeMint(queen4,1);
             await expect(queenStakeProxy.connect(owner).accumulateDailyQueenRewards(stakingHealth))
             .to.be.revertedWithCustomError(queenStakeProxy,"InComplete24Hours");
         });
