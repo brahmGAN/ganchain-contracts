@@ -5,7 +5,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import "./interfaces/IErrors.sol"; 
-import "./GPU/GPU.sol";
+import "./interfaces/IERC721.sol"; 
 
 contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable,IErrors {
 
@@ -21,9 +21,6 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
 
     /// @dev Instance of the NFT contract that holds the node keys 
     IERC721 public _nftContract; 
-
-    /// @dev Instance of the GPU contract 
-    //GPU public GPUInstance;
 
     // Not yet finalized 
     mapping(address => uint) _stakingHealth; 
@@ -56,6 +53,7 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         _stakingHealthSetAt = uint40(block.timestamp);
     }
 
+    /// @notice Minimum staking amount is 1000 GPoints.
     /// @dev Allows the users to stake and become a queen node.
     /// @dev Anyone with the NFT node key can become a queen by staking a minimum of 1000 GPoints initially. 
     function stake() public payable {
@@ -89,6 +87,7 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
             _stakingHealth[queens[i]] = stakingHealth[i];
         }
         _stakingHealthSetAt = uint40(block.timestamp);
+        //@note emit
     }
 
     function accumulateDailyQueenRewards() public onlyOwner {
@@ -132,7 +131,15 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         // @note emit
     }
 
-    //unstake
-
-    // add staking health 
+    /// @notice No rewards for staking below 1000 GPoints
+    /// @dev Allows the queens to unstake 
+    function unStake(uint amount) public {
+        if (amount == 0) revert ZeroUnstakeAmount();
+        if (_stakedAmount[msg.sender] < amount) revert ExceedsStakedAmount();
+        claimRewards();
+        _stakedAmount[msg.sender] = 0;
+        (bool success,) = payable(msg.sender).call{value: amount}("");
+        if (!success) revert TransferFailed(); 
+        //@note emit
+    }
 }

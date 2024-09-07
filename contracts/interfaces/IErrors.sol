@@ -29,4 +29,14 @@ interface IErrors {
    * @dev Displayed when transfer failed 
    */
   error TransferFailed();
+  
+  /**
+   * @dev Displayed when un-stake amount exceeds staked amount
+   */
+  error ExceedsStakedAmount();
+
+  /**
+   * @dev Displayed when un-stake amount is 0
+   */
+  error ZeroUnstakeAmount();
 }
