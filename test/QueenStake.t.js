@@ -1,4 +1,5 @@
 const { ethers } = require("hardhat");
+const { expect } = require("chai");
 
 describe("Queen Staking",() => {
     let owner;
@@ -7,10 +8,11 @@ describe("Queen Staking",() => {
     let queen1;
     let queen2; 
     let queen3;
+    let queen4;
     let NFTFactory; 
     let nftContract; 
     before(async () => {
-        [owner, queen1, queen2, queen3] = await ethers.getSigners();
+        [owner, queen1, queen2, queen3, queen4] = await ethers.getSigners();
         NFTFactory= await ethers.getContractFactory("GANNode");
         nftContract= await NFTFactory.deploy(owner);
         await nftContract.connect(owner).safeMint(queen1,1);
@@ -26,9 +28,20 @@ describe("Queen Staking",() => {
 
     describe("Staking",()=>{
         it("Should be able to stake",async()=>{
-            await queenStakeProxy.connect(queen1).stake({value:ethers.parseEther("1000")});
+            await expect(await queenStakeProxy.connect(queen1).stake({value:ethers.parseEther("1000")}))
+            .to.emit(queenStakeProxy,"staked")
+            .withArgs(queen1,ethers.parseEther("1000"));
             await queenStakeProxy.connect(queen2).stake({value:ethers.parseEther("7000")});
             await queenStakeProxy.connect(queen3).stake({value:ethers.parseEther("7000")});
+        });
+        it("Should revert when trying to stake without having the NFT node key",async()=>{
+            await expect( queenStakeProxy.connect(queen4).stake({value:ethers.parseEther("7000")}))
+            .to.be.revertedWithCustomError(queenStakeProxy,"BuyNodeNFT");
+        });
+        it("Should revert when staking amount is less than 1000 GPoints",async()=>{
+            await nftContract.connect(owner).safeMint(queen4,1);
+            await expect(queenStakeProxy.connect(queen4).stake({value:ethers.parseEther("999")}))
+            .to.be.revertedWithCustomError(queenStakeProxy,"InsufficientStakes");
         });
     });
 
