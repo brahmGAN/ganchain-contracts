@@ -31,4 +31,24 @@ describe("Queen Staking",() => {
             await queenStakeProxy.connect(queen3).stake({value:ethers.parseEther("7000")});
         });
     });
+
+    describe("Accumulate rewards",()=>{
+        it("Should let owner calculate daily queen rewards",async()=>{
+            const stakingHealth = [100, 200, 300];
+            await queenStakeProxy.connect(owner).accumulateDailyQueenRewards(stakingHealth);
+            //await queenStakeProxy.connect(owner).accumulateDailyQueenRewards(stakingHealth);
+        });
+    });
+
+    describe("Claim",()=>{
+        it("Should let Queens claim rewards",async()=>{
+            await queenStakeProxy.connect(queen1).claimRewards();
+        });
+    });
+
+    describe("Unstake",()=>{
+        it("Should let queens unstake",async()=>{
+            await queenStakeProxy.connect(queen3).unStake(ethers.parseEther("7000"));
+        });
+    });
 });

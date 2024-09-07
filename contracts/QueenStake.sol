@@ -44,7 +44,6 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         __ReentrancyGuard_init();
         _nftContract = IERC721(nftContract);
         _rewardsPerDay = uint88(rewardsPerDay);
-        _lastRewardCalculated = uint40(block.timestamp); 
     }
 
     /// @notice Minimum staking amount is 1000 GPoints.
