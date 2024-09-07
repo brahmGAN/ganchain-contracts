@@ -91,22 +91,32 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         _stakingHealthSetAt = uint40(block.timestamp);
     }
 
-    function accumulateDailyQueenRewards() public onlyOwner {
+    function accumulateDailyQueenRewards() public view onlyOwner {
         if(block.timestamp < _lastRewardCalculated + 24 hours) revert InComplete24Hours();
         address[] memory queens = _queens; 
         uint totalQueens = queens.length; 
         uint256[] memory stakeScores = new uint256[](totalQueens); 
+        uint stakeMultiplier;  
         uint256 totalStakeScore;
+        /// @dev Calculate the SS = su * sm * sh;  
         for(uint i = 0; i < totalQueens; i++) {
+            stakeMultiplier = _stakedAmount[_queens[i]];
+            if (stakeMultiplier < 7000000000000000000000 ) {
+                stakeMultiplier = 125; 
+            }
+            else if (stakeMultiplier < 25000000000000000000000 ) {
+                stakeMultiplier = 150; 
+            }
+            else if (stakeMultiplier < 100000000000000000000000) {
+                stakeMultiplier = 175; 
+            }
+            else {
+                stakeMultiplier = 200; 
+            }
             // Stake score = SU * SM * SH 
-            stakeScores[i] = _stakedAmount[msg.sender] * _stakingHealth[queens[i]]; 
+            stakeScores[i] = _stakedAmount[msg.sender] * stakeMultiplier * _stakingHealth[queens[i]]; 
+            totalStakeScore += stakeScores[i]; 
         }
-    }
-
-    function stakingMultiplier(address queen) public {
-        uint8 factor = 100; 
-        uint stakedAmount = _stakedAmount[queen]; 
-        
     }
 
     //unstake
