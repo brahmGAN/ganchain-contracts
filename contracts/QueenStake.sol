@@ -52,7 +52,9 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     function stake() public payable {
         if (_nftContract.balanceOf(msg.sender) < 1) revert BuyNodeNFT();
         if (_stakedAmount[msg.sender] >= 1e21) {
-            claimRewards();
+            if (_queenRewards[msg.sender] > 0) {
+                claimRewards();
+            }
         }
         else {
             if (msg.value < 1e21) revert InsufficientStakes();
