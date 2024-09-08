@@ -74,13 +74,13 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         emit claimedRewards(msg.sender, rewards);
     }
 
-    function accumulateDailyQueenRewards(uint[] calldata stakingHealth) public onlyOwner {
+    function accumulateDailyQueenRewards(uint96[] calldata stakingHealth) public onlyOwner {
         if (block.timestamp < _lastRewardCalculated + 24 hours) revert InComplete24Hours();
         address[] memory queens = _queens; 
-        uint256 totalQueens = queens.length; 
-        uint256[] memory stakeScores = new uint256[](totalQueens); 
-        uint256 stakeMultiplier;  
-        uint256 totalStakeScore;
+        uint24 totalQueens = uint24(queens.length); 
+        uint96[] memory stakeScores = new uint96[](totalQueens); 
+        uint96 stakeMultiplier;  
+        uint96 totalStakeScore;
         /// @dev Calculates the SS = su * sm * sh 
         for (uint i = 0; i < totalQueens; i++) {
             /// @dev Stores su
@@ -117,7 +117,7 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
 
     /// @notice No rewards for staking below 1000 GPoints
     /// @dev Allows the queens to unstake 
-    function unStake(uint amount) public {
+    function unStake(uint88 amount) public {
         if (amount == 0) revert ZeroUnstakeAmount();
         if (_stakedAmount[msg.sender] < amount) revert ExceedsStakedAmount();
         if (_queenRewards[msg.sender] > 0) {

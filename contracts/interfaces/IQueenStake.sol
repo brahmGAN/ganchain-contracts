@@ -15,10 +15,10 @@ interface IQueenStake {
     );
     event unStaked(
         address queen, 
-        uint amount
+        uint88 amount
     );
     function stake() external payable;
     function claimRewards() external; 
-    function accumulateDailyQueenRewards(uint[] calldata stakingHealth) external;
-    function unStake(uint amount) external; 
+    function accumulateDailyQueenRewards(uint96[] calldata stakingHealth) external;
+    function unStake(uint88 amount) external; 
 }
