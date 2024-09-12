@@ -49,7 +49,7 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     /// @notice Minimum staking amount is 1000 GPoints.
     /// @dev Allows the users to stake and become a queen node.
     /// @dev Anyone with the NFT node key can become a queen by staking a minimum of 1000 GPoints initially. 
-    function stake() public payable {
+    function stake() external  payable {
         if (_nftContract.balanceOf(msg.sender) < 1) revert BuyNodeNFT();
         if (_stakedAmount[msg.sender] >= 1e21) {
             if (_queenRewards[msg.sender] > 0) {
