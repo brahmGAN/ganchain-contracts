@@ -9,7 +9,7 @@ contract AddQueen is IGPU {
     function addQueen(address queenAddress, string calldata publicKey, string calldata userName) external {
         require(helper == msg.sender,"OH");
         require(!queens[queenAddress].exists, "QueenPresent");
-        require(!providers[queenAddress].exists, "AlreadyProvider");
+        //require(!providers[queenAddress].exists, "AlreadyProvider");
         require(bytes(userName).length > 0, "!Name");
         require(bytes(publicKey).length > 0, "!Key");
 

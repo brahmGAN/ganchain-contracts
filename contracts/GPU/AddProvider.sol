@@ -7,10 +7,10 @@ import "./IGPU.sol";
 contract AddProvider is IGPU {
 
     function addProvider(address providerAddress) external haveNft(msg.sender){
-        require(!isValidator[msg.sender],"AlreadyValidator");
+        //require(!isValidator[msg.sender],"AlreadyValidator");
         require(!isProvider[msg.sender], "AddressUsed");
         require(!providers[providerAddress].exists, "Exists");
-        require(!queens[providerAddress].exists, "AlreadyQueen");
+        //require(!queens[providerAddress].exists, "AlreadyQueen");
 
         providers[providerAddress] = Provider({
             nftAddress: msg.sender,
@@ -18,7 +18,7 @@ contract AddProvider is IGPU {
             exists: true
         });
 
-        users[userID] = User({
+        users[userID] = User({ 
             userAddress: providerAddress,
             userType: UserType.Provider
         });
