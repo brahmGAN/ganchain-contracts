@@ -6,7 +6,7 @@ import "./IGPU.sol";
 
 contract AddQueen is IGPU {
 
-    function addQueen(address queenAddress, string calldata publicKey, string calldata userName) external haveNft(msg.sender){
+    function addQueen(address queenAddress, string calldata publicKey, string calldata userName) external haveNft(queenAddress){
         require(helper == msg.sender,"OH");
         require(!queens[queenAddress].exists, "QueenPresent");
         //require(!providers[queenAddress].exists, "AlreadyProvider");
