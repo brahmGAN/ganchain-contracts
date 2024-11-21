@@ -55,5 +55,13 @@ describe("GPU", () => {
             .to.emit(gpuProxy, "ProviderAdded")
             .withArgs(provider.address, user1.address);
     });
+    it("Should revert when trying to add a queen without a node NFT key", async ()=>{
+        await expect(
+            gpuProxy
+              .connect(helper)
+              .addQueen(user2.address, publicKey, userName)
+          )
+            .to.be.revertedWith('NoNFT');
+    });
   });
 });
