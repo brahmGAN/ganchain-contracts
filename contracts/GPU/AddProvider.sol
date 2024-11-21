@@ -65,6 +65,7 @@ contract AddProvider is IGPU {
         );
         require(machineDetails.portsOpen.length > 0, "!Ports");
         require(bytes(machineDetails.region).length > 0, "!Region");
+        require(machineDetails.ram > 0, "!Ram");
 
         machineDetails.machineInfoId = machineInfoID;
         machineInfo[machineInfoID] = machineDetails;
