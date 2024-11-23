@@ -36,6 +36,9 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     /// @dev instance of the GPU contract
     GPU public GPUInstance;
 
+    /// @dev switch to control open rewards 
+    bool public _openRewards; 
+
     /// @dev Authorizes the upgrade to a new implementation. Only callable by the owner.
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
@@ -50,7 +53,7 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         GPUInstance = GPU(_GPUAddress);
     }
 
-    /// @notice Minimum staking amount is 1000 GPoints.
+    /// @notice No minimum staking amount 
     /// @dev Allows the users to stake and become a queen node.
     /// @dev Anyone with the NFT node key can become a queen by staking a minimum of 1000 GPoints initially. 
     function stake() external  payable {
@@ -148,6 +151,23 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         (bool success,) = payable(msg.sender).call{value: amount}("");
         if (!success) revert TransferFailed(); 
         emit unStaked(msg.sender, amount);
+    }
+
+    /// @dev set `_openRewards` 
+    function setOpenRewards(bool status) external onlyOwner() {
+        _openRewards = status; 
+    }
+
+    /// @dev Registered validators can enroll for queen rewards if the switch is on
+    function validatorRewardsEnroll() external {
+        if (_openRewards && GPUInstance.isValidator(msg.sender)) {
+            _queens.push(msg.sender); 
+        }
+    }
+
+    /// @dev set the rewards per day for queen's
+    function setRewardsPerDay(uint88 rewardsPerDay) external {
+        _rewardsPerDay = rewardsPerDay;  
     }
 
     /// @notice Getter functions
