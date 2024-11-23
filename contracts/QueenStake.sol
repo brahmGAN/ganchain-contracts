@@ -6,7 +6,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import "./interfaces/IErrors.sol"; 
 import "./interfaces/IQueenStake.sol"; 
-import "./interfaces/IERC721.sol";
+import "./GPU/GPU.sol";
 
 contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable,IErrors,IQueenStake {
 
@@ -33,17 +33,21 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     /// @dev List of queens that stakes
     address[] _queens; 
 
+    /// @dev instance of the GPU contract
+    GPU public GPUInstance;
+
     /// @dev Authorizes the upgrade to a new implementation. Only callable by the owner.
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
     /// @dev Initializes the contract with GPU contract address and rewards per day for the queen nodes pool.
     /// @dev `rewardsPerDay` should be passed in wei and not as GPoints 
-    function initialize(address nftContract, uint256 rewardsPerDay) public initializer {
+    function initialize(address _GPUAddress, address nftContract, uint256 rewardsPerDay) public initializer {
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
         __ReentrancyGuard_init();
         _nftContract = IERC721(nftContract);
         _rewardsPerDay = uint88(rewardsPerDay);
+        GPUInstance = GPU(_GPUAddress);
     }
 
     /// @notice Minimum staking amount is 1000 GPoints.
@@ -51,13 +55,10 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     /// @dev Anyone with the NFT node key can become a queen by staking a minimum of 1000 GPoints initially. 
     function stake() external  payable {
         if (_nftContract.balanceOf(msg.sender) < 1) revert BuyNodeNFT();
-        if (_stakedAmount[msg.sender] >= 1e21) {
+        if (_stakedAmount[msg.sender] > 0) {
             if (_queenRewards[msg.sender] > 0) {
                 claimRewards();
             }
-        }
-        else {
-            if (msg.value < 1e21) revert InsufficientStakes();
         }
         _totalStakes += uint96(msg.value); 
         _stakedAmount[msg.sender] += uint88(msg.value); 
@@ -74,36 +75,56 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         emit claimedRewards(msg.sender, rewards);
     }
 
-    function accumulateDailyQueenRewards(uint96[] calldata stakingHealth) public onlyOwner {
-        if (block.timestamp < _lastRewardCalculated + 24 hours) revert InComplete24Hours();
+    function accumulateDailyQueenRewards() public onlyOwner {
+        /// @dev Removed this check to keep things flexible. 
+        //if (block.timestamp < _lastRewardCalculated + 24 hours) revert InComplete24Hours();
         address[] memory queens = _queens; 
         uint24 totalQueens = uint24(queens.length); 
         uint96[] memory stakeScores = new uint96[](totalQueens); 
         uint96 stakeMultiplier;  
         uint96 totalStakeScore;
-        /// @dev Calculates the SS = su * sm * sh 
+        /// @dev Calculates the SS = su * sm 
         for (uint i = 0; i < totalQueens; i++) {
+
             /// @dev Stores su
-            stakeMultiplier = _stakedAmount[_queens[i]];
-            /// @dev Calculates the su * sm 
-            if (stakeMultiplier < 7000000000000000000000 ) {
+            if(GPUInstance.isValidator(queens[i]))
+            {
+                stakeMultiplier = _stakedAmount[queens[i]] + 1e20;
+            }
+            else 
+            {
+                stakeMultiplier = _stakedAmount[queens[i]];
+            }
+
+            /// @dev Staking multilpier 
+            /// @dev Calculates the (su * sm) 
+            if (stakeMultiplier <= 1e20) {
+                stakeMultiplier = stakeMultiplier; 
+            }
+            else if (stakeMultiplier < 1e21) {
                 stakeMultiplier *= 125; 
             }
-            else if (stakeMultiplier < 25000000000000000000000 ) {
+            else if (stakeMultiplier < 7e21) {
                 stakeMultiplier *= 150; 
             }
-            else if (stakeMultiplier < 100000000000000000000000) {
+            else if (stakeMultiplier < 25e21) {
                 stakeMultiplier *= 175; 
             }
             else {
                 stakeMultiplier *= 200; 
             }
-            /// @dev Multiplies the already calculated (su * sm) with sh
-            stakeScores[i] = stakeMultiplier * stakingHealth[i]; 
+
+            /// @dev Multiplies the already calculated (su * sm) with sh and comepletes calculating the SS = su * sm * sh 
+            // Currently the staking health is 1
+            // stakeScores[i] = stakeMultiplier * stakingHealth[i]; 
+            stakeScores[i] = stakeMultiplier; 
+
             /// @dev ∑SS
             totalStakeScore += stakeScores[i]; 
         }
+
         /// @dev Calculates the queen rewards 
+        /// @dev (ss/∑ss) * Rewards per day
         if (totalStakeScore > 0) {
             uint256 rewardsPerDay = _rewardsPerDay;
             for (uint i = 0; i < totalQueens; i++) {

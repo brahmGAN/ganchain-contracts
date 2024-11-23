@@ -19,6 +19,6 @@ interface IQueenStake {
     );
     function stake() external payable;
     function claimRewards() external; 
-    function accumulateDailyQueenRewards(uint96[] calldata stakingHealth) external;
+    function accumulateDailyQueenRewards() external;
     function unStake(uint88 amount) external; 
 }

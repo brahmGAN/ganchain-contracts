@@ -154,7 +154,7 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
     mapping(address => uint256[]) drillQueenMachines;
     mapping(address => uint256[]) healthCheckQueenMachines;
     mapping(address => bool) isProvider;
-    mapping(address => bool) isValidator;
+    mapping(address => bool) public isValidator;
     mapping(address => address) public nftAddressToProviderAddress;
 
     modifier haveNft(address NftAddress) {
