@@ -90,7 +90,7 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         for (uint i = 0; i < totalQueens; i++) {
 
             /// @dev Stores su
-            if(GPUInstance.isValidator(queens[i]))
+            if(_openRewards && GPUInstance.isValidator(queens[i]))
             {
                 stakeMultiplier = _stakedAmount[queens[i]] + 1e20;
             }
@@ -147,7 +147,7 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         if (_queenRewards[msg.sender] > 0) {
             claimRewards();
         }
-        _stakedAmount[msg.sender] = 0;
+        _stakedAmount[msg.sender] -= amount;
         (bool success,) = payable(msg.sender).call{value: amount}("");
         if (!success) revert TransferFailed(); 
         emit unStaked(msg.sender, amount);
@@ -163,6 +163,7 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         if (_openRewards && GPUInstance.isValidator(msg.sender)) {
             _queens.push(msg.sender); 
         }
+        emit validatorAdded(msg.sender);
     }
 
     /// @dev set the rewards per day for queen's
@@ -198,5 +199,9 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
 
     function getAllQueens() external view returns(address[] memory) {
         return _queens; 
+    }
+
+    function getOpenRewardStatus() external view returns(bool) {
+        return _openRewards; 
     }
 }
