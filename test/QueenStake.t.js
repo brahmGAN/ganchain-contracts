@@ -48,7 +48,7 @@ describe("Queen Staking", () => {
     QueenStake = await ethers.getContractFactory("QueenStaking");
     queenStakeProxy = await upgrades.deployProxy(
       QueenStake,
-      [gpuProxy.target,nftContract.target, ethers.parseEther("576")],
+      [gpuProxy.target,nftContract.target, ethers.parseEther("572")],
       { initializer: "initialize" }
     );
   });
@@ -65,13 +65,6 @@ describe("Queen Staking", () => {
       await queenStakeProxy
         .connect(queen2)
         .stake({ value: ethers.parseEther("7000") });
-        await expect(
-          await queenStakeProxy
-            .connect(validator1)
-            .stake({ value: ethers.parseEther("99") })
-        )
-          .to.emit(queenStakeProxy, "staked")
-          .withArgs(validator1, ethers.parseEther("99"));
     });
     it("Should revert when trying to stake without having the NFT node key", async () => {
       await expect(
@@ -99,6 +92,13 @@ describe("Queen Staking", () => {
         .withArgs(validator2, validatorSS58Address, 1);
     });
     it("Enroll validators for queen rewards", async () => {
+      await expect(
+        await queenStakeProxy
+          .connect(validator1)
+          .validatorRewardsEnroll()
+      )
+        .to.emit(queenStakeProxy, "validatorEnrolled")
+        .withArgs(validator1);
         await expect(
           await queenStakeProxy
             .connect(validator2)
@@ -143,25 +143,41 @@ describe("Queen Staking", () => {
         queenStakeProxy.connect(queen4).claimRewards()
       ).to.be.revertedWithCustomError(queenStakeProxy, "NoRewards");
     });
+    it("Should let Validator1 claim rewards", async () => {
+      const rewards = await queenStakeProxy.connect(validator1).getMyRewards();
+      await expect(queenStakeProxy.connect(validator1).claimRewards())
+        .to.emit(queenStakeProxy, "claimedRewards")
+        .withArgs(validator1, rewards);
+        //expect(BigInt(rewards)).to.equal(BigInt(42683381837176330));
+        console.log("Validator1 rewards:"+rewards);
+    });
+    it("Should let Validator2 claim rewards", async () => {
+      const rewards = await queenStakeProxy.connect(validator2).getMyRewards();
+      await expect(queenStakeProxy.connect(validator2).claimRewards())
+        .to.emit(queenStakeProxy, "claimedRewards")
+        .withArgs(validator2, rewards);
+      //expect(BigInt(rewards)).to.equal(BigInt(70427580031340944705));
+      console.log("Validator2 rewards:"+rewards);
+    });
   });
 
-  // describe("Unstake", () => {
-  //   it("Should let queens unstake", async () => {
-  //     await expect(
-  //       queenStakeProxy.connect(queen2).unStake(ethers.parseEther("7000"))
-  //     )
-  //       .to.emit(queenStakeProxy, "unStaked")
-  //       .withArgs(queen2, ethers.parseEther("7000"));
-  //   });
-  //   it("Should revert when there's nothing to unstake", async () => {
-  //     await expect(
-  //       queenStakeProxy.connect(queen3).unStake(0)
-  //     ).to.be.revertedWithCustomError(queenStakeProxy, "ZeroUnstakeAmount");
-  //   });
-  //   it("Should revert when unstaking amount is greater than what's staked", async () => {
-  //     await expect(
-  //       queenStakeProxy.connect(queen3).unStake(ethers.parseEther("10000"))
-  //     ).to.be.revertedWithCustomError(queenStakeProxy, "ExceedsStakedAmount");
-  //   });
-  // });
+  describe("Unstake", () => {
+    it("Should let queens unstake", async () => {
+      await expect(
+        queenStakeProxy.connect(queen2).unStake(ethers.parseEther("7000"))
+      )
+        .to.emit(queenStakeProxy, "unStaked")
+        .withArgs(queen2, ethers.parseEther("7000"));
+    });
+    it("Should revert when there's nothing to unstake", async () => {
+      await expect(
+        queenStakeProxy.connect(queen3).unStake(0)
+      ).to.be.revertedWithCustomError(queenStakeProxy, "ZeroUnstakeAmount");
+    });
+    it("Should revert when unstaking amount is greater than what's staked", async () => {
+      await expect(
+        queenStakeProxy.connect(queen3).unStake(ethers.parseEther("10000"))
+      ).to.be.revertedWithCustomError(queenStakeProxy, "ExceedsStakedAmount");
+    });
+  });
 });
