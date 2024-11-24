@@ -39,6 +39,9 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     /// @dev switch to control open rewards 
     bool public _openRewards; 
 
+    /// @dev Checkes whether the user has already enrolled for the queen rewards
+    mapping(address => bool) _enrolledForQueen;
+
     /// @dev Authorizes the upgrade to a new implementation. Only callable by the owner.
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
@@ -65,7 +68,10 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         }
         _totalStakes += uint96(msg.value); 
         _stakedAmount[msg.sender] += uint88(msg.value); 
-        _queens.push(msg.sender);
+        if(!_enrolledForQueen[msg.sender]) {
+            _queens.push(msg.sender);
+            _enrolledForQueen[msg.sender] = true; 
+        }
         emit staked(msg.sender, uint88(msg.value));
     }  
 
@@ -89,41 +95,41 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         /// @dev Calculates the SS = su * sm 
         for (uint i = 0; i < totalQueens; i++) {
 
-            /// @dev Stores su
-            if(_openRewards && GPUInstance.isValidator(queens[i]))
-            {
-                stakeMultiplier = _stakedAmount[queens[i]] + 1e20;
-            }
-            else 
-            {
-                stakeMultiplier = _stakedAmount[queens[i]];
-            }
+           /// @dev Stores su
+                if(_openRewards && GPUInstance.isValidator(queens[i]))
+                {
+                    stakeMultiplier = _stakedAmount[queens[i]] + 1e20;
+                }
+                else 
+                {
+                    stakeMultiplier = _stakedAmount[queens[i]];
+                }
 
-            /// @dev Staking multilpier 
-            /// @dev Calculates the (su * sm) 
-            if (stakeMultiplier <= 1e20) {
-                stakeMultiplier = stakeMultiplier; 
-            }
-            else if (stakeMultiplier < 1e21) {
-                stakeMultiplier *= 125; 
-            }
-            else if (stakeMultiplier < 7e21) {
-                stakeMultiplier *= 150; 
-            }
-            else if (stakeMultiplier < 25e21) {
-                stakeMultiplier *= 175; 
-            }
-            else {
-                stakeMultiplier *= 200; 
-            }
+                /// @dev Staking multilpier 
+                /// @dev Calculates the (su * sm) 
+                if (stakeMultiplier <= 1e20) {
+                    stakeMultiplier = stakeMultiplier; 
+                }
+                else if (stakeMultiplier <= 1e21) {
+                    stakeMultiplier *= 125; 
+                }
+                else if (stakeMultiplier <= 7e21) {
+                    stakeMultiplier *= 150; 
+                }
+                else if (stakeMultiplier <= 25e21) {
+                    stakeMultiplier *= 175; 
+                }
+                else {
+                    stakeMultiplier *= 200; 
+                }
 
-            /// @dev Multiplies the already calculated (su * sm) with sh and comepletes calculating the SS = su * sm * sh 
-            // Currently the staking health is 1
-            // stakeScores[i] = stakeMultiplier * stakingHealth[i]; 
-            stakeScores[i] = stakeMultiplier; 
+                /// @dev Multiplies the already calculated (su * sm) with sh and comepletes calculating the SS = su * sm * sh 
+                // Currently the staking health is 1
+                // stakeScores[i] = stakeMultiplier * stakingHealth[i]; 
+                stakeScores[i] = stakeMultiplier; 
 
-            /// @dev ∑SS
-            totalStakeScore += stakeScores[i]; 
+                /// @dev ∑SS
+                totalStakeScore += stakeScores[i]; 
         }
 
         /// @dev Calculates the queen rewards 
@@ -160,10 +166,11 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
 
     /// @dev Registered validators can enroll for queen rewards if the switch is on
     function validatorRewardsEnroll() external {
-        if (_openRewards && GPUInstance.isValidator(msg.sender)) {
+        if (_openRewards && GPUInstance.isValidator(msg.sender) && !_enrolledForQueen[msg.sender]) {
             _queens.push(msg.sender); 
+            _enrolledForQueen[msg.sender] = true; 
         }
-        emit validatorAdded(msg.sender);
+        emit validatorEnrolled(msg.sender);
     }
 
     /// @dev set the rewards per day for queen's

@@ -17,7 +17,7 @@ interface IQueenStake {
         address queen, 
         uint88 amount
     );
-    event validatorAdded(
+    event validatorEnrolled(
         address validator 
     );
     function stake() external payable;
