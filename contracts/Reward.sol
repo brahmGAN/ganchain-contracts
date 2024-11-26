@@ -36,7 +36,8 @@ contract Reward is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeab
     }
 
     function accumulateDailyProviderRewards() public onlyOwner {
-        require(block.timestamp >= lastRewardCalculated + 24 hours, "24 hrs not completed");
+        /// @dev Removed this check to keep things flexible.
+        // require(block.timestamp >= lastRewardCalculated + 24 hours, "24 hrs not completed");
         address[] memory providers = GPUInstance.getProviders();
         uint256[] memory computeScores = new uint256[](providers.length);
         uint256 totalComputeScore = 0;

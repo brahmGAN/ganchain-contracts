@@ -47,13 +47,13 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
 
     /// @dev Initializes the contract with GPU contract address and rewards per day for the queen nodes pool.
     /// @dev `rewardsPerDay` should be passed in wei and not as GPoints 
-    function initialize(address _GPUAddress, address nftContract, uint256 rewardsPerDay) public initializer {
+    function initialize(address gpuContract, address nftContract, uint256 rewardsPerDay) public initializer {
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
         __ReentrancyGuard_init();
         _nftContract = IERC721(nftContract);
         _rewardsPerDay = uint88(rewardsPerDay);
-        GPUInstance = GPU(_GPUAddress);
+        GPUInstance = GPU(gpuContract);
     }
 
     /// @notice No minimum staking amount 
