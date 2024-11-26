@@ -95,6 +95,9 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         /// @dev Calculates the SS = su * sm 
         for (uint i = 0; i < totalQueens; i++) {
 
+           /// @dev This check makes sure rewards are handed out only if validators and queens are still setup. It's done as the first step of the loop.
+           /// @dev If this check fails then we iterate to the next address. 
+           // if(GPUInstance.isValidator(queens[i]) || GPUInstance.isQueen(queens[i]))
            /// @dev Stores su
                 if(_openRewards && GPUInstance.isValidator(queens[i]))
                 {
@@ -132,6 +135,9 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
                 totalStakeScore += stakeScores[i]; 
         }
 
+        /// @dev This check makes sure rewards are handed out only if validators and queens are still setup. It's done as the first step of the loop.
+        /// @dev If this check fails then we iterate to the next address. 
+        // if(GPUInstance.isValidator(queens[i]) || GPUInstance.isQueen(queens[i]))    
         /// @dev Calculates the queen rewards 
         /// @dev (ss/∑ss) * Rewards per day
         if (totalStakeScore > 0) {
