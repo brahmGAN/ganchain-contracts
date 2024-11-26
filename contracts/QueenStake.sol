@@ -165,12 +165,12 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     }
 
     /// @dev Registered validators can enroll for queen rewards if the switch is on
-    function validatorRewardsEnroll() external {
-        if (_openRewards && GPUInstance.isValidator(msg.sender) && !_enrolledForQueen[msg.sender]) {
-            _queens.push(msg.sender); 
-            _enrolledForQueen[msg.sender] = true; 
+    function validatorRewardsEnroll(address validator) external onlyOwner() {
+        if (_openRewards && GPUInstance.isValidator(validator) && !_enrolledForQueen[validator]) {
+            _queens.push(validator); 
+            _enrolledForQueen[validator] = true; 
         }
-        emit validatorEnrolled(msg.sender);
+        emit validatorEnrolled(validator);
     }
 
     /// @dev set the rewards per day for queen's
