@@ -27,8 +27,11 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     /// @dev Can hold upto 10 Billion GPoints in wei 
     uint96 _totalStakes; 
 
-    /// @dev Queen's rewards which is calculated every day
-    mapping(address => uint96) _queenRewards;
+    /// @dev Pending Queen's rewards 
+    mapping(address => uint96) _pendingQueenRewards;
+
+    /// @dev Total earned rewards of the queen 
+    mapping(address => uint96) _totalRewardsEarned;
 
     /// @dev List of queens that stakes
     address[] _queens; 
@@ -62,7 +65,7 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     function stake() external  payable {
         if (_nftContract.balanceOf(msg.sender) < 1) revert BuyNodeNFT();
         if (_stakedAmount[msg.sender] > 0) {
-            if (_queenRewards[msg.sender] > 0) {
+            if (_pendingQueenRewards[msg.sender] > 0) {
                 claimRewards();
             }
         }
@@ -76,9 +79,9 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     }  
 
     function claimRewards() public {
-        uint96 rewards = _queenRewards[msg.sender]; 
+        uint96 rewards = _pendingQueenRewards[msg.sender]; 
         if (rewards == 0) revert NoRewards(); 
-        _queenRewards[msg.sender] = 0; 
+        _pendingQueenRewards[msg.sender] = 0; 
         (bool success,) = payable(msg.sender).call{value: rewards}("");
         if (!success) revert TransferFailed(); 
         emit claimedRewards(msg.sender, rewards);
@@ -142,9 +145,12 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         /// @dev (ss/∑ss) * Rewards per day
         if (totalStakeScore > 0) {
             uint256 rewardsPerDay = _rewardsPerDay;
+            uint96 newRewards; 
             for (uint i = 0; i < totalQueens; i++) {
                 /// @dev queen rewards = (ss * _rewardsPerDay) / ∑SS
-                _queenRewards[queens[i]] += uint96((stakeScores[i] * rewardsPerDay) / (totalStakeScore));
+                newRewards = uint96((stakeScores[i] * rewardsPerDay) / (totalStakeScore));
+                _pendingQueenRewards[queens[i]] +=  newRewards; 
+                _totalRewardsEarned[queens[i]] += newRewards; 
             } 
         }
         _lastRewardCalculated = uint40(block.timestamp); 
@@ -156,7 +162,7 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     function unStake(uint88 amount) public {
         if (amount == 0) revert ZeroUnstakeAmount();
         if (_stakedAmount[msg.sender] < amount) revert ExceedsStakedAmount();
-        if (_queenRewards[msg.sender] > 0) {
+        if (_pendingQueenRewards[msg.sender] > 0) {
             claimRewards();
         }
         _stakedAmount[msg.sender] -= amount;
@@ -203,11 +209,15 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     }
 
     function getQueenRewards(address queen) external view onlyOwner() returns(uint96) {
-        return _queenRewards[queen]; 
+        return _pendingQueenRewards[queen]; 
     } 
 
-    function getMyRewards() external view returns(uint96) {
-        return _queenRewards[msg.sender]; 
+    function getMyPendingRewards() external view returns(uint96) {
+        return _pendingQueenRewards[msg.sender]; 
+    }
+
+    function getMyTotalRewardsEarned() external view returns(uint96) {
+        return _totalRewardsEarned[msg.sender]; 
     }
 
     function getAllQueens() external view returns(address[] memory) {
@@ -216,5 +226,9 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
 
     function getOpenRewardStatus() external view returns(bool) {
         return _openRewards; 
+    }
+
+    function getTotalRewards(address queen) external view onlyOwner returns(uint96) {
+        return _totalRewardsEarned[queen]; 
     }
 }
