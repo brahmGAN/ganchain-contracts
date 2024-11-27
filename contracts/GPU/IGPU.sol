@@ -272,6 +272,11 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         uint indexed nftCount
     );
 
+    event ValidatorStatus(
+        address indexed validator,
+        bool status 
+    );
+
     event RandomDrillTestTriggered(address indexed queenValidationAddress, uint256 indexed machineId);
 
     event RandomHealthCheckTriggered(address indexed queenValidationAddress, uint256 indexed machineId);
