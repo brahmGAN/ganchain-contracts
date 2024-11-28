@@ -12,7 +12,8 @@ contract AddQueen is IGPU {
         //require(!providers[queenAddress].exists, "AlreadyProvider");
         require(bytes(userName).length > 0, "!Name");
         require(bytes(publicKey).length > 0, "!Key");
-
+        //Add a check to ensure the queen has staked the sufficient amount
+        
         queens[queenAddress] = Queen({
             jobs :  new uint[](0),
             publicKey: publicKey,
@@ -27,6 +28,8 @@ contract AddQueen is IGPU {
             userType : UserType.Queen
         });
         userID++;
+        
+        //isQueen[queenAddress] = true; 
 
         emit QueenAdded(queenAddress, publicKey, userName);
     }
