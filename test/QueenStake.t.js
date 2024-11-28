@@ -94,15 +94,15 @@ describe("Queen Staking", () => {
     it("Enroll validators for queen rewards", async () => {
       await expect(
         await queenStakeProxy
-          .connect(validator1)
-          .validatorRewardsEnroll()
+          .connect(owner)
+          .validatorRewardsEnroll(validator1)
       )
         .to.emit(queenStakeProxy, "validatorEnrolled")
         .withArgs(validator1);
         await expect(
           await queenStakeProxy
-            .connect(validator2)
-            .validatorRewardsEnroll()
+            .connect(owner)
+            .validatorRewardsEnroll(validator2)
         )
           .to.emit(queenStakeProxy, "validatorEnrolled")
           .withArgs(validator2);
@@ -133,7 +133,7 @@ describe("Queen Staking", () => {
 
   describe("Claim", () => {
     it("Should let Queens claim rewards", async () => {
-      const rewards = await queenStakeProxy.connect(queen1).getMyRewards();
+      const rewards = await queenStakeProxy.connect(queen1).getMyPendingRewards();
       await expect(queenStakeProxy.connect(queen1).claimRewards())
         .to.emit(queenStakeProxy, "claimedRewards")
         .withArgs(queen1, rewards);
@@ -144,7 +144,7 @@ describe("Queen Staking", () => {
       ).to.be.revertedWithCustomError(queenStakeProxy, "NoRewards");
     });
     it("Should let Validator1 claim rewards", async () => {
-      const rewards = await queenStakeProxy.connect(validator1).getMyRewards();
+      const rewards = await queenStakeProxy.connect(validator1).getMyPendingRewards();
       await expect(queenStakeProxy.connect(validator1).claimRewards())
         .to.emit(queenStakeProxy, "claimedRewards")
         .withArgs(validator1, rewards);
@@ -152,7 +152,7 @@ describe("Queen Staking", () => {
         console.log("Validator1 rewards:"+rewards);
     });
     it("Should let Validator2 claim rewards", async () => {
-      const rewards = await queenStakeProxy.connect(validator2).getMyRewards();
+      const rewards = await queenStakeProxy.connect(validator2).getMyPendingRewards();
       await expect(queenStakeProxy.connect(validator2).claimRewards())
         .to.emit(queenStakeProxy, "claimedRewards")
         .withArgs(validator2, rewards);
