@@ -70,4 +70,23 @@ describe("GPU", () => {
       ).to.be.revertedWith("NoNFT");
     });
   });
+
+  describe("Setter functions for provider and validator",()=>{
+    it("Should set the status of the providers and validators",async()=>{
+      await expect(
+        await gpuProxy.isProvider(user1)
+      ).to.be.equal(true); 
+      await expect(
+        await gpuProxy.isValidator(user1)
+      ).to.be.equal(true); 
+      await gpuProxy.connect(owner).setRoleStatus(user1,0,false); 
+      await gpuProxy.connect(owner).setRoleStatus(user1,1,false); 
+      await expect(
+        await gpuProxy.isProvider(user1)
+      ).to.be.equal(false); 
+      await expect(
+        await gpuProxy.isValidator(user1)
+      ).to.be.equal(false); 
+    });
+  });
 });
