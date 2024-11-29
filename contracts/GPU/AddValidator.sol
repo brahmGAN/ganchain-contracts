@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.20;
-import "./AGPU.sol";
+import "./IGPU.sol";
 contract AddValidator is IGPU {
     address[] ValidatorNFTAddresses;
     struct ValidatorInfo {

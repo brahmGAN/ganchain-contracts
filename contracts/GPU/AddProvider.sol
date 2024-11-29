@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.20;
 
-import "./AGPU.sol";
+import "./IGPU.sol";
 
 contract AddProvider is IGPU {
 
