@@ -69,5 +69,13 @@ describe("GPU", () => {
         gpuProxy.connect(helper).addQueen(user2.address, publicKey, userName),
       ).to.be.revertedWith("NoNFT");
     });
+
+    it("Should set validator to false",async()=>{
+      await expect(await gpuProxy.isValidator(user1))
+      .to.be.equal(true);
+      await gpuProxy.connect(owner).setValidator(user1,false); 
+      await expect(await gpuProxy.isValidator(user1))
+      .to.be.equal(false);
+    });
   });
 });

@@ -34,7 +34,7 @@ contract AddValidator is IGPU {
         return ValidatorNFTAddresses;
     }
 
-    function setValidator(address validator, bool status) public 
+    function setValidator(address validator, bool status) public onlyOwner
     {
         isValidator[validator] = status; 
     }
