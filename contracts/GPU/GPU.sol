@@ -73,25 +73,4 @@ contract GPU is AddProvider, AddQueen, AddJobs, AddConsumer, AddValidator {
         emit UpdatedInitializedValues(msg.sender, nftAddress, tickSeconds, gpuID, userID, machineID, machineInfoID, jobID, helper, scheduler);
         emit UpdatedInitializedDrillTestValues(minDrillTestRange, minMachineAvailability, maxMachineUnavailability, gracePeriod);
     }
-
-    /// @dev Setter function to change the availability status of either the validator,queen or the provider
-    function setRoleStatus(address nodeRunner, uint8 role, bool status) public onlyOwner 
-    {
-        if(role == 0)
-        {
-            isProvider[nodeRunner] = status; 
-        }
-        else
-        {
-            isValidator[nodeRunner] = status; 
-        }
-        // else if(role ==1)
-        // {
-        //     isValidator[nodeRunner] = status; 
-        // }
-        // else 
-        // {
-        //     isQueen[nodeRunner] = status; 
-        // }
-    }
 }

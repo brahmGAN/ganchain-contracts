@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.20;
 
-import "./IGPU.sol";
+import "./AGPU.sol";
 
 contract AddProvider is IGPU {
 
@@ -10,7 +10,7 @@ contract AddProvider is IGPU {
         //require(!isValidator[msg.sender],"AlreadyValidator");
         require(!isProvider[msg.sender], "AddressUsed");
         require(!providers[providerAddress].exists, "Exists");
-        //require(!queens[providerAddress].exists, "AlreadyQueen");
+        require(!queens[providerAddress].exists, "AlreadyQueen");
 
         providers[providerAddress] = Provider({
             nftAddress: msg.sender,
@@ -18,7 +18,7 @@ contract AddProvider is IGPU {
             exists: true
         });
 
-        users[userID] = User({ 
+        users[userID] = User({
             userAddress: providerAddress,
             userType: UserType.Provider
         });
@@ -65,7 +65,6 @@ contract AddProvider is IGPU {
         );
         require(machineDetails.portsOpen.length > 0, "!Ports");
         require(bytes(machineDetails.region).length > 0, "!Region");
-        require(machineDetails.ram > 0, "!Ram");
 
         machineDetails.machineInfoId = machineInfoID;
         machineInfo[machineInfoID] = machineDetails;

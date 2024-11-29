@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.20;
 
-import "./IGPU.sol";
+import "./AGPU.sol";
 
 contract AddQueen is IGPU {
 
@@ -12,8 +12,7 @@ contract AddQueen is IGPU {
         //require(!providers[queenAddress].exists, "AlreadyProvider");
         require(bytes(userName).length > 0, "!Name");
         require(bytes(publicKey).length > 0, "!Key");
-        //Add a check to ensure the queen has staked the sufficient amount
-        
+
         queens[queenAddress] = Queen({
             jobs :  new uint[](0),
             publicKey: publicKey,
@@ -28,8 +27,6 @@ contract AddQueen is IGPU {
             userType : UserType.Queen
         });
         userID++;
-        
-        //isQueen[queenAddress] = true; 
 
         emit QueenAdded(queenAddress, publicKey, userName);
     }

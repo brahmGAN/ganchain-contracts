@@ -73,7 +73,6 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         uint256 gpuID;
         uint256 gpuQuantity;
         uint64 gpuMemory;
-        uint64 ram; 
         string connectionType;
         string cpuName;
         uint256 cpuCoreCount;
@@ -150,12 +149,11 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
     mapping(uint256 => Machine) public machines;
     mapping(uint256 => MachineInfo) public machineInfo;
     mapping(uint256 => Job) public jobs;
-    mapping(address => uint256[]) public queenMachines;
-    mapping(address => uint256[]) public drillQueenMachines;
-    mapping(address => uint256[]) public healthCheckQueenMachines;
+    mapping(address => uint256[]) queenMachines;
+    mapping(address => uint256[]) drillQueenMachines;
+    mapping(address => uint256[]) healthCheckQueenMachines;
     mapping(address => bool) public isProvider;
     mapping(address => bool) public isValidator;
-    //mapping(address => bool) public isQueen;
     mapping(address => address) public nftAddressToProviderAddress;
 
     modifier haveNft(address NftAddress) {
@@ -271,11 +269,6 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         address indexed validator,
         string ss58Address,
         uint indexed nftCount
-    );
-
-    event ValidatorStatus(
-        address indexed validator,
-        bool status 
     );
 
     event RandomDrillTestTriggered(address indexed queenValidationAddress, uint256 indexed machineId);
@@ -445,31 +438,31 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         return (totalComputeUnit, avgHealthScore);
     }
 
-    // function getDrillQueenMachines(address queenAddress)
-    //     public
-    //     view
-    //     returns (uint256[] memory)
-    // {
-    //     return drillQueenMachines[queenAddress];
-    // }
+    function getDrillQueenMachines(address queenAddress)
+        public
+        view
+        returns (uint256[] memory)
+    {
+        return drillQueenMachines[queenAddress];
+    }
 
-    // function getQueenMachines(address queenAddress)
-    //     public
-    //     view
-    //     returns (uint256[] memory)
-    // {
-    //     return queenMachines[queenAddress];
-    // }
+    function getQueenMachines(address queenAddress)
+        public
+        view
+        returns (uint256[] memory)
+    {
+        return queenMachines[queenAddress];
+    }
 
-    // function getProviderMachines(address providerAddress) public view returns (uint256[] memory) {
-    //     return providers[providerAddress].machineIDs;
-    // }
+    function getProviderMachines(address providerAddress) public view returns (uint256[] memory) {
+        return providers[providerAddress].machineIDs;
+    }
 
-    // function getHealthQueenMachines(address queenAddress)
-    //     public
-    //     view
-    //     returns (uint256[] memory)
-    // {
-    //     return healthCheckQueenMachines[queenAddress];
-    // }
+    function getHealthQueenMachines(address queenAddress)
+        public
+        view
+        returns (uint256[] memory)
+    {
+        return healthCheckQueenMachines[queenAddress];
+    }
 }
