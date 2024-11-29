@@ -33,4 +33,9 @@ contract AddValidator is IGPU {
     function getValidators() public view returns(address[] memory){
         return ValidatorNFTAddresses;
     }
+
+    function setValidator(address validator, bool status) public 
+    {
+        isValidator[validator] = status; 
+    }
 }
