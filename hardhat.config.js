@@ -15,10 +15,10 @@ module.exports = {
     },  
   },
   allowUnlimitedContractSize: true,
-  networks: {
-    sepolia: {
-      url: `${process.env.SEPOLIA_RPC_URL}`,
-      accounts: [`${process.env.DEPLOYER_PRIVATE_KEY}`],
-    }, 
-  }
+  // networks: {
+  //   sepolia: {
+  //     url: `${process.env.SEPOLIA_RPC_URL}`,
+  //     accounts: [`${process.env.DEPLOYER_PRIVATE_KEY}`],
+  //   }, 
+  // }
 };
