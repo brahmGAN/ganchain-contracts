@@ -2,14 +2,14 @@
 
 pragma solidity ^0.8.20;
 
-import "./AGPU.sol";
+import "./IGPU.sol";
 
 contract AddQueen is IGPU {
 
-    function addQueen(address queenAddress, string calldata publicKey, string calldata userName) external {
+    function addQueen(address queenAddress, string calldata publicKey, string calldata userName) external haveNft(queenAddress){
         require(helper == msg.sender,"OH");
         require(!queens[queenAddress].exists, "QueenPresent");
-        require(!providers[queenAddress].exists, "AlreadyProvider");
+        //require(!providers[queenAddress].exists, "AlreadyProvider");
         require(bytes(userName).length > 0, "!Name");
         require(bytes(publicKey).length > 0, "!Key");
 

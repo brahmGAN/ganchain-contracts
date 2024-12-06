@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.20;
-import "./AGPU.sol";
+import "./IGPU.sol";
 contract AddValidator is IGPU {
     address[] ValidatorNFTAddresses;
     struct ValidatorInfo {
@@ -9,7 +9,7 @@ contract AddValidator is IGPU {
     }
     mapping(address => ValidatorInfo) public validators;
     function addValidator(string calldata validatorSS58Address) public haveNft(msg.sender){
-        require(!isProvider[msg.sender], "AlreadyProvider");
+        //require(!isProvider[msg.sender], "AlreadyProvider");
         require(!isValidator[msg.sender], "AlreadyValidator");
         require(bytes(validatorSS58Address).length > 0, "!SS58");
         uint nftBalance = calculateNFT(msg.sender);
@@ -32,5 +32,10 @@ contract AddValidator is IGPU {
     }
     function getValidators() public view returns(address[] memory){
         return ValidatorNFTAddresses;
+    }
+
+    function setValidator(address validator, bool status) public onlyOwner
+    {
+        isValidator[validator] = status; 
     }
 }

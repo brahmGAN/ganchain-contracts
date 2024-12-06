@@ -1,0 +1,28 @@
+name: Tests
+
+on:
+    push:
+        branches:
+            - main
+            - enhancements
+    pull_request:
+
+jobs:
+    unit-tests:
+        name: Unit Tests
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 18.17.1
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Compile
+              run: npx hardhat compile
+
+            - name: Run unit tests
+              run: npx hardhat test

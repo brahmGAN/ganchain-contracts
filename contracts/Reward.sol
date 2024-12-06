@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.20;
 
-import "./GPU.sol";
+import "./GPU/GPU.sol";
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
@@ -36,7 +36,9 @@ contract Reward is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeab
     }
 
     function accumulateDailyProviderRewards() public onlyOwner {
-        require(block.timestamp >= lastRewardCalculated + 24 hours, "24 hrs not completed");
+        /// @dev Removed this check to keep things flexible.
+        // require(block.timestamp >= lastRewardCalculated + 24 hours, "24 hrs not completed");
+        //address[] memory providers = GPUInstance.getProviders();
         address[] memory providers = GPUInstance.getProviders();
         uint256[] memory computeScores = new uint256[](providers.length);
         uint256 totalComputeScore = 0;
@@ -78,12 +80,11 @@ contract Reward is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeab
         require(block.timestamp >= lastWithdrawalTime[msg.sender] + LOCK_PERIOD, "Withdrawal locked for 30 days");
         //require(amount <= providerRewards[msg.sender], "Insufficient reward balance");
         require(address(this).balance >= providerRewards[msg.sender], "Contract balance is insufficient");
-        (bool success,) = payable(msg.sender).call{value: providerRewards[msg.sender]}("");
-        require(success, "TransferFailed");
+        uint256 _providerRewards = providerRewards[msg.sender];
         providerRewards[msg.sender] = 0;
+        (bool success,) = payable(msg.sender).call{value: _providerRewards}("");
+        require(success, "TransferFailed");
         lastWithdrawalTime[msg.sender] = block.timestamp;
         emit RewardWithdrawn(msg.sender, providerRewards[msg.sender]);
     }
-
-
 }

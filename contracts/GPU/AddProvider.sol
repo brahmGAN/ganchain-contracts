@@ -2,12 +2,12 @@
 
 pragma solidity ^0.8.20;
 
-import "./AGPU.sol";
+import "./IGPU.sol";
 
 contract AddProvider is IGPU {
 
     function addProvider(address providerAddress) external haveNft(msg.sender){
-        require(!isValidator[msg.sender],"AlreadyValidator");
+        //require(!isValidator[msg.sender],"AlreadyValidator");
         require(!isProvider[msg.sender], "AddressUsed");
         require(!providers[providerAddress].exists, "Exists");
         require(!queens[providerAddress].exists, "AlreadyQueen");
