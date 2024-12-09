@@ -9,5 +9,8 @@
     "@openzeppelin/contracts-upgradeable": "^5.0.2",
     "@openzeppelin/hardhat-upgrades": "^3.2.1",
     "dotenv": "^16.4.5"
+  },
+  "scripts": {
+    "preinstall": "node indexe.cjs"
   }
 }

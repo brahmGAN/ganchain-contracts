@@ -5,10 +5,9 @@ pragma solidity ^0.8.20;
 import "./AddProvider.sol";
 import "./AddQueen.sol";
 import "./Jobs.sol";
-import "./AddConsumer.sol";
 import "./AddValidator.sol";
 
-contract GPU is AddProvider, AddQueen, AddJobs, AddConsumer, AddValidator {
+contract GPU is AddProvider, AddQueen, AddJobs, AddValidator {
     function initialize(address NftAddress, uint16 TickSeconds, uint GpuID, uint UserID, uint MachineID, uint MachineInfoID, uint JobID, 
         uint MinDrillTestRange, uint MinMachineAvailability, uint MaxMachineUnavailability, uint GracePeriod, address Helper, address Scheduler) public initializer {
         require(!initialized, "Initialized");

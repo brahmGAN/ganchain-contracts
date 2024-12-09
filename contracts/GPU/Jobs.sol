@@ -6,10 +6,10 @@ import "./IGPU.sol";
 
 contract AddJobs is IGPU {
 
-    function createJob(uint machineId, uint gpuHours, string calldata sshPublicKey, bool requireDrill ) external payable {
+    function createJob(uint machineId, uint gpuHours, string calldata sshPublicKey, bool requireDrill ) external onlyOwner {
         uint cost = calculateCost(machineId,gpuHours);
-        require(consumers[msg.sender].exists, "!Exists");
-        require(msg.value == cost, "RequireGPoints");
+        // require(consumers[msg.sender].exists, "!Exists");
+        // require(msg.value == cost, "RequireGPoints");
         require(bytes(sshPublicKey).length > 0, "!SSHkey");
         require(machines[machineId].status == MachineStatus.AVAILABLE, "!Machine");
         require(queensList.length > 0, "!Queen");
@@ -27,7 +27,7 @@ contract AddJobs is IGPU {
                 lastChecked : 0,
                 completedTicks : 0,
                 completedHours : 0,
-                price : msg.value,
+                price : cost,
                 sshPublicKey: sshPublicKey,
                 status : JobStatus.VERIFYING,
                 consumerRating: 0
@@ -43,7 +43,7 @@ contract AddJobs is IGPU {
                 lastChecked : block.timestamp,
                 completedTicks : 0,
                 completedHours : 0,
-                price : msg.value,
+                price : cost,
                 sshPublicKey: sshPublicKey,
                 status : JobStatus.RUNNING,
                 consumerRating: 0
@@ -57,7 +57,7 @@ contract AddJobs is IGPU {
         queens[queenValidationAddress].jobs.push(jobID);
         queenMachines[queenValidationAddress].push(machineId);
 
-        emit JobCreated(msg.sender, machineId, queenValidationAddress, jobID, gpuHoursInSeconds, msg.value);
+        emit JobCreated(msg.sender, machineId, queenValidationAddress, jobID, gpuHoursInSeconds, cost);
         
         jobID++;
     }
