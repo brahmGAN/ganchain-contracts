@@ -75,6 +75,7 @@ abstract contract IGPU is OwnableUpgradeable, UUPSUpgradeable {
         uint64 gpuMemory;
         string connectionType;
         string cpuName;
+        uint64 ram;
         uint256 cpuCoreCount;
         uint256 uploadBandWidth;
         uint256 downloadBandWidth;
