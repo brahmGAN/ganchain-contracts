@@ -166,6 +166,7 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
             claimRewards();
         }
         _stakedAmount[msg.sender] -= amount;
+        _totalStakes -= amount; 
         (bool success,) = payable(msg.sender).call{value: amount}("");
         if (!success) revert TransferFailed(); 
         emit unStaked(msg.sender, amount);
@@ -186,7 +187,7 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     }
 
     /// @dev set the rewards per day for queen's
-    function setRewardsPerDay(uint88 rewardsPerDay) external {
+    function setRewardsPerDay(uint88 rewardsPerDay) external onlyOwner() {
         _rewardsPerDay = rewardsPerDay;  
     }
 
