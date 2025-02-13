@@ -45,6 +45,15 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     /// @dev Checkes whether the user has already enrolled for the queen rewards
     mapping(address => bool) _enrolledForQueen;
 
+    /// @dev Boolean switch to control the availability of stake() 
+    bool public _stake;
+
+    /// @dev Boolean switch to control the availability of unStake()
+    bool public _unStake;
+
+    /// @dev Boolean switch to control the availability of claim()
+    bool public _claim; 
+
     /// @dev Authorizes the upgrade to a new implementation. Only callable by the owner.
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
@@ -64,6 +73,7 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     /// @dev Anyone with the NFT node key can become a queen by staking a minimum of 1000 GPoints initially. 
     function stake() external  payable {
         //if (_nftContract.balanceOf(msg.sender) < 1) revert BuyNodeNFT();
+        if (!_stake) revert stakeNotYetAvailable(); 
         if (_stakedAmount[msg.sender] > 0) {
             // if (_pendingQueenRewards[msg.sender] > 0) {
             //     claimRewards();
@@ -78,18 +88,10 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         emit staked(msg.sender, uint88(msg.value));
     }  
 
-    function claimRewards() public {
-        uint96 rewards = _pendingQueenRewards[msg.sender]; 
-        if (rewards == 0) revert NoRewards(); 
-        _pendingQueenRewards[msg.sender] = 0; 
-        (bool success,) = payable(msg.sender).call{value: rewards}("");
-        if (!success) revert TransferFailed(); 
-        emit claimedRewards(msg.sender, rewards);
-    }
-
     /// @notice No rewards for staking below 1000 GPoints
     /// @dev Allows the queens to unstake 
     function unStake(uint88 amount) public {
+        if (!_unStake) revert unStakeNotYetAvailable();
         if (amount == 0) revert ZeroUnstakeAmount();
         if (_stakedAmount[msg.sender] < amount) revert ExceedsStakedAmount();
         if (_pendingQueenRewards[msg.sender] > 0) {
@@ -100,6 +102,16 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         (bool success,) = payable(msg.sender).call{value: amount}("");
         if (!success) revert TransferFailed(); 
         emit unStaked(msg.sender, amount);
+    }
+
+    function claimRewards() public {
+        if (!_claim) revert claimNotYetAvailable(); 
+        uint96 rewards = _pendingQueenRewards[msg.sender]; 
+        if (rewards == 0) revert NoRewards(); 
+        _pendingQueenRewards[msg.sender] = 0; 
+        (bool success,) = payable(msg.sender).call{value: rewards}("");
+        if (!success) revert TransferFailed(); 
+        emit claimedRewards(msg.sender, rewards);
     }
 
     function accumulateDailyQueenRewards() public onlyOwner {
@@ -191,6 +203,28 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         _rewardsPerDay = rewardsPerDay;  
     }
 
+    function setUserFunctionStatus(bool status, uint8 functionType) external onlyOwner() {
+
+        /// @dev sets the status of stake()
+        if (functionType == 0) {
+            _stake = status; 
+        }
+
+        /// @dev sets the status of unStake()
+        else if (functionType == 1) {
+            _unStake = status;
+        }
+
+        /// @dev sets the status of claim()
+        else if (functionType == 2) {
+            _claim = status;
+        }
+
+        else {
+            revert wrongFunctionType(); 
+        }
+    }
+
     /// @notice Getter functions
     
     function getLastRewardCalculated() external view onlyOwner() returns(uint40) {
@@ -229,7 +263,7 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         return _openRewards; 
     }
 
-    function getTotalRewards(address queen) external view onlyOwner returns(uint96) {
+    function getTotalRewards(address queen) external view onlyOwner() returns(uint96) {
         return _totalRewardsEarned[queen]; 
     }
 }

@@ -39,4 +39,24 @@ interface IErrors {
    * @dev Displayed when un-stake amount is 0
    */
   error ZeroUnstakeAmount();
+
+  /**
+    * @dev Displayed when stake() isn't yet available for users
+   */
+  error stakeNotYetAvailable();
+
+  /**
+    * @dev Displayed when unStake() isn't yet available for users
+   */
+  error unStakeNotYetAvailable(); 
+
+  /**
+    * @dev Displayed when claim() isn't yet available for users
+   */
+  error claimNotYetAvailable();   
+
+  /**
+    * @dev Displayed when a wrong functionType is passed as a parameter
+   */
+  error wrongFunctionType();
 }
