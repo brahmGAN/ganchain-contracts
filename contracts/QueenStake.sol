@@ -54,6 +54,8 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     /// @dev Boolean switch to control the availability of claim()
     bool public _claim; 
 
+    mapping(address => uint96) _totalRewardsclaimed; 
+
     /// @dev Authorizes the upgrade to a new implementation. Only callable by the owner.
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
@@ -108,7 +110,8 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         if (!_claim) revert claimNotYetAvailable(); 
         uint96 rewards = _pendingQueenRewards[msg.sender]; 
         if (rewards == 0) revert NoRewards(); 
-        _pendingQueenRewards[msg.sender] = 0; 
+        _pendingQueenRewards[msg.sender] = 0;
+        _totalRewardsclaimed[msg.sender] += rewards; 
         (bool success,) = payable(msg.sender).call{value: rewards}("");
         if (!success) revert TransferFailed(); 
         emit claimedRewards(msg.sender, rewards);
