@@ -87,6 +87,21 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         emit claimedRewards(msg.sender, rewards);
     }
 
+    /// @notice No rewards for staking below 1000 GPoints
+    /// @dev Allows the queens to unstake 
+    function unStake(uint88 amount) public {
+        if (amount == 0) revert ZeroUnstakeAmount();
+        if (_stakedAmount[msg.sender] < amount) revert ExceedsStakedAmount();
+        if (_pendingQueenRewards[msg.sender] > 0) {
+            claimRewards();
+        }
+        _stakedAmount[msg.sender] -= amount;
+        _totalStakes -= amount; 
+        (bool success,) = payable(msg.sender).call{value: amount}("");
+        if (!success) revert TransferFailed(); 
+        emit unStaked(msg.sender, amount);
+    }
+
     function accumulateDailyQueenRewards() public onlyOwner {
         /// @dev Removed this check to keep things flexible. 
         //if (block.timestamp < _lastRewardCalculated + 24 hours) revert InComplete24Hours();
@@ -155,21 +170,6 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         }
         _lastRewardCalculated = uint40(block.timestamp); 
         emit accumulatedDailyQueenRewards(_lastRewardCalculated);
-    }
-
-    /// @notice No rewards for staking below 1000 GPoints
-    /// @dev Allows the queens to unstake 
-    function unStake(uint88 amount) public {
-        if (amount == 0) revert ZeroUnstakeAmount();
-        if (_stakedAmount[msg.sender] < amount) revert ExceedsStakedAmount();
-        if (_pendingQueenRewards[msg.sender] > 0) {
-            claimRewards();
-        }
-        _stakedAmount[msg.sender] -= amount;
-        _totalStakes -= amount; 
-        (bool success,) = payable(msg.sender).call{value: amount}("");
-        if (!success) revert TransferFailed(); 
-        emit unStaked(msg.sender, amount);
     }
 
     /// @dev set `_openRewards` 
