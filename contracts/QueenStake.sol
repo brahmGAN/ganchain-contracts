@@ -54,6 +54,7 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     /// @dev Boolean switch to control the availability of claim()
     bool public _claim; 
 
+    /// @dev Mapping that stores the rewards claimed by a user so far
     mapping(address => uint96) _totalRewardsclaimed; 
 
     /// @dev Authorizes the upgrade to a new implementation. Only callable by the owner.
@@ -206,19 +207,20 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         _rewardsPerDay = rewardsPerDay;  
     }
 
+    /// @dev Set the status of the functions that users interact with. 
     function setUserFunctionStatus(bool status, uint8 functionType) external onlyOwner() {
 
-        /// @dev sets the status of stake()
+        /// @dev sets the status of stake(), functionType = 0
         if (functionType == 0) {
             _stake = status; 
         }
 
-        /// @dev sets the status of unStake()
+        /// @dev sets the status of unStake(), functionType = 1
         else if (functionType == 1) {
             _unStake = status;
         }
 
-        /// @dev sets the status of claim()
+        /// @dev sets the status of claim(), functionType = 2
         else if (functionType == 2) {
             _claim = status;
         }
@@ -226,6 +228,11 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         else {
             revert wrongFunctionType(); 
         }
+    }
+
+    /// @dev Set the total rewards claimed by the queens so far 
+    function setTotalRewardsClaimed(address queen, uint96 rewardsClaimed) external onlyOwner() {
+        _totalRewardsclaimed[queen] = rewardsClaimed; 
     }
 
     /// @notice Getter functions
