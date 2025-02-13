@@ -20,6 +20,10 @@ interface IQueenStake {
     event validatorEnrolled(
         address validator 
     );
+    event authorizedUnStaked(
+        address queen, 
+        uint96 amount
+    );
     function stake() external payable;
     function claimRewards() external; 
     function accumulateDailyQueenRewards() external;
