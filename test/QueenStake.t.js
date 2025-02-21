@@ -201,12 +201,6 @@ describe("Queen Staking", () => {
         .connect(queen1)
         .getMyPendingRewards();
 
-      console.log("Staked amount before upgrade:" + stakesBeforeUpgrade);
-
-      console.log(
-        "Queen 1 pending rewards before upgrade:" + pendingRewardsBeforeUpgrade,
-      );
-
       NewQueenStake = await ethers.getContractFactory("NewQueenStaking");
 
       upgradedQueenStakeProxy = await upgrades.upgradeProxy(
@@ -270,4 +264,32 @@ describe("Queen Staking", () => {
       rewards = await queenStakeProxy.connect(queen1).getMyPendingRewards();
     });
   });
+
+  describe("Unstake after upgrade", () => {
+    it("Should fail while un-staking since the switch is off in the new implimentation", async () => {
+      await expect(
+        queenStakeProxy.connect(queen1).unStake(ethers.parseEther("500")),
+      )
+        .to.be.revertedWithCustomError(queenStakeProxy,"unStakeNotYetAvailable");
+    });
+  });
+
+  // describe("Contract upgrade", () => {
+  //   it("Should upgrade to a new queen contract", async () => {
+  //     stakesBeforeUpgrade = await queenStakeProxy
+  //       .connect(queen1)
+  //       .getMyStakedAmount();
+
+  //     pendingRewardsBeforeUpgrade = await queenStakeProxy
+  //       .connect(queen1)
+  //       .getMyPendingRewards();
+
+  //     NewQueenStake = await ethers.getContractFactory("NewQueenStaking");
+
+  //     upgradedQueenStakeProxy = await upgrades.upgradeProxy(
+  //       queenStakeProxy.target,
+  //       NewQueenStake,
+  //     );
+  //   });
+  // });
 });
