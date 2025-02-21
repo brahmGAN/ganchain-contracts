@@ -57,6 +57,10 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     /// @dev Mapping that stores the rewards claimed by a user so far
     mapping(address => uint96) _totalRewardsclaimed; 
 
+    mapping(address => uint88) public _uncastedVotes; 
+
+    mapping(address => uint88) public _castedVotes;
+
     /// @dev Authorizes the upgrade to a new implementation. Only callable by the owner.
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
@@ -84,6 +88,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         }
         _totalStakes += uint96(msg.value); 
         _stakedAmount[msg.sender] += uint88(msg.value); 
+        _uncastedVotes[msg.sender] += uint88(msg.value / 1 ether); 
         if(!_enrolledForQueen[msg.sender]) {
             _queens.push(msg.sender);
             _enrolledForQueen[msg.sender] = true; 
@@ -107,15 +112,24 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         emit unStaked(msg.sender, amount);
     }
 
-    function claimRewards() public {
-        if (!_claim) revert claimNotYetAvailable(); 
-        uint96 rewards = _pendingQueenRewards[msg.sender]; 
-        if (rewards == 0) revert NoRewards(); 
-        _pendingQueenRewards[msg.sender] = 0;
-        _totalRewardsclaimed[msg.sender] += rewards; 
-        (bool success,) = payable(msg.sender).call{value: rewards}("");
-        if (!success) revert TransferFailed(); 
-        emit claimedRewards(msg.sender, rewards);
+    // function claimRewards() public {
+    //     if (!_claim) revert claimNotYetAvailable(); 
+    //     uint96 rewards = _pendingQueenRewards[msg.sender]; 
+    //     if (rewards == 0) revert NoRewards(); 
+    //     _pendingQueenRewards[msg.sender] = 0;
+    //     _totalRewardsclaimed[msg.sender] += rewards; 
+    //     (bool success,) = payable(msg.sender).call{value: rewards}("");
+    //     if (!success) revert TransferFailed(); 
+    //     emit claimedRewards(msg.sender, rewards);
+    // }
+
+    /// @dev call this function first before accumulateDailyQueenRewards is called
+    function setCastedVotes(address[] memory queens, uint88[] memory castedVotes) external onlyOwner {
+        for(uint i = 0; i < queens.length; i++) 
+        {
+            _castedVotes[queens[i]] = castedVotes[i]; 
+            _uncastedVotes[queens[i]] = (_stakedAmount[queens[i]] / 1 ether) - castedVotes[i]; 
+        } 
     }
 
     function accumulateDailyQueenRewards() public onlyOwner {
@@ -133,14 +147,16 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
            /// @dev If this check fails then we iterate to the next address. 
            // if(GPUInstance.isValidator(queens[i]) || GPUInstance.isQueen(queens[i]))
            /// @dev Stores su
-                if(_openRewards && GPUInstance.isValidator(queens[i]))
-                {
-                    stakeMultiplier = _stakedAmount[queens[i]] + 1e20;
-                }
-                else 
-                {
-                    stakeMultiplier = _stakedAmount[queens[i]];
-                }
+                // if(_openRewards && GPUInstance.isValidator(queens[i]))
+                // {
+                //     // instead of _stakedAmount use a new mapping called _voted
+                //     stakeMultiplier = _stakedAmount[queens[i]] + 1e20;
+                // }
+                // else 
+                // {
+                    // instead of _stakedAmount use a new mapping called _voted
+                    stakeMultiplier = _castedVotes[queens[i]];
+                // }
 
                 /// @dev Staking multilpier 
                 /// @dev Calculates the (su * sm) 
@@ -180,8 +196,9 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
             for (uint i = 0; i < totalQueens; i++) {
                 /// @dev queen rewards = (ss * _rewardsPerDay) / ∑SS
                 newRewards = uint96((stakeScores[i] * rewardsPerDay) / (totalStakeScore));
-                _pendingQueenRewards[queens[i]] +=  newRewards; 
+                // _pendingQueenRewards[queens[i]] +=  newRewards; 
                 _totalRewardsEarned[queens[i]] += newRewards; 
+                _stakedAmount[queens[i]] += uint88(newRewards); 
             } 
         }
         _lastRewardCalculated = uint40(block.timestamp); 

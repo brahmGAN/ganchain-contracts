@@ -139,37 +139,37 @@ describe("Queen Staking", () => {
     // });
   });
 
-  describe("Claim", () => {
-    it("Should let Queens claim rewards", async () => {
-      const rewards = await queenStakeProxy
-        .connect(queen2)
-        .getMyPendingRewards();
-      await expect(queenStakeProxy.connect(queen2).claimRewards())
-        .to.emit(queenStakeProxy, "claimedRewards")
-        .withArgs(queen2, rewards);
-    });
-    it("Should revert when there are no rewards to claim", async () => {
-      await expect(
-        queenStakeProxy.connect(queen4).claimRewards(),
-      ).to.be.revertedWithCustomError(queenStakeProxy, "NoRewards");
-    });
-    it("Should let Validator1 claim rewards", async () => {
-      const rewards = await queenStakeProxy
-        .connect(validator1)
-        .getMyPendingRewards();
-      await expect(queenStakeProxy.connect(validator1).claimRewards())
-        .to.emit(queenStakeProxy, "claimedRewards")
-        .withArgs(validator1, rewards);
-    });
-    it("Should let Validator2 claim rewards", async () => {
-      const rewards = await queenStakeProxy
-        .connect(validator2)
-        .getMyPendingRewards();
-      await expect(queenStakeProxy.connect(validator2).claimRewards())
-        .to.emit(queenStakeProxy, "claimedRewards")
-        .withArgs(validator2, rewards);
-    });
-  });
+  // describe("Claim", () => {
+  //   it("Should let Queens claim rewards", async () => {
+  //     const rewards = await queenStakeProxy
+  //       .connect(queen2)
+  //       .getMyPendingRewards();
+  //     await expect(queenStakeProxy.connect(queen2).claimRewards())
+  //       .to.emit(queenStakeProxy, "claimedRewards")
+  //       .withArgs(queen2, rewards);
+  //   });
+  //   it("Should revert when there are no rewards to claim", async () => {
+  //     await expect(
+  //       queenStakeProxy.connect(queen4).claimRewards(),
+  //     ).to.be.revertedWithCustomError(queenStakeProxy, "NoRewards");
+  //   });
+  //   it("Should let Validator1 claim rewards", async () => {
+  //     const rewards = await queenStakeProxy
+  //       .connect(validator1)
+  //       .getMyPendingRewards();
+  //     await expect(queenStakeProxy.connect(validator1).claimRewards())
+  //       .to.emit(queenStakeProxy, "claimedRewards")
+  //       .withArgs(validator1, rewards);
+  //   });
+  //   it("Should let Validator2 claim rewards", async () => {
+  //     const rewards = await queenStakeProxy
+  //       .connect(validator2)
+  //       .getMyPendingRewards();
+  //     await expect(queenStakeProxy.connect(validator2).claimRewards())
+  //       .to.emit(queenStakeProxy, "claimedRewards")
+  //       .withArgs(validator2, rewards);
+  //   });
+  // });
 
   describe("Unstake", () => {
     it("Should let queens unstake", async () => {
