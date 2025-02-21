@@ -17,6 +17,8 @@ describe("Queen Staking", () => {
   let validator2;  
   let validatorSS58Address = "validatorSS58Address"; 
   let upgradedQueenStakeProxy;
+  let stakesBeforeUpgrade;
+  let rewardsBeforeUpgrade;
   before(async () => {
     [owner, queen1, queen2, queen3, queen4, helper, scheduler, validator1,validator2] = await ethers.getSigners();
     NFTFactory = await ethers.getContractFactory("GANNode");
@@ -183,6 +185,14 @@ describe("Queen Staking", () => {
     
     it("Should upgrade to a new queen contract", async ()=> {
 
+    stakesBeforeUpgrade = await queenStakeProxy.connect(queen1).getMyStakedAmount();  
+
+    rewardsBeforeUpgrade = await queenStakeProxy.connect(queen1).getMyPendingRewards(); 
+
+    console.log("Staked amount before upgrade:" + stakesBeforeUpgrade); 
+
+    console.log("Queen 1 pending rewards before upgrade:" + rewardsBeforeUpgrade);
+
       NewQueenStake = await ethers.getContractFactory("NewQueenStaking");
 
       upgradedQueenStakeProxy = await upgrades.upgradeProxy(queenStakeProxy.target, NewQueenStake); 
@@ -237,7 +247,7 @@ describe("Staking after upgrade", ()=> {
 
       let rewards = await queenStakeProxy.connect(queen1).getMyPendingRewards(); 
 
-      console.log("Queen 1 pending rewards:" + rewards);
+      console.log("Queen 1 pending rewards after upgrade and before accumulation:" + rewards);
 
       await queenStakeProxy
         .connect(owner)
@@ -245,7 +255,7 @@ describe("Staking after upgrade", ()=> {
 
       rewards = await queenStakeProxy.connect(queen1).getMyPendingRewards(); 
 
-      console.log("Queen 1 pending rewards after accumulation:" + rewards);
+      console.log("Queen 1 pending rewards after upgrade and accumulation:" + rewards);
   });
 });
 });
