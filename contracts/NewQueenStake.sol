@@ -8,7 +8,7 @@ import "./interfaces/IErrors.sol";
 import "./interfaces/IQueenStake.sol"; 
 import "./GPU/GPU.sol";
 
-contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable,IErrors,IQueenStake {
+contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable,IErrors,IQueenStake {
 
     /// @dev Timestamp of the last rewards calculated at 
     uint40 _lastRewardCalculated; 
@@ -45,6 +45,18 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     /// @dev Checkes whether the user has already enrolled for the queen rewards
     mapping(address => bool) _enrolledForQueen;
 
+    /// @dev Boolean switch to control the availability of stake() 
+    bool public _stake;
+
+    /// @dev Boolean switch to control the availability of unStake()
+    bool public _unStake;
+
+    /// @dev Boolean switch to control the availability of claim()
+    bool public _claim; 
+
+    /// @dev Mapping that stores the rewards claimed by a user so far
+    mapping(address => uint96) _totalRewardsclaimed; 
+
     /// @dev Authorizes the upgrade to a new implementation. Only callable by the owner.
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
@@ -63,11 +75,12 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     /// @dev Allows the users to stake and become a queen node.
     /// @dev Anyone with the NFT node key can become a queen by staking a minimum of 1000 GPoints initially. 
     function stake() external  payable {
-        if (_nftContract.balanceOf(msg.sender) < 1) revert BuyNodeNFT();
+        //if (_nftContract.balanceOf(msg.sender) < 1) revert BuyNodeNFT();
+        if (!_stake) revert stakeNotYetAvailable(); 
         if (_stakedAmount[msg.sender] > 0) {
-            if (_pendingQueenRewards[msg.sender] > 0) {
-                claimRewards();
-            }
+            // if (_pendingQueenRewards[msg.sender] > 0) {
+            //     claimRewards();
+            // }
         }
         _totalStakes += uint96(msg.value); 
         _stakedAmount[msg.sender] += uint88(msg.value); 
@@ -78,10 +91,28 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         emit staked(msg.sender, uint88(msg.value));
     }  
 
+    /// @notice No rewards for staking below 1000 GPoints
+    /// @dev Allows the queens to unstake 
+    function unStake(uint88 amount) public {
+        if (!_unStake) revert unStakeNotYetAvailable();
+        if (amount == 0) revert ZeroUnstakeAmount();
+        if (_stakedAmount[msg.sender] < amount) revert ExceedsStakedAmount();
+        // if (_pendingQueenRewards[msg.sender] > 0) {
+        //     claimRewards();
+        // }
+        _stakedAmount[msg.sender] -= amount;
+        _totalStakes -= amount; 
+        (bool success,) = payable(msg.sender).call{value: amount}("");
+        if (!success) revert TransferFailed(); 
+        emit unStaked(msg.sender, amount);
+    }
+
     function claimRewards() public {
+        if (!_claim) revert claimNotYetAvailable(); 
         uint96 rewards = _pendingQueenRewards[msg.sender]; 
         if (rewards == 0) revert NoRewards(); 
-        _pendingQueenRewards[msg.sender] = 0; 
+        _pendingQueenRewards[msg.sender] = 0;
+        _totalRewardsclaimed[msg.sender] += rewards; 
         (bool success,) = payable(msg.sender).call{value: rewards}("");
         if (!success) revert TransferFailed(); 
         emit claimedRewards(msg.sender, rewards);
@@ -157,27 +188,13 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         emit accumulatedDailyQueenRewards(_lastRewardCalculated);
     }
 
-    /// @notice No rewards for staking below 1000 GPoints
-    /// @dev Allows the queens to unstake 
-    function unStake(uint88 amount) public {
-        if (amount == 0) revert ZeroUnstakeAmount();
-        if (_stakedAmount[msg.sender] < amount) revert ExceedsStakedAmount();
-        if (_pendingQueenRewards[msg.sender] > 0) {
-            claimRewards();
-        }
-        _stakedAmount[msg.sender] -= amount;
-        (bool success,) = payable(msg.sender).call{value: amount}("");
-        if (!success) revert TransferFailed(); 
-        emit unStaked(msg.sender, amount);
-    }
-
     /// @dev set `_openRewards` 
-    function setOpenRewards(bool status) external onlyOwner() {
+    function setOpenRewards(bool status) external onlyOwner {
         _openRewards = status; 
     }
 
     /// @dev Registered validators can enroll for queen rewards if the switch is on
-    function validatorRewardsEnroll(address validator) external onlyOwner() {
+    function validatorRewardsEnroll(address validator) external onlyOwner {
         if (_openRewards && GPUInstance.isValidator(validator) && !_enrolledForQueen[validator]) {
             _queens.push(validator); 
             _enrolledForQueen[validator] = true; 
@@ -186,17 +203,60 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     }
 
     /// @dev set the rewards per day for queen's
-    function setRewardsPerDay(uint88 rewardsPerDay) external {
+    function setRewardsPerDay(uint88 rewardsPerDay) external onlyOwner {
         _rewardsPerDay = rewardsPerDay;  
+    }
+
+    /// @dev Set the status of the functions that users interact with. 
+    function setUserFunctionStatus(bool status, uint8 functionType) external onlyOwner {
+
+        /// @dev sets the status of stake(), functionType = 0
+        if (functionType == 0) {
+            _stake = status; 
+        }
+
+        /// @dev sets the status of unStake(), functionType = 1
+        else if (functionType == 1) {
+            _unStake = status;
+        }
+
+        /// @dev sets the status of claim(), functionType = 2
+        else if (functionType == 2) {
+            _claim = status;
+        }
+
+        else {
+            revert wrongFunctionType(); 
+        }
+    }
+
+    /// @dev Set the total rewards claimed by the queens so far 
+    function setTotalRewardsClaimed(address queen, uint96 rewardsClaimed) external onlyOwner {
+        _totalRewardsclaimed[queen] = rewardsClaimed; 
+    }
+
+    function authorizedUnstake(address queen) external onlyOwner {
+        uint96 rewards = _pendingQueenRewards[msg.sender];
+        uint96 stakedAmount = _stakedAmount[msg.sender]; 
+
+        _pendingQueenRewards[msg.sender] = 0;
+        _totalRewardsclaimed[msg.sender] += rewards;
+
+        _stakedAmount[msg.sender] = 0;
+        _totalStakes -= stakedAmount; 
+
+        (bool success,) = payable(msg.sender).call{value: (rewards + stakedAmount)}("");
+        if (!success) revert TransferFailed(); 
+        emit authorizedUnStaked(queen, (rewards + stakedAmount));
     }
 
     /// @notice Getter functions
     
-    function getLastRewardCalculated() external view onlyOwner() returns(uint40) {
+    function getLastRewardCalculated() external view onlyOwner returns(uint40) {
         return _lastRewardCalculated;
     }
 
-    function getStakedAmount(address queen) external view onlyOwner() returns(uint88) {
+    function getStakedAmount(address queen) external view onlyOwner returns(uint88) {
         return _stakedAmount[queen]; 
     } 
 
@@ -204,11 +264,11 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
         return _stakedAmount[msg.sender]; 
     }
 
-    function getTotalStakes() external view onlyOwner() returns(uint96) {
+    function getTotalStakes() external view onlyOwner returns(uint96) {
         return _totalStakes;
     }
 
-    function getQueenRewards(address queen) external view onlyOwner() returns(uint96) {
+    function getQueenRewards(address queen) external view onlyOwner returns(uint96) {
         return _pendingQueenRewards[queen]; 
     } 
 

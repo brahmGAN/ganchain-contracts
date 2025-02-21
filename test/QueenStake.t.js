@@ -16,6 +16,7 @@ describe("Queen Staking", () => {
   let validator1;
   let validator2;  
   let validatorSS58Address = "validatorSS58Address"; 
+  let upgradedQueenStakeProxy;
   before(async () => {
     [owner, queen1, queen2, queen3, queen4, helper, scheduler, validator1,validator2] = await ethers.getSigners();
     NFTFactory = await ethers.getContractFactory("GANNode");
@@ -53,7 +54,7 @@ describe("Queen Staking", () => {
     );
   });
 
-  describe("Staking", () => {
+  describe("Staking", ()=> {
     it("Should be able to stake", async () => {
       await expect(
         await queenStakeProxy
@@ -62,6 +63,7 @@ describe("Queen Staking", () => {
       )
         .to.emit(queenStakeProxy, "staked")
         .withArgs(queen1, ethers.parseEther("1000"));
+
       await queenStakeProxy
         .connect(queen2)
         .stake({ value: ethers.parseEther("7000") });
@@ -73,6 +75,56 @@ describe("Queen Staking", () => {
           .stake({ value: ethers.parseEther("7000") })
       ).to.be.revertedWithCustomError(queenStakeProxy, "BuyNodeNFT");
     });
+  });
+
+  describe("Contract upgrade", ()=> {
+    
+      it("Should upgrade to a new queen contract", async ()=> {
+
+        NewQueenStake = await ethers.getContractFactory("NewQueenStaking");
+
+        upgradedQueenStakeProxy = await upgrades.upgradeProxy(queenStakeProxy.target, NewQueenStake); 
+      });
+
+      it("Should fail when staking as the switch is off in the new implementation",async ()=> {
+
+        await expect(
+          await queenStakeProxy
+          .connect(queen1)
+          .getMyStakedAmount()
+        )
+        .to.be.equals(ethers.parseEther("1000"));
+
+        await expect(
+          queenStakeProxy
+            .connect(queen1)
+            .stake({ value: ethers.parseEther("1000") })
+        )
+          .to.be.revertedWithCustomError(queenStakeProxy,"stakeNotYetAvailable");
+      });
+
+      it("Should switch on the stake and be able to stake", async()=>{
+
+        await upgradedQueenStakeProxy 
+        .connect(owner)
+        .setUserFunctionStatus(true,0); 
+
+        await expect(
+          queenStakeProxy
+            .connect(queen1)
+            .stake({ value: ethers.parseEther("1000") })
+        )
+          .to.emit(queenStakeProxy, "staked")
+          .withArgs(queen1, ethers.parseEther("1000"));
+
+
+          await expect(
+            await queenStakeProxy
+              .connect(queen1)
+              .getMyStakedAmount()
+          )
+            .to.be.equals(ethers.parseEther("2000"));
+      });
   });
 
   describe("Validator rewards with queen", () => {
