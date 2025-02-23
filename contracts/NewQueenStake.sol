@@ -125,7 +125,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     //         if (_enrolledForQueen[queens[i]] && ((castedVotes[i] * 1 ether) <= _stakedAmount[queens[i]])) 
     //         {
     //             _castedVotes[queens[i]] = castedVotes[i]; 
-    //             _unUsedStakes[queens[i]] = _stakedAmount[queens[i]] - (castedVotes[i] * 1 ether); //TODO: stakedAmount - (castedVotes * 1 eth) && change uncastedVotes to unusedStake 4
+    //             _unUsedStakes[queens[i]] = _stakedAmount[queens[i]] - (castedVotes[i] * 1 ether); //: stakedAmount - (castedVotes * 1 eth) && change uncastedVotes to unusedStake 4
     //         }
     //         else 
     //         {
@@ -169,42 +169,22 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         /// @dev Calculates the SS = su * sm 
         for (uint i = 0; i < totalQueens; i++) {
 
-           /// @dev This check makes sure rewards are handed out only if validators and queens are still setup. It's done as the first step of the loop.
-           /// @dev If this check fails then we iterate to the next address. 
-           // if(GPUInstance.isValidator(queens[i]) || GPUInstance.isQueen(queens[i]))
-           /// @dev Stores su
-                // if(_openRewards && GPUInstance.isValidator(queens[i]))
-                // {
-                //     // instead of _stakedAmount use a new mapping called _castedVotes
-                //     stakeMultiplier = _stakedAmount[queens[i]] + 1e20;
-                // }
-                // else 
-                // {
-                    // instead of _stakedAmount use a new mapping called _castedVotes
-                    stakeMultiplier = _castedVotes[queens[i]]; //TODO: Remove this
-                // }
-
-
-                /// @dev Staking multilpier 
-                /// @dev Calculates the (su * sm) 
-                // if (stakeMultiplier <= 1e20) {
-                if (stakeMultiplier <= 100) { //TODO: change it to if(_stakedAmount[queens[i]] <= 1e20) and then update the stakeMultiplier as follows:
-                    stakeMultiplier = stakeMultiplier; //TODO: stakeMultiplier = 100;
+                //stakeMultiplier = _castedVotes[queens[i]]; //TODO: Remove this 9
+                
+                if (_stakedAmount[queens[i]] <= 1e20) {  //TODO: change it to if(_stakedAmount[queens[i]] <= 1e20) and then update the stakeMultiplier as follows: 10
+                    stakeMultiplier = 100; //TODO: stakeMultiplier = 100; 11
                 }
-                // else if (stakeMultiplier <= 1e21) {
-                else if (stakeMultiplier <= 1000) {
-                    stakeMultiplier *= 125;  //TODO: stakeMultiplier = 125;
+                else if (_stakedAmount[queens[i]] <= 1e21) {
+                    stakeMultiplier = 125;  //TODO: stakeMultiplier = 125; 12
                 }
-                // else if (stakeMultiplier <= 7e21) {
-                else if (stakeMultiplier <= 7000) {
-                    stakeMultiplier *= 150; 
+                else if (_stakedAmount[queens[i]] <= 7e21) {
+                    stakeMultiplier = 150; 
                 }
-                // else if (stakeMultiplier <= 25e21) {
-                else if (stakeMultiplier <= 25000) {
-                    stakeMultiplier *= 175; 
+                else if (_stakedAmount[queens[i]] <= 25e21) {
+                    stakeMultiplier = 175; 
                 }
                 else {
-                    stakeMultiplier *= 200; 
+                    stakeMultiplier = 200; 
                 }
 
                 /// @dev Multiplies the already calculated (su * sm) with sh and comepletes calculating the SS = su * sm * sh 
