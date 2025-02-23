@@ -57,7 +57,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     /// @dev Mapping that stores the rewards claimed by a user so far
     mapping(address => uint96) _totalRewardsclaimed; 
 
-    mapping(address => uint88) public _uncastedVotes; 
+    mapping(address => uint88) public _unUsedStakes; 
 
     mapping(address => uint88) public _castedVotes;
 
@@ -88,12 +88,12 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         // }
         _totalStakes += uint96(msg.value); 
         _stakedAmount[msg.sender] += uint88(msg.value); 
-        _uncastedVotes[msg.sender] += uint88(msg.value / 1 ether); 
+        _unUsedStakes[msg.sender] += uint88(msg.value); 
         if(!_enrolledForQueen[msg.sender]) {
             _queens.push(msg.sender);
             _enrolledForQueen[msg.sender] = true; 
         }
-        emit staked(msg.sender, uint88(msg.value)); //TODO: emit uncasted votes
+        emit newstaked(msg.sender, uint88(msg.value), _stakedAmount[msg.sender], _unUsedStakes[msg.sender], _totalStakes);  //TODO: emit  uncastedvotes 1
     }  
 
     /// @notice No rewards for staking below 1000 GPoints
@@ -101,27 +101,14 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     function unStake(uint88 amount) public {
         if (!_unStake) revert unStakeNotYetAvailable();
         if (amount == 0) revert ZeroUnstakeAmount();
-        if (_uncastedVotes[msg.sender] * 1 ether < amount) revert ExceedsStakedAmount(); //TODO: instead of uncastedVotes use unusedStake
-        // if (_pendingQueenRewards[msg.sender] > 0) {
-        //     claimRewards();  
-        // }
-        _stakedAmount[msg.sender] -= amount; //TODO: recalculate and update unusedStake
+        if (_unUsedStakes[msg.sender] < amount) revert ExceedsStakedAmount(); //TODO: instead of uncastedVotes use unusedStake 2
+        _stakedAmount[msg.sender] -= amount; 
+        _unUsedStakes[msg.sender] -= amount;    //TODO: recalculate and update unusedStake 3
         _totalStakes -= amount; 
         (bool success,) = payable(msg.sender).call{value: amount}("");
         if (!success) revert TransferFailed(); 
         emit unStaked(msg.sender, amount);
     }
-
-    // function claimRewards() public {
-    //     if (!_claim) revert claimNotYetAvailable(); 
-    //     uint96 rewards = _pendingQueenRewards[msg.sender]; 
-    //     if (rewards == 0) revert NoRewards(); 
-    //     _pendingQueenRewards[msg.sender] = 0;
-    //     _totalRewardsclaimed[msg.sender] += rewards; 
-    //     (bool success,) = payable(msg.sender).call{value: rewards}("");
-    //     if (!success) revert TransferFailed(); 
-    //     emit claimedRewards(msg.sender, rewards);
-    // }
 
     /// @dev call this function first before accumulateDailyQueenRewards is called
     function setCastedVotes(address[] memory queens, uint88[] memory castedVotes) external onlyOwner { //TODO: merge this function with accumulateDailyQueenRewards
@@ -131,7 +118,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
             //TODO: if queen[i] doesnt exist in the _queens then skip it (also maintain the skip counter and emit it later)
             //TODO: also check if castedVotes * 1 eth <= stakedAmount (if not then again skip it and add it to skip counter)
             _castedVotes[queens[i]] = castedVotes[i]; 
-            _uncastedVotes[queens[i]] = (_stakedAmount[queens[i]] / 1 ether) - castedVotes[i]; //TODO: stakedAmount - (castedVotes * 1 eth) && change uncastedVotes to unusedStake
+            _unUsedStakes[queens[i]] = _stakedAmount[queens[i]] - (castedVotes[i] * 1 ether); //TODO: stakedAmount - (castedVotes * 1 eth) && change uncastedVotes to unusedStake 4
         } 
     }
 

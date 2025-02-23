@@ -4,7 +4,14 @@ pragma solidity ^0.8.20;
 interface IQueenStake {
     event staked(
         address queen, 
-        uint88 stakedAmount
+        uint88 currentStakedAmount
+    );
+    event newstaked(
+        address queen, 
+        uint88 currentStakedAmount, 
+        uint88 totalUserStakedAmount, 
+        uint88 unUsedStakedAmount, 
+        uint96 totalStakes 
     );
     event claimedRewards(
         address queen, 
@@ -25,7 +32,6 @@ interface IQueenStake {
         uint96 amount
     );
     function stake() external payable;
-    // function claimRewards() external; 
     function accumulateDailyQueenRewards() external;
     function unStake(uint88 amount) external; 
 }
