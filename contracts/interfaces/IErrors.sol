@@ -59,4 +59,9 @@ interface IErrors {
     * @dev Displayed when a wrong functionType is passed as a parameter
    */
   error wrongFunctionType();
+
+  /**
+    * @dev Displayed there's a mismatch in the queen array length that's passed into accumulate rewards
+   */
+  error incorrectArraySize();
 }
