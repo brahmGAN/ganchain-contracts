@@ -110,32 +110,32 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         emit unStaked(msg.sender, amount);
     }
 
-    /// @dev call this function first before accumulateDailyQueenRewards is called
+    // /// @dev call this function first before accumulateDailyQueenRewards is called
     // function setCastedVotes(address[] memory queens, uint88[] memory castedVotes) external onlyOwner { //TODO: merge this function with accumulateDailyQueenRewards 8
-    //      check if the length of both arrays are equal 5
-    //     if (_queens.length != queens.length) revert incorrectArraySize();
+    //     // : check if the length of both arrays are equal 5
+    //     if (_queens.length != queensPassed.length) revert incorrectArraySize();
 
     //     uint88 skipped; 
     //     address[] memory skippedQueens; 
 
-    //     for(uint i = 0; i < queens.length; i++) 
+    //     for(uint i = 0; i < queensPassed.length; i++) 
     //     {
-    //         // if queen[i] doesnt exist in the _queens then skip it (also maintain the skip counter and emit it later) 6
-    //         // also check if castedVotes * 1 eth <= stakedAmount (if not then again skip it and add it to skip counter) 7
-    //         if (_enrolledForQueen[queens[i]] && ((castedVotes[i] * 1 ether) <= _stakedAmount[queens[i]])) 
+    //         // : if queen[i] doesnt exist in the _queens then skip it (also maintain the skip counter and emit it later) 6
+    //         // : also check if castedVotes * 1 eth <= stakedAmount (if not then again skip it and add it to skip counter) 7
+    //         if (_enrolledForQueen[queensPassed[i]] && ((castedVotes[i] * 1 ether) <= _stakedAmount[queensPassed[i]])) 
     //         {
-    //             _castedVotes[queens[i]] = castedVotes[i]; 
-    //             _unUsedStakes[queens[i]] = _stakedAmount[queens[i]] - (castedVotes[i] * 1 ether); //: stakedAmount - (castedVotes * 1 eth) && change uncastedVotes to unusedStake 4
+    //             _castedVotes[queensPassed[i]] = castedVotes[i]; 
+    //             _unUsedStakes[queensPassed[i]] = _stakedAmount[queensPassed[i]] - (castedVotes[i] * 1 ether); //: stakedAmount - (castedVotes * 1 eth) && change uncastedVotes to unusedStake 4
     //         }
     //         else 
     //         {
-    //             skippedQueens[skipped] = queens[i];
+    //             skippedQueens[skipped] = queensPassed[i];
     //             skipped++; 
     //         }
     //     } 
     // }
 
-    function accumulateDailyQueenRewards(address[] memory queens, uint88[] memory castedVotes) public onlyOwner {
+    function accumulateDailyQueenRewards(address[] memory queensPassed, uint88[] memory castedVotes) public onlyOwner {
         /// @dev Removed this check to keep things flexible. 
         //if (block.timestamp < _lastRewardCalculated + 24 hours) revert InComplete24Hours();
         address[] memory queens = _queens; 
@@ -144,24 +144,24 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         uint96 stakeMultiplier;  
         uint96 totalStakeScore;
 
-        //TODO: check if the length of both arrays are equal 5
-        if (_queens.length != queens.length) revert incorrectArraySize();
+        // TODO: check if the length of both arrays are equal 5
+        if (_queens.length != queensPassed.length) revert incorrectArraySize();
 
         uint88 skipped; 
         address[] memory skippedQueens; 
 
-        for(uint i = 0; i < queens.length; i++) 
+        for(uint i = 0; i < queensPassed.length; i++) 
         {
-            //TODO: if queen[i] doesnt exist in the _queens then skip it (also maintain the skip counter and emit it later) 6
-            //TODO: also check if castedVotes * 1 eth <= stakedAmount (if not then again skip it and add it to skip counter) 7
-            if (_enrolledForQueen[queens[i]] && ((castedVotes[i] * 1 ether) <= _stakedAmount[queens[i]])) 
+            // TODO: if queen[i] doesnt exist in the _queens then skip it (also maintain the skip counter and emit it later) 6
+            // TODO: also check if castedVotes * 1 eth <= stakedAmount (if not then again skip it and add it to skip counter) 7
+            if (_enrolledForQueen[queensPassed[i]] && ((castedVotes[i] * 1 ether) <= _stakedAmount[queensPassed[i]])) 
             {
-                _castedVotes[queens[i]] = castedVotes[i]; 
-                _unUsedStakes[queens[i]] = _stakedAmount[queens[i]] - (castedVotes[i] * 1 ether); //TODO: stakedAmount - (castedVotes * 1 eth) && change uncastedVotes to unusedStake 4
+                _castedVotes[queensPassed[i]] = castedVotes[i]; 
+                _unUsedStakes[queensPassed[i]] = _stakedAmount[queensPassed[i]] - (castedVotes[i] * 1 ether); //TODO: stakedAmount - (castedVotes * 1 eth) && change uncastedVotes to unusedStake 4
             }
             else 
             {
-                skippedQueens[skipped] = queens[i];
+                skippedQueens[skipped] = queensPassed[i];
                 skipped++; 
             }
         } 
@@ -187,10 +187,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
                     stakeMultiplier = 200; 
                 }
 
-                /// @dev Multiplies the already calculated (su * sm) with sh and comepletes calculating the SS = su * sm * sh 
-                // Currently the staking health is 1
-                // stakeScores[i] = stakeMultiplier * stakingHealth[i]; 
-                stakeScores[i] = stakeMultiplier;  //TODO: stakeScore = _castedVotes[queens[i]] * stakeMultiplier;
+                stakeScores[i] = _castedVotes[queens[i]] * stakeMultiplier;  //TODO: stakeScore = _castedVotes[queens[i]] * stakeMultiplier; 13
 
                 /// @dev ∑SS
                 totalStakeScore += stakeScores[i]; 
@@ -213,7 +210,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
             } 
         }
         _lastRewardCalculated = uint40(block.timestamp); 
-        emit accumulatedDailyQueenRewards(_lastRewardCalculated); //TODO: add the skip counter from setCastedVotes
+        emit newAccumulatedDailyQueenRewards(_lastRewardCalculated, skipped, skippedQueens); //TODO: add the skip counter from setCastedVotes 14
     }
 
     /// @dev set `_openRewards` 
@@ -248,10 +245,10 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
             _unStake = status;
         }
 
-        /// @dev sets the status of claim(), functionType = 2 //TODO: remove since claim is removed
-        else if (functionType == 2) {
-            _claim = status;
-        }
+        /// @dev sets the status of claim(), functionType = 2 //TODO: remove since claim is removed 15
+        // else if (functionType == 2) {
+        //     _claim = status;
+        // }
 
         else {
             revert wrongFunctionType(); 
@@ -264,18 +261,18 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     }
 
     function authorizedUnstake(address queen) external onlyOwner {
-        uint96 rewards = _pendingQueenRewards[msg.sender]; //TODO: instead of pendingRewards, use stakedAmount
+        //uint96 rewards = _pendingQueenRewards[msg.sender]; //TODO: instead of pendingRewards, use stakedAmount 16
         uint96 stakedAmount = _stakedAmount[msg.sender]; 
 
-        _pendingQueenRewards[msg.sender] = 0;
-        _totalRewardsclaimed[msg.sender] += rewards;
+        //_pendingQueenRewards[msg.sender] = 0;
+        //_totalRewardsclaimed[msg.sender] += rewards;
 
         _stakedAmount[msg.sender] = 0;
         _totalStakes -= stakedAmount; 
 
-        (bool success,) = payable(msg.sender).call{value: (rewards + stakedAmount)}(""); //TODO: send to queen address directly
+        (bool success,) = payable(queen).call{value: (stakedAmount)}(""); //TODO: send to queen address directly 17
         if (!success) revert TransferFailed(); 
-        emit authorizedUnStaked(queen, (rewards + stakedAmount));
+        emit authorizedUnStaked(queen, (stakedAmount));
     }
 
     /// @notice Getter functions

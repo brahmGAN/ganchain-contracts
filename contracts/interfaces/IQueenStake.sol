@@ -20,6 +20,11 @@ interface IQueenStake {
     event accumulatedDailyQueenRewards(
         uint40 lastRewardCalculated
     );
+    event newAccumulatedDailyQueenRewards(
+        uint40 lastRewardCalculated, 
+        uint88 skipped, 
+        address[] skippedQueens
+    );
     event unStaked(
         address queen, 
         uint88 amount
@@ -32,6 +37,6 @@ interface IQueenStake {
         uint96 amount
     );
     function stake() external payable;
-    function accumulateDailyQueenRewards() external;
+    // function accumulateDailyQueenRewards() external;
     function unStake(uint88 amount) external; 
 }
