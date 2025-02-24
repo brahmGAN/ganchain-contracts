@@ -61,6 +61,12 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
 
     mapping(address => uint88) public _castedVotes;
 
+    event newStaked(
+        address queen, 
+        uint88 currentStakedAmount, 
+        uint88 unUsedStakedAmount
+    );
+
     /// @dev Authorizes the upgrade to a new implementation. Only callable by the owner.
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
@@ -93,7 +99,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
             _queens.push(msg.sender);
             _enrolledForQueen[msg.sender] = true; 
         }
-        emit newstaked(msg.sender, uint88(msg.value), _stakedAmount[msg.sender], _unUsedStakes[msg.sender], _totalStakes);  //TODO: emit  uncastedvotes 1
+        emit newStaked(msg.sender, uint88(msg.value), _unUsedStakes[msg.sender]);  //TODO: emit  uncastedvotes 1
     }  
 
     /// @notice No rewards for staking below 1000 GPoints

@@ -244,7 +244,7 @@ describe("Queen Staking", () => {
           .connect(queen1)
           .stake({ value: ethers.parseEther("1000") }),
       )
-        .to.emit(queenStakeProxy, "staked")
+        .to.emit(queenStakeProxy, "newstaked")
         .withArgs(queen1, ethers.parseEther("1000"));
     });
 

@@ -6,13 +6,6 @@ interface IQueenStake {
         address queen, 
         uint88 currentStakedAmount
     );
-    event newstaked(
-        address queen, 
-        uint88 currentStakedAmount, 
-        uint88 totalUserStakedAmount, 
-        uint88 unUsedStakedAmount, 
-        uint96 totalStakes 
-    );
     event claimedRewards(
         address queen, 
         uint96 rewardsClaimed
