@@ -54,6 +54,9 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     /// @dev Boolean switch to control the availability of claim()
     bool public _claim; 
 
+    /// @dev Boolean switch that makes sure owner has called setCastedVotes
+    bool public _accumulate; 
+
     /// @dev Mapping that stores the rewards claimed by a user so far
     mapping(address => uint96) _totalRewardsclaimed; 
 
@@ -124,10 +127,16 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
                 skipped++; 
             }
         } 
+
+        _accumulate = true; 
+
         emit skippedQueens(skipped);
     }
 
     function accumulateDailyQueenRewards() public onlyOwner {
+
+        if (!_accumulate) revert setCastedVote(); 
+
         address[] memory queens = _queens; 
         uint24 totalQueens = uint24(queens.length); 
         uint96[] memory stakeScores = new uint96[](totalQueens); 
@@ -178,6 +187,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
             } 
         }
         _lastRewardCalculated = uint40(block.timestamp); 
+        _accumulate = false; 
         emit accumulatedDailyQueenRewards(_lastRewardCalculated); //TODO: add the skip counter from setCastedVotes 14
     }
 

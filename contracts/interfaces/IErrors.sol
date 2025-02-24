@@ -64,4 +64,9 @@ interface IErrors {
     * @dev Displayed there's a mismatch in the queen array length that's passed into accumulate rewards
    */
   error incorrectArraySize();
+
+  /**
+    * @dev Displayed when setCastedVotes isn't called by the owner 
+   */
+  error setCastedVote();
 }

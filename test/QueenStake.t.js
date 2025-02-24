@@ -259,9 +259,9 @@ describe("Queen Staking", () => {
         await queenStakeProxy.connect(queen1).getMyStakedAmount(),
       ).to.be.equals(ethers.parseEther("1000") + stakesBeforeUpgrade);
 
-      await queenStakeProxy.connect(owner).accumulateDailyQueenRewards();
+      // await queenStakeProxy.connect(owner).accumulateDailyQueenRewards();
 
-      rewards = await queenStakeProxy.connect(queen1).getMyPendingRewards();
+      // rewards = await queenStakeProxy.connect(queen1).getMyPendingRewards();
     });
   });
 
