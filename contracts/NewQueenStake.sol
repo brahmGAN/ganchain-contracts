@@ -253,6 +253,19 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         emit authorizedUnStaked(queen, (stakedAmount));
     }
 
+    function setQueenRewards(address[] memory queens, uint88[] memory queenRewards) external onlyOwner 
+    {
+        if (queens.length != queenRewards.length) revert incorrectArraySize(); 
+
+        uint queensLength = queenRewards.length; 
+
+        for (uint i=0; i < queensLength; i++)
+        {
+            _totalRewardsEarned[queens[i]] += queenRewards[i]; 
+            _stakedAmount[queens[i]] += queenRewards[i]; 
+        }
+    }
+
     /// @notice Getter functions
     
     function getLastRewardCalculated() external view onlyOwner returns(uint40) {
