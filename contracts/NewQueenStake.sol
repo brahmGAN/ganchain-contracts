@@ -183,7 +183,9 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
                 newRewards = uint96((stakeScores[i] * rewardsPerDay) / (totalStakeScore));
                 // _pendingQueenRewards[queens[i]] +=  newRewards; 
                 _totalRewardsEarned[queens[i]] += newRewards; 
+                _totalStakes += newRewards; 
                 _stakedAmount[queens[i]] += uint88(newRewards); 
+                _unUsedStakes[msg.sender] += uint88(newRewards); 
             } 
         }
         _lastRewardCalculated = uint40(block.timestamp); 
@@ -262,7 +264,9 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         for (uint i=0; i < queensLength; i++)
         {
             _totalRewardsEarned[queens[i]] += queenRewards[i]; 
+            _totalStakes += queenRewards[i]; 
             _stakedAmount[queens[i]] += queenRewards[i]; 
+            _unUsedStakes[queens[i]] += queenRewards[i]; 
         }
     }
 
