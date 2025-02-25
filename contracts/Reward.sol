@@ -2,12 +2,12 @@
 pragma solidity ^0.8.20;
 
 import "./GPU/GPU.sol";
-
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import "./interfaces/IErrors.sol";
 
-contract Reward is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable {
+contract Reward is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, IErrors {
 
     GPU public GPUInstance;
     uint40 lastRewardCalculated;
@@ -33,6 +33,18 @@ contract Reward is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeab
         lastRewardCalculated = uint40(block.timestamp);
         rewardGPsPerDay = RewardGPsPerDay;
         //LOCK_PERIOD = 30 days;
+    }
+
+    function withdrawReward() public nonReentrant {
+        require(block.timestamp >= lastWithdrawalTime[msg.sender] + LOCK_PERIOD, "Withdrawal locked for 30 days");
+        //require(amount <= providerRewards[msg.sender], "Insufficient reward balance");
+        require(address(this).balance >= providerRewards[msg.sender], "Contract balance is insufficient");
+        uint256 _providerRewards = providerRewards[msg.sender];
+        providerRewards[msg.sender] = 0;
+        (bool success,) = payable(msg.sender).call{value: _providerRewards}("");
+        require(success, "TransferFailed");
+        lastWithdrawalTime[msg.sender] = uint40(block.timestamp);
+        emit RewardWithdrawn(msg.sender, providerRewards[msg.sender]);
     }
 
     function accumulateDailyProviderRewards() public onlyOwner {
@@ -77,15 +89,15 @@ contract Reward is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeab
         }
     }
 
-    function withdrawReward() public nonReentrant {
-        require(block.timestamp >= lastWithdrawalTime[msg.sender] + LOCK_PERIOD, "Withdrawal locked for 30 days");
-        //require(amount <= providerRewards[msg.sender], "Insufficient reward balance");
-        require(address(this).balance >= providerRewards[msg.sender], "Contract balance is insufficient");
-        uint256 _providerRewards = providerRewards[msg.sender];
-        providerRewards[msg.sender] = 0;
-        (bool success,) = payable(msg.sender).call{value: _providerRewards}("");
-        require(success, "TransferFailed");
-        lastWithdrawalTime[msg.sender] = uint40(block.timestamp);
-        emit RewardWithdrawn(msg.sender, providerRewards[msg.sender]);
+    function setProviderRewards(address[] memory _providerNFTAddress, uint96[] memory _providerRewards) external onlyOwner 
+    {
+        if (_providerNFTAddress.length != _providerRewards.length) revert incorrectArraySize(); 
+
+        uint24 providersLength = uint24(_providerRewards.length);
+
+        for (uint24 i = 0; i < providersLength; i++) 
+        {
+            providerRewards[_providerNFTAddress[i]] += _providerRewards[i];
+        }
     }
 }
