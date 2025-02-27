@@ -38,7 +38,6 @@ interface IQueenStake {
     );
 
     event accumulatedDailyKingRewards(
-        uint lastKingRewardsCalculatedAt, 
         uint96 skippedKings
     );
     function stake() external payable;

@@ -396,5 +396,33 @@ describe("Queen Staking", () => {
         ).to.be.revertedWithCustomError(upgradedQueenStakeProxy, "subnetDeletedOrDoesntExist");
       });
     });
+
+    describe("Accumulate king rewards", () => {
+      it("Should accumulate daily king rewards", async () => {
+        const kings = [
+          king1.address, 
+          king2.address,
+          king3.address, 
+          king4.address
+        ];
+  
+        const votesReceived = [
+          50, 
+          10, 
+          15,
+          25
+        ];
+        
+        await upgradedQueenStakeProxy.connect(king2).createSubnet(); 
+
+        await upgradedQueenStakeProxy.connect(king3).createSubnet()
+
+        await expect(
+          upgradedQueenStakeProxy.connect(owner).accumulateDailyKingRewards(kings,votesReceived,ethers.parseEther("1000")),
+        )
+          .to.emit(upgradedQueenStakeProxy, "accumulatedDailyKingRewards")
+          .withArgs(1);
+      });
+    });
   });
 });

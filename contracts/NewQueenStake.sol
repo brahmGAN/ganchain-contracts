@@ -362,7 +362,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
             }
         }
 
-        emit accumulatedDailyKingRewards(block.timestamp, skippedKings);
+        emit accumulatedDailyKingRewards(skippedKings);
     }
 
     function setKingRewards(address[] memory kings, uint88[] memory kingRewards) external onlyOwner 
