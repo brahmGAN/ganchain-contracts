@@ -142,7 +142,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
             _enrolledForKing[msg.sender] =  true; 
         }
         _subnetId++; 
-        emit createdSubnet(_subnetId, msg.sender);
+        emit createdSubnet(_subnetId-1, msg.sender);
     }
 
     function deleteSubnet(uint88 subnetId) external 
@@ -287,11 +287,6 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         else if (functionType == 1) {
             _unStake = status;
         }
-
-        /// @dev sets the status of claim(), functionType = 2 //TODO: remove since claim is removed 15
-        // else if (functionType == 2) {
-        //     _claim = status;
-        // }
 
         /// @dev sets the status of createSubnet(), functionType = 2
         else if (functionType == 2) {

@@ -10,6 +10,10 @@ describe("Queen Staking", () => {
   let queen3;
   let queen4;
   let queen5;
+  let king1; 
+  let king2;
+  let king3;
+  let king4; 
   let NFTFactory;
   let nftContract;
   let helper;
@@ -27,7 +31,11 @@ describe("Queen Staking", () => {
       queen2,
       queen3,
       queen4,
-      queen5, 
+      queen5,
+      king1,
+      king2,
+      king3,
+      king4, 
       helper,
       scheduler,
       validator1,
@@ -323,9 +331,30 @@ describe("Queen Staking", () => {
         await queenStakeProxy.connect(queen5).getMyStakedAmount(),
       ).to.be.equals(ethers.parseEther("288.333333333333333333"));
     });
+  });
 
-    // it("Should let owner calculate daily queen rewards", async () => {
-    //   await queenStakeProxy.connect(owner).accumulateDailyQueenRewards();
-    // });
+  describe("Subnets", () => {
+    describe("Create subnets", () => {
+
+      it("Should revert since createSubnets() isn't available", async () => {
+        await expect(
+          upgradedQueenStakeProxy.connect(king1).createSubnet(),
+        ).to.be.revertedWithCustomError(upgradedQueenStakeProxy, "createSubnetsNotYetAvailable");
+      });
+
+      it("Should switch on the createSubnets()", async () => {
+        await upgradedQueenStakeProxy
+          .connect(owner)
+          .setUserFunctionStatus(true, 2);
+      });
+
+      it("should create a subnet", async()=>{
+        await expect(
+          upgradedQueenStakeProxy.connect(king1).createSubnet(),
+        ).to.emit(upgradedQueenStakeProxy,"createdSubnet").withArgs(0,king1);
+
+        await upgradedQueenStakeProxy.connect(king2).createSubnet(); 
+      });
+    });
   });
 });
