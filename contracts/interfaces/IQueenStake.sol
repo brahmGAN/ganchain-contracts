@@ -22,7 +22,7 @@ interface IQueenStake {
     );
     event authorizedUnStaked(
         address queen, 
-        uint96 amount
+        uint192 amount
     );
     event skippedQueens(
         uint96 skipped
@@ -35,6 +35,11 @@ interface IQueenStake {
     event deletedSubnet(
         uint88 subnetId,
         address subnetKing 
+    );
+
+    event accumulatedDailyKingRewards(
+        uint lastKingRewardsCalculatedAt, 
+        uint96 skippedKings
     );
     function stake() external payable;
     // function accumulateDailyQueenRewards() external;

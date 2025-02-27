@@ -158,6 +158,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     function setCastedVotes(address[] memory queens, uint88[] memory castedVotes) external onlyOwner { //TODO: merge this function with accumulateDailyQueenRewards 8
         // TODO: check if the length of both arrays are equal 5
         if (_queens.length != queens.length) revert incorrectArraySize();
+        if (queens.length != castedVotes.length) revert incorrectArraySize();
 
         uint96 skipped; 
 
@@ -233,12 +234,27 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
                 _totalRewardsEarned[queens[i]] += newRewards; 
                 _totalStakes += newRewards; 
                 _stakedAmount[queens[i]] += uint88(newRewards); 
-                _unUsedStakes[msg.sender] += uint88(newRewards); 
+                _unUsedStakes[queens[i]] += uint88(newRewards); 
             } 
         }
         _lastRewardCalculated = uint40(block.timestamp); 
         _accumulate = false; 
         emit accumulatedDailyQueenRewards(_lastRewardCalculated); //TODO: add the skip counter from setCastedVotes 14
+    }
+
+    function setQueenRewards(address[] memory queens, uint88[] memory queenRewards) external onlyOwner 
+    {
+        if (queens.length != queenRewards.length) revert incorrectArraySize(); 
+
+        uint queensLength = queenRewards.length; 
+
+        for (uint i=0; i < queensLength; i++)
+        {
+            _totalRewardsEarned[queens[i]] += queenRewards[i]; 
+            _totalStakes += queenRewards[i]; 
+            _stakedAmount[queens[i]] += queenRewards[i]; 
+            _unUsedStakes[queens[i]] += queenRewards[i]; 
+        }
     }
 
     /// @dev set `_openRewards` 
@@ -313,18 +329,61 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         emit authorizedUnStaked(queen, (stakedAmount));
     }
 
-    function setQueenRewards(address[] memory queens, uint88[] memory queenRewards) external onlyOwner 
+    /// @dev kingRewardsPerDay should be in wei
+    function accumulateDailyKingRewards(address[] memory kings, uint120[] memory votesReceived,uint88 kingRewardsPerDay) external onlyOwner
     {
-        if (queens.length != queenRewards.length) revert incorrectArraySize(); 
+        if (_kings.length != kings.length) revert incorrectArraySize();
+        if (kings.length != votesReceived.length) revert incorrectArraySize();
 
-        uint queensLength = queenRewards.length; 
+        uint96 skippedKings; 
+        uint kingsLength = kings.length;
+        uint totalVotes; 
 
-        for (uint i=0; i < queensLength; i++)
+        for(uint i=0; i < kingsLength; i++)
         {
-            _totalRewardsEarned[queens[i]] += queenRewards[i]; 
-            _totalStakes += queenRewards[i]; 
-            _stakedAmount[queens[i]] += queenRewards[i]; 
-            _unUsedStakes[queens[i]] += queenRewards[i]; 
+            if (_enrolledForKing[kings[i]])
+            {
+                totalVotes += votesReceived[i]; 
+            }
+            else 
+            {
+                skippedKings++; 
+            }
+        }
+
+        if (totalVotes > 0)
+        {
+
+            uint96 kingRewards; 
+
+            for(uint i=0; i < kingsLength; i++)
+            {
+                if (_enrolledForKing[kings[i]])
+                {
+                     kingRewards = uint96((votesReceived[i] * kingRewardsPerDay) / (totalVotes));
+                     _totalRewardsEarned[kings[i]] += kingRewards; 
+                    _totalStakes += kingRewards; 
+                    _stakedAmount[kings[i]] += uint88(kingRewards); 
+                    _unUsedStakes[kings[i]] += uint88(kingRewards); 
+                }
+            }
+        }
+
+        emit accumulatedDailyKingRewards(block.timestamp, skippedKings);
+    }
+
+    function setKingRewards(address[] memory kings, uint88[] memory kingRewards) external onlyOwner 
+    {
+        if (kings.length != kingRewards.length) revert incorrectArraySize(); 
+
+        uint kingLength = kingRewards.length; 
+
+        for (uint i=0; i < kingLength; i++)
+        {
+            _totalRewardsEarned[kings[i]] += kingRewards[i]; 
+            _totalStakes += kingRewards[i]; 
+            _stakedAmount[kings[i]] += kingRewards[i]; 
+            _unUsedStakes[kings[i]] += kingRewards[i]; 
         }
     }
 
