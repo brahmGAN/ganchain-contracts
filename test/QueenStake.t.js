@@ -9,6 +9,7 @@ describe("Queen Staking", () => {
   let queen2;
   let queen3;
   let queen4;
+  let queen5;
   let NFTFactory;
   let nftContract;
   let helper;
@@ -26,6 +27,7 @@ describe("Queen Staking", () => {
       queen2,
       queen3,
       queen4,
+      queen5, 
       helper,
       scheduler,
       validator1,
@@ -130,46 +132,7 @@ describe("Queen Staking", () => {
     it("Should let owner calculate daily queen rewards", async () => {
       await queenStakeProxy.connect(owner).accumulateDailyQueenRewards();
     });
-    // it("Should revert when it hasn't been 24 hours since last rewards calculated", async () => {
-    //   await expect(
-    //     queenStakeProxy
-    //       .connect(owner)
-    //       .accumulateDailyQueenRewards(stakingHealth)
-    //   ).to.be.revertedWithCustomError(queenStakeProxy, "InComplete24Hours");
-    // });
   });
-
-  // describe("Claim", () => {
-  //   it("Should let Queens claim rewards", async () => {
-  //     const rewards = await queenStakeProxy
-  //       .connect(queen2)
-  //       .getMyPendingRewards();
-  //     await expect(queenStakeProxy.connect(queen2).claimRewards())
-  //       .to.emit(queenStakeProxy, "claimedRewards")
-  //       .withArgs(queen2, rewards);
-  //   });
-  //   it("Should revert when there are no rewards to claim", async () => {
-  //     await expect(
-  //       queenStakeProxy.connect(queen4).claimRewards(),
-  //     ).to.be.revertedWithCustomError(queenStakeProxy, "NoRewards");
-  //   });
-  //   it("Should let Validator1 claim rewards", async () => {
-  //     const rewards = await queenStakeProxy
-  //       .connect(validator1)
-  //       .getMyPendingRewards();
-  //     await expect(queenStakeProxy.connect(validator1).claimRewards())
-  //       .to.emit(queenStakeProxy, "claimedRewards")
-  //       .withArgs(validator1, rewards);
-  //   });
-  //   it("Should let Validator2 claim rewards", async () => {
-  //     const rewards = await queenStakeProxy
-  //       .connect(validator2)
-  //       .getMyPendingRewards();
-  //     await expect(queenStakeProxy.connect(validator2).claimRewards())
-  //       .to.emit(queenStakeProxy, "claimedRewards")
-  //       .withArgs(validator2, rewards);
-  //   });
-  // });
 
   describe("Unstake", () => {
     it("Should let queens unstake", async () => {
@@ -258,10 +221,24 @@ describe("Queen Staking", () => {
       await expect(
         await queenStakeProxy.connect(queen1).getMyStakedAmount(),
       ).to.be.equals(ethers.parseEther("1000") + stakesBeforeUpgrade);
+    });
 
-      // await queenStakeProxy.connect(owner).accumulateDailyQueenRewards();
+    it("Should be able to stake without having the NFT node key", async () => {
+      await expect(
+        await queenStakeProxy
+          .connect(queen4)
+          .stake({ value: ethers.parseEther("5000") }),
+      )
+        .to.emit(queenStakeProxy, "staked")
+        .withArgs(queen4, ethers.parseEther("5000"));
 
-      // rewards = await queenStakeProxy.connect(queen1).getMyPendingRewards();
+        await queenStakeProxy
+        .connect(queen2)
+        .stake({ value: ethers.parseEther("1") });
+
+        await queenStakeProxy
+        .connect(queen5)
+        .stake({ value: ethers.parseEther("50") }); 
     });
   });
 
@@ -272,24 +249,83 @@ describe("Queen Staking", () => {
       )
         .to.be.revertedWithCustomError(queenStakeProxy,"unStakeNotYetAvailable");
     });
+
+    it("Should switch on the un-stake ", async () => {
+      await upgradedQueenStakeProxy
+        .connect(owner)
+        .setUserFunctionStatus(true, 1);
+    });
+
+    it("Should let queens unstake", async () => {
+      await expect(
+        queenStakeProxy.connect(queen1).unStake(ethers.parseEther("1000")),
+      )
+        .to.emit(queenStakeProxy, "unStaked")
+        .withArgs(queen1, ethers.parseEther("1000"));
+    });
+
+    it("Should revert when unstaking amount is greater than what's staked", async () => {
+      await expect(
+        queenStakeProxy.connect(queen1).unStake(ethers.parseEther("10000")),
+      ).to.be.revertedWithCustomError(queenStakeProxy, "ExceedsStakedAmount");
+    });
+
+    it("Should revert when there's nothing to unstake", async () => {
+      await expect(
+        queenStakeProxy.connect(queen1).unStake(0),
+      ).to.be.revertedWithCustomError(queenStakeProxy, "ZeroUnstakeAmount");
+    });
   });
 
-  // describe("Contract upgrade", () => {
-  //   it("Should upgrade to a new queen contract", async () => {
-  //     stakesBeforeUpgrade = await queenStakeProxy
-  //       .connect(queen1)
-  //       .getMyStakedAmount();
+  describe("Accumulate rewards after upgrade", () => {
+    it("Should revert since setCastedVotes isn't called", async () => {
+      await expect(
+        queenStakeProxy.connect(owner).accumulateDailyQueenRewards(),
+      ).to.be.revertedWithCustomError(queenStakeProxy, "setCastedVote");
+    });
 
-  //     pendingRewardsBeforeUpgrade = await queenStakeProxy
-  //       .connect(queen1)
-  //       .getMyPendingRewards();
+    it("Should setCastedVotes()", async () => {
+      
+      const queens = [
+        queen1.address, 
+        queen2.address,
+        queen3.address, 
+        queen4.address,
+        queen5.address
+      ];
 
-  //     NewQueenStake = await ethers.getContractFactory("NewQueenStaking");
+      const castedVotes = [
+        20, 
+        100, 
+        69,
+        30,
+        50
+      ];
 
-  //     upgradedQueenStakeProxy = await upgrades.upgradeProxy(
-  //       queenStakeProxy.target,
-  //       NewQueenStake,
-  //     );
-  //   });
-  // });
+      await expect(
+        upgradedQueenStakeProxy.connect(owner).setCastedVotes(queens, castedVotes),
+      ).to.emit(upgradedQueenStakeProxy, "skippedQueens")
+      .withArgs(2);
+    });
+
+    it("Should check the stakes of queen5 to be 50", async () => {
+      await expect(
+        await queenStakeProxy.connect(queen5).getMyStakedAmount(),
+      ).to.be.equals(ethers.parseEther("50"));
+    });
+
+    it("Should let owner calculate daily queen rewards", async () => {
+      await queenStakeProxy.connect(owner).accumulateDailyQueenRewards();
+    });
+
+    it("Should check the stakes of queen5 to be $GP 283.33", async () => {
+      await expect(
+        await queenStakeProxy.connect(queen5).getMyStakedAmount(),
+      ).to.be.equals(ethers.parseEther("288.333333333333333333"));
+    });
+
+    // it("Should let owner calculate daily queen rewards", async () => {
+    //   await queenStakeProxy.connect(owner).accumulateDailyQueenRewards();
+    // });
+  });
 });

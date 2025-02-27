@@ -157,7 +157,6 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     /// @dev call this function first before accumulateDailyQueenRewards is called
     function setCastedVotes(address[] memory queens, uint88[] memory castedVotes) external onlyOwner { //TODO: merge this function with accumulateDailyQueenRewards 8
         // TODO: check if the length of both arrays are equal 5
-        if (_queens.length != queens.length) revert incorrectArraySize();
         if (queens.length != castedVotes.length) revert incorrectArraySize();
 
         uint96 skipped; 
@@ -332,7 +331,6 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     /// @dev kingRewardsPerDay should be in wei
     function accumulateDailyKingRewards(address[] memory kings, uint120[] memory votesReceived,uint88 kingRewardsPerDay) external onlyOwner
     {
-        if (_kings.length != kings.length) revert incorrectArraySize();
         if (kings.length != votesReceived.length) revert incorrectArraySize();
 
         uint96 skippedKings; 
