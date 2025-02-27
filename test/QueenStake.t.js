@@ -337,6 +337,7 @@ describe("Queen Staking", () => {
     describe("Create subnets", () => {
 
       it("Should revert since createSubnets() isn't available", async () => {
+
         await expect(
           upgradedQueenStakeProxy.connect(king1).createSubnet(),
         ).to.be.revertedWithCustomError(upgradedQueenStakeProxy, "createSubnetsNotYetAvailable");
@@ -352,8 +353,47 @@ describe("Queen Staking", () => {
         await expect(
           upgradedQueenStakeProxy.connect(king1).createSubnet(),
         ).to.emit(upgradedQueenStakeProxy,"createdSubnet").withArgs(0,king1);
+      });
+    });
 
-        await upgradedQueenStakeProxy.connect(king2).createSubnet(); 
+    describe("Delete subnets", () => {
+
+      it("Should revert since deleteSubnets() isn't available", async () => {
+        await expect(
+          upgradedQueenStakeProxy.connect(king1).deleteSubnet(0),
+        ).to.be.revertedWithCustomError(upgradedQueenStakeProxy, "deleteSubnetsNotYetAvailable");
+      });
+
+      it("Should switch on the deleteSubnets()", async () => {
+        await upgradedQueenStakeProxy
+          .connect(owner)
+          .setUserFunctionStatus(true, 3);
+      });
+
+      it("Should revert since king is unauthorized", async () => {
+        await expect(
+          upgradedQueenStakeProxy.connect(king2).deleteSubnet(0),
+        ).to.be.revertedWithCustomError(upgradedQueenStakeProxy, "unauthorizedKing");
+      });
+
+      it("should delete a subnet", async()=>{
+        await expect(
+          upgradedQueenStakeProxy.connect(king1).deleteSubnet(0),
+        )
+          .to.emit(upgradedQueenStakeProxy, "deletedSubnet")
+          .withArgs(0,king1);
+      });
+
+      it("Should revert since subnet is already deleted", async () => {
+        await expect(
+         upgradedQueenStakeProxy.connect(king1).deleteSubnet(0),
+        ).to.be.revertedWithCustomError(upgradedQueenStakeProxy, "subnetDeletedOrDoesntExist");
+      });
+
+      it("Should revert since subnet isn't created", async () => {
+        await expect(
+          upgradedQueenStakeProxy.connect(king1).deleteSubnet(1),
+        ).to.be.revertedWithCustomError(upgradedQueenStakeProxy, "subnetDeletedOrDoesntExist");
       });
     });
   });

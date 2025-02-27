@@ -150,7 +150,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         if (!_deleteSubnets) revert deleteSubnetsNotYetAvailable();
         if (!_subnetStatus[subnetId]) revert subnetDeletedOrDoesntExist();
         if (_subnetKing[subnetId] != msg.sender) revert unauthorizedKing(); 
-        _subnetStatus[_subnetId] = false;
+        _subnetStatus[subnetId] = false;
         emit deletedSubnet(subnetId, msg.sender);
     }
 
