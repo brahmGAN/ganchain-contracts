@@ -64,6 +64,31 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
 
     mapping(address => uint88) public _castedVotes;
 
+    /// @dev subnet variables start 
+
+    /// @dev Hold the unique ID of a subnet 
+    uint88 public _subnetId; 
+
+    /// @dev subnetID which is either alive or dead
+    mapping(uint88 => bool) public _subnetStatus; 
+
+    /// @dev The owner of the subnet can be fetched using this
+    mapping(uint88 => address) public _subnetKing; 
+
+    /// @dev All the kings 
+    address[] public _kings;
+
+    /// @dev Boolean that says whether a user is or isn't a king 
+    mapping(address => bool) _enrolledForKing; 
+
+    /// @dev Boolean switch to control the availability of setSubnetStatus
+    bool public _createSubnets;
+
+    // @dev Boolean switch to control the availability of deleteSubnet
+    bool public _deleteSubnets;
+
+    /// @dev subnet variables ends
+
     /// @dev Authorizes the upgrade to a new implementation. Only callable by the owner.
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
@@ -104,6 +129,29 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         (bool success,) = payable(msg.sender).call{value: amount}("");
         if (!success) revert TransferFailed(); 
         emit unStaked(msg.sender, amount);
+    }
+
+    function createSubnet() external 
+    {
+        if (!_createSubnets) revert createSubnetsNotYetAvailable();
+        _subnetStatus[_subnetId] = true; 
+        _subnetKing[_subnetId] = msg.sender; 
+        if (!_enrolledForKing[msg.sender])
+        {
+            _kings.push(msg.sender); 
+            _enrolledForKing[msg.sender] =  true; 
+        }
+        _subnetId++; 
+        emit createdSubnet(_subnetId, msg.sender);
+    }
+
+    function deleteSubnet(uint88 subnetId) external 
+    {
+        if (!_deleteSubnets) revert deleteSubnetsNotYetAvailable();
+        if (!_subnetStatus[subnetId]) revert subnetDeletedOrDoesntExist();
+        if (_subnetKing[subnetId] != msg.sender) revert unauthorizedKing(); 
+        _subnetStatus[_subnetId] = false;
+        emit deletedSubnet(subnetId, msg.sender);
     }
 
     /// @dev call this function first before accumulateDailyQueenRewards is called

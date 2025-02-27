@@ -69,4 +69,24 @@ interface IErrors {
     * @dev Displayed when setCastedVotes isn't called by the owner 
    */
   error setCastedVote();
+
+  /**
+    * @dev Displayed when createSubnet() isn't yet available for users
+   */
+  error createSubnetsNotYetAvailable();   
+
+  /**
+    * @dev Displayed when deleteSubnet() isn't yet available for users
+   */
+  error deleteSubnetsNotYetAvailable();  
+  
+   /**
+    * @dev Displayed when the user isn't the king of the subnet
+   */
+  error unauthorizedKing();
+
+  /**
+    * @dev Displayed when the subnet is either already deleted or doesn't exist
+   */
+  error subnetDeletedOrDoesntExist();
 }
