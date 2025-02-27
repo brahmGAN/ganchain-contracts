@@ -278,6 +278,16 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         //     _claim = status;
         // }
 
+        /// @dev sets the status of createSubnet(), functionType = 2
+        else if (functionType == 2) {
+            _createSubnets = status;
+        }
+        
+        /// @dev sets the status of deleteSubnet(), functionType = 3
+        else if (functionType == 3) {
+            _deleteSubnets = status;
+        }
+
         else {
             revert wrongFunctionType(); 
         }
