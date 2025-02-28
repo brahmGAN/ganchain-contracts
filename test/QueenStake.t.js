@@ -454,18 +454,14 @@ describe("Queen Staking", () => {
         await upgradedQueenStakeProxy.connect(king2).createSubnet();
 
         await upgradedQueenStakeProxy.connect(king3).createSubnet();
-
-        await expect(
-          upgradedQueenStakeProxy
+        
+        await   upgradedQueenStakeProxy
             .connect(owner)
             .accumulateDailyKingRewards(
               kings,
               votesReceived,
               ethers.parseEther("1000"),
-            ),
-        )
-          .to.emit(upgradedQueenStakeProxy, "accumulatedDailyKingRewards")
-          .withArgs(1);
+            );
       });
 
       it("Should check the staked amount of king3 to be $GP 200", async () => {

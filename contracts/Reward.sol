@@ -10,8 +10,8 @@ import "./interfaces/IErrors.sol";
 contract Reward is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, IErrors {
 
     GPU public GPUInstance;
-    uint40 lastRewardCalculated;
-    uint96 rewardGPsPerDay;
+    uint40 public lastRewardCalculated;
+    uint96 public rewardGPsPerDay;
     uint24 constant LOCK_PERIOD = 30 days;
 
     // Mappings
@@ -21,6 +21,7 @@ contract Reward is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeab
     // Events
     event DailyProviderRewardsAccumulated(address owner, uint256 timestamp);
     event RewardWithdrawn(address indexed provider, uint256 amount);
+    event SetProviderRewards(uint40 lastRewardCalculated); 
 
     // Functions
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
@@ -99,5 +100,9 @@ contract Reward is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeab
         {
             providerRewards[_providerNFTAddress[i]] += _providerRewards[i];
         }
+
+        lastRewardCalculated = uint40(block.timestamp); 
+
+        emit SetProviderRewards(lastRewardCalculated);
     }
 }
