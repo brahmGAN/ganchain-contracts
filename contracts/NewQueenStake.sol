@@ -134,15 +134,15 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     function createSubnet() external 
     {
         if (!_createSubnets) revert createSubnetsNotYetAvailable();
+        _subnetId++;
         _subnetStatus[_subnetId] = true; 
         _subnetKing[_subnetId] = msg.sender; 
         if (!_enrolledForKing[msg.sender])
         {
             _kings.push(msg.sender); 
             _enrolledForKing[msg.sender] =  true; 
-        }
-        _subnetId++; 
-        emit createdSubnet(_subnetId-1, msg.sender);
+        } 
+        emit createdSubnet(_subnetId, msg.sender);
     }
 
     function deleteSubnet(uint88 subnetId) external 
