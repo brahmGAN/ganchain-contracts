@@ -423,6 +423,18 @@ describe("Queen Staking", () => {
           .to.emit(upgradedQueenStakeProxy, "accumulatedDailyKingRewards")
           .withArgs(1);
       });
+
+      it("Should check the staked amount of king3 to be $GP 200", async () => {
+        await expect(
+          await queenStakeProxy.connect(king3).getMyStakedAmount(),
+        ).to.be.equals(ethers.parseEther("200"));
+      });
+
+      it("Should check the rewards of king3 to be $GP 200", async () => {
+        await expect(
+          await queenStakeProxy.connect(king3).getMyTotalRewardsEarned(),
+        ).to.be.equals(ethers.parseEther("200"));
+      });
     });
   });
 });
