@@ -10,11 +10,11 @@ describe("Queen Staking", () => {
   let queen3;
   let queen4;
   let queen5;
-  let queen6; 
-  let king1; 
+  let queen6;
+  let king1;
   let king2;
   let king3;
-  let king4; 
+  let king4;
   let NFTFactory;
   let nftContract;
   let helper;
@@ -37,7 +37,7 @@ describe("Queen Staking", () => {
       king1,
       king2,
       king3,
-      king4, 
+      king4,
       helper,
       scheduler,
       validator1,
@@ -184,14 +184,13 @@ describe("Queen Staking", () => {
   });
 
   describe("Staking after upgrade", () => {
-
-    it("Should have the same staked amount as before the upgrade", async()=>{
+    it("Should have the same staked amount as before the upgrade", async () => {
       await expect(
         await queenStakeProxy.connect(queen1).getMyStakedAmount(),
       ).to.be.equals(stakesBeforeUpgrade);
     });
 
-    it("Should have the same pending rewards as before the upgrade", async()=>{
+    it("Should have the same pending rewards as before the upgrade", async () => {
       await expect(
         await queenStakeProxy.connect(queen1).getMyPendingRewards(),
       ).to.be.equals(pendingRewardsBeforeUpgrade);
@@ -221,7 +220,7 @@ describe("Queen Staking", () => {
         .withArgs(queen1, ethers.parseEther("1000"));
     });
 
-    it("Should retain pending rewards after Re-staking as auto-claim is removed", async()=> {
+    it("Should retain pending rewards after Re-staking as auto-claim is removed", async () => {
       await expect(
         await queenStakeProxy.connect(queen1).getMyPendingRewards(),
       ).to.be.equals(pendingRewardsBeforeUpgrade);
@@ -242,13 +241,13 @@ describe("Queen Staking", () => {
         .to.emit(queenStakeProxy, "staked")
         .withArgs(queen4, ethers.parseEther("5000"));
 
-        await queenStakeProxy
+      await queenStakeProxy
         .connect(queen2)
         .stake({ value: ethers.parseEther("1") });
 
-        await queenStakeProxy
+      await queenStakeProxy
         .connect(queen5)
-        .stake({ value: ethers.parseEther("50") }); 
+        .stake({ value: ethers.parseEther("50") });
     });
   });
 
@@ -256,8 +255,10 @@ describe("Queen Staking", () => {
     it("Should fail while un-staking since the switch is off in the new implimentation", async () => {
       await expect(
         queenStakeProxy.connect(queen1).unStake(ethers.parseEther("500")),
-      )
-        .to.be.revertedWithCustomError(queenStakeProxy,"unStakeNotYetAvailable");
+      ).to.be.revertedWithCustomError(
+        queenStakeProxy,
+        "unStakeNotYetAvailable",
+      );
     });
 
     it("Should switch on the un-stake ", async () => {
@@ -295,27 +296,23 @@ describe("Queen Staking", () => {
     });
 
     it("Should setCastedVotes()", async () => {
-      
       const queens = [
-        queen1.address, 
+        queen1.address,
         queen2.address,
-        queen3.address, 
+        queen3.address,
         queen4.address,
-        queen5.address
+        queen5.address,
       ];
 
-      const castedVotes = [
-        20, 
-        100, 
-        69,
-        30,
-        50
-      ];
+      const castedVotes = [20, 100, 69, 30, 50];
 
       await expect(
-        upgradedQueenStakeProxy.connect(owner).setCastedVotes(queens, castedVotes),
-      ).to.emit(upgradedQueenStakeProxy, "skippedQueens")
-      .withArgs(2);
+        upgradedQueenStakeProxy
+          .connect(owner)
+          .setCastedVotes(queens, castedVotes),
+      )
+        .to.emit(upgradedQueenStakeProxy, "skippedQueens")
+        .withArgs(2);
     });
 
     it("Should check the stakes of queen5 to be 50", async () => {
@@ -338,20 +335,22 @@ describe("Queen Staking", () => {
   describe("Set queen rewards", () => {
     it("Should set daily queen rewards", async () => {
       const kings = [
-        queen1.address, 
+        queen1.address,
         queen2.address,
-        queen3.address, 
-        queen6.address
+        queen3.address,
+        queen6.address,
       ];
 
       const KingRewards = [
-        ethers.parseEther("5000"), 
-        ethers.parseEther("8000"), 
+        ethers.parseEther("5000"),
+        ethers.parseEther("8000"),
         ethers.parseEther("10000"),
-        ethers.parseEther("69000")
+        ethers.parseEther("69000"),
       ];
-      
-      await upgradedQueenStakeProxy.connect(owner).setKingRewards(kings, KingRewards); 
+
+      await upgradedQueenStakeProxy
+        .connect(owner)
+        .setKingRewards(kings, KingRewards);
     });
 
     it("Should check the staked amount of queen6 to be $GP 69000", async () => {
@@ -369,12 +368,13 @@ describe("Queen Staking", () => {
 
   describe("Subnets", () => {
     describe("Create subnets", () => {
-
       it("Should revert since createSubnets() isn't available", async () => {
-
         await expect(
           upgradedQueenStakeProxy.connect(king1).createSubnet(),
-        ).to.be.revertedWithCustomError(upgradedQueenStakeProxy, "createSubnetsNotYetAvailable");
+        ).to.be.revertedWithCustomError(
+          upgradedQueenStakeProxy,
+          "createSubnetsNotYetAvailable",
+        );
       });
 
       it("Should switch on the createSubnets()", async () => {
@@ -383,19 +383,21 @@ describe("Queen Staking", () => {
           .setUserFunctionStatus(true, 2);
       });
 
-      it("should create a subnet", async()=>{
-        await expect(
-          upgradedQueenStakeProxy.connect(king1).createSubnet(),
-        ).to.emit(upgradedQueenStakeProxy,"createdSubnet").withArgs(0,king1);
+      it("should create a subnet", async () => {
+        await expect(upgradedQueenStakeProxy.connect(king1).createSubnet())
+          .to.emit(upgradedQueenStakeProxy, "createdSubnet")
+          .withArgs(0, king1);
       });
     });
 
     describe("Delete subnets", () => {
-
       it("Should revert since deleteSubnets() isn't available", async () => {
         await expect(
           upgradedQueenStakeProxy.connect(king1).deleteSubnet(0),
-        ).to.be.revertedWithCustomError(upgradedQueenStakeProxy, "deleteSubnetsNotYetAvailable");
+        ).to.be.revertedWithCustomError(
+          upgradedQueenStakeProxy,
+          "deleteSubnetsNotYetAvailable",
+        );
       });
 
       it("Should switch on the deleteSubnets()", async () => {
@@ -407,52 +409,60 @@ describe("Queen Staking", () => {
       it("Should revert since king is unauthorized", async () => {
         await expect(
           upgradedQueenStakeProxy.connect(king2).deleteSubnet(0),
-        ).to.be.revertedWithCustomError(upgradedQueenStakeProxy, "unauthorizedKing");
+        ).to.be.revertedWithCustomError(
+          upgradedQueenStakeProxy,
+          "unauthorizedKing",
+        );
       });
 
-      it("should delete a subnet", async()=>{
-        await expect(
-          upgradedQueenStakeProxy.connect(king1).deleteSubnet(0),
-        )
+      it("should delete a subnet", async () => {
+        await expect(upgradedQueenStakeProxy.connect(king1).deleteSubnet(0))
           .to.emit(upgradedQueenStakeProxy, "deletedSubnet")
-          .withArgs(0,king1);
+          .withArgs(0, king1);
       });
 
       it("Should revert since subnet is already deleted", async () => {
         await expect(
-         upgradedQueenStakeProxy.connect(king1).deleteSubnet(0),
-        ).to.be.revertedWithCustomError(upgradedQueenStakeProxy, "subnetDeletedOrDoesntExist");
+          upgradedQueenStakeProxy.connect(king1).deleteSubnet(0),
+        ).to.be.revertedWithCustomError(
+          upgradedQueenStakeProxy,
+          "subnetDeletedOrDoesntExist",
+        );
       });
 
       it("Should revert since subnet isn't created", async () => {
         await expect(
           upgradedQueenStakeProxy.connect(king1).deleteSubnet(1),
-        ).to.be.revertedWithCustomError(upgradedQueenStakeProxy, "subnetDeletedOrDoesntExist");
+        ).to.be.revertedWithCustomError(
+          upgradedQueenStakeProxy,
+          "subnetDeletedOrDoesntExist",
+        );
       });
     });
 
     describe("Accumulate king rewards", () => {
       it("Should accumulate daily king rewards", async () => {
         const kings = [
-          king1.address, 
+          king1.address,
           king2.address,
-          king3.address, 
-          king4.address
+          king3.address,
+          king4.address,
         ];
-  
-        const votesReceived = [
-          50, 
-          10, 
-          15,
-          25
-        ];
-        
-        await upgradedQueenStakeProxy.connect(king2).createSubnet(); 
+
+        const votesReceived = [50, 10, 15, 25];
+
+        await upgradedQueenStakeProxy.connect(king2).createSubnet();
 
         await upgradedQueenStakeProxy.connect(king3).createSubnet();
 
         await expect(
-          upgradedQueenStakeProxy.connect(owner).accumulateDailyKingRewards(kings,votesReceived,ethers.parseEther("1000")),
+          upgradedQueenStakeProxy
+            .connect(owner)
+            .accumulateDailyKingRewards(
+              kings,
+              votesReceived,
+              ethers.parseEther("1000"),
+            ),
         )
           .to.emit(upgradedQueenStakeProxy, "accumulatedDailyKingRewards")
           .withArgs(1);
@@ -474,20 +484,22 @@ describe("Queen Staking", () => {
     describe("Set king rewards", () => {
       it("Should set daily king rewards", async () => {
         const kings = [
-          king1.address, 
+          king1.address,
           king2.address,
-          king3.address, 
-          king4.address
+          king3.address,
+          king4.address,
         ];
-  
+
         const KingRewards = [
-          ethers.parseEther("5000"), 
-          ethers.parseEther("8000"), 
+          ethers.parseEther("5000"),
+          ethers.parseEther("8000"),
           ethers.parseEther("10000"),
-          ethers.parseEther("69000")
+          ethers.parseEther("69000"),
         ];
-        
-        await upgradedQueenStakeProxy.connect(owner).setKingRewards(kings, KingRewards); 
+
+        await upgradedQueenStakeProxy
+          .connect(owner)
+          .setKingRewards(kings, KingRewards);
       });
 
       it("Should check the staked amount of king4 to be $GP 69000", async () => {
