@@ -10,6 +10,7 @@ describe("Queen Staking", () => {
   let queen3;
   let queen4;
   let queen5;
+  let queen6; 
   let king1; 
   let king2;
   let king3;
@@ -32,6 +33,7 @@ describe("Queen Staking", () => {
       queen3,
       queen4,
       queen5,
+      queen6,
       king1,
       king2,
       king3,
@@ -333,6 +335,38 @@ describe("Queen Staking", () => {
     });
   });
 
+  describe("Set queen rewards", () => {
+    it("Should set daily queen rewards", async () => {
+      const kings = [
+        queen1.address, 
+        queen2.address,
+        queen3.address, 
+        queen6.address
+      ];
+
+      const KingRewards = [
+        ethers.parseEther("5000"), 
+        ethers.parseEther("8000"), 
+        ethers.parseEther("10000"),
+        ethers.parseEther("69000")
+      ];
+      
+      await upgradedQueenStakeProxy.connect(owner).setKingRewards(kings, KingRewards); 
+    });
+
+    it("Should check the staked amount of queen6 to be $GP 69000", async () => {
+      await expect(
+        await queenStakeProxy.connect(queen6).getMyStakedAmount(),
+      ).to.be.equals(ethers.parseEther("69000"));
+    });
+
+    it("Should check the rewards of queen6 to be $GP 69000", async () => {
+      await expect(
+        await queenStakeProxy.connect(queen6).getMyTotalRewardsEarned(),
+      ).to.be.equals(ethers.parseEther("69000"));
+    });
+  });
+
   describe("Subnets", () => {
     describe("Create subnets", () => {
 
@@ -438,7 +472,7 @@ describe("Queen Staking", () => {
     });
 
     describe("Set king rewards", () => {
-      it("Should accumulate daily king rewards", async () => {
+      it("Should set daily king rewards", async () => {
         const kings = [
           king1.address, 
           king2.address,
