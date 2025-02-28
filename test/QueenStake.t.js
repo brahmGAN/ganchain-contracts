@@ -415,7 +415,7 @@ describe("Queen Staking", () => {
         
         await upgradedQueenStakeProxy.connect(king2).createSubnet(); 
 
-        await upgradedQueenStakeProxy.connect(king3).createSubnet()
+        await upgradedQueenStakeProxy.connect(king3).createSubnet();
 
         await expect(
           upgradedQueenStakeProxy.connect(owner).accumulateDailyKingRewards(kings,votesReceived,ethers.parseEther("1000")),
@@ -434,6 +434,38 @@ describe("Queen Staking", () => {
         await expect(
           await queenStakeProxy.connect(king3).getMyTotalRewardsEarned(),
         ).to.be.equals(ethers.parseEther("200"));
+      });
+    });
+
+    describe("Set king rewards", () => {
+      it("Should accumulate daily king rewards", async () => {
+        const kings = [
+          king1.address, 
+          king2.address,
+          king3.address, 
+          king4.address
+        ];
+  
+        const KingRewards = [
+          ethers.parseEther("5000"), 
+          ethers.parseEther("8000"), 
+          ethers.parseEther("10000"),
+          ethers.parseEther("69000")
+        ];
+        
+        await upgradedQueenStakeProxy.connect(owner).setKingRewards(kings, KingRewards); 
+      });
+
+      it("Should check the staked amount of king4 to be $GP 69000", async () => {
+        await expect(
+          await queenStakeProxy.connect(king4).getMyStakedAmount(),
+        ).to.be.equals(ethers.parseEther("69000"));
+      });
+
+      it("Should check the rewards of king4 to be $GP 69000", async () => {
+        await expect(
+          await queenStakeProxy.connect(king4).getMyTotalRewardsEarned(),
+        ).to.be.equals(ethers.parseEther("69000"));
       });
     });
   });
