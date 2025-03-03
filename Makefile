@@ -5,3 +5,6 @@ compile:
 
 test: 
 	npx hardhat test 
+
+make deploy: 
+	npx hardhat run /home/blackbeard/gpu/ganchain-contracts/ignition/modules/GPU_Deploy.js
