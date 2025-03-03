@@ -15,6 +15,7 @@ describe("Queen Staking", () => {
   let king2;
   let king3;
   let king4;
+  let king5;
   let NFTFactory;
   let nftContract;
   let helper;
@@ -38,6 +39,7 @@ describe("Queen Staking", () => {
       king2,
       king3,
       king4,
+      king5, 
       helper,
       scheduler,
       validator1,
@@ -387,6 +389,29 @@ describe("Queen Staking", () => {
         await expect(upgradedQueenStakeProxy.connect(king1).createSubnet())
           .to.emit(upgradedQueenStakeProxy, "createdSubnet")
           .withArgs(1, king1);
+
+        await upgradedQueenStakeProxy.connect(king5).createSubnet();
+      });
+
+      it("should revert when a user is trying to create more than 1 subnet", async () => {
+          await expect(
+            upgradedQueenStakeProxy.connect(king5).createSubnet(),
+          ).to.be.revertedWithCustomError(
+            upgradedQueenStakeProxy,
+            "cannotCreateMultipleSubnets",
+          );
+      });
+
+      it("should switch on _createMultipleSubnets", async () => {
+        await upgradedQueenStakeProxy
+          .connect(owner)
+          .setUserFunctionStatus(true, 4);
+      });
+
+      it("should let user create more than 1 subnet after switching on _createMultipleSubnets", async () => {
+        await expect(upgradedQueenStakeProxy.connect(king5).createSubnet())
+          .to.emit(upgradedQueenStakeProxy, "createdSubnet")
+          .withArgs(3, king5);
       });
     });
 
@@ -432,7 +457,7 @@ describe("Queen Staking", () => {
 
       it("Should revert since subnet isn't created", async () => {
         await expect(
-          upgradedQueenStakeProxy.connect(king1).deleteSubnet(2),
+          upgradedQueenStakeProxy.connect(king1).deleteSubnet(10),
         ).to.be.revertedWithCustomError(
           upgradedQueenStakeProxy,
           "subnetDeletedOrDoesntExist",

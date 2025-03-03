@@ -90,6 +90,12 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     /// @dev Timestamp of the last king rewards calculated at 
     uint40 _lastKingRewardsCalculatedAt;  
 
+    /// @dev Keeps track of how many subnets a user has created 
+    mapping(address => uint16) _totalSubnetsHeld; 
+
+    /// @dev Boolean switch to be checked if a user creates multiple subnets 
+    bool _createMultipleSubnets;
+
     /// @dev subnet variables ends
 
     /// @dev Authorizes the upgrade to a new implementation. Only callable by the owner.
@@ -137,15 +143,34 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     function createSubnet() external 
     {
         if (!_createSubnets) revert createSubnetsNotYetAvailable();
-        _subnetId++;
-        _subnetStatus[_subnetId] = true; 
-        _subnetKing[_subnetId] = msg.sender; 
-        if (!_enrolledForKing[msg.sender])
+        if (_totalSubnetsHeld[msg.sender] > 0)
         {
-            _kings.push(msg.sender); 
-            _enrolledForKing[msg.sender] =  true; 
-        } 
-        emit createdSubnet(_subnetId, msg.sender);
+            if (!_createMultipleSubnets) revert cannotCreateMultipleSubnets();
+            _subnetId++;
+            _subnetStatus[_subnetId] = true; 
+            _subnetKing[_subnetId] = msg.sender; 
+            _totalSubnetsHeld[msg.sender]++; 
+            if (!_enrolledForKing[msg.sender])
+            {
+                _kings.push(msg.sender); 
+                _enrolledForKing[msg.sender] =  true; 
+            } 
+            emit createdSubnet(_subnetId, msg.sender);
+        }
+        else 
+        {
+            _subnetId++;
+            _subnetStatus[_subnetId] = true; 
+            _subnetKing[_subnetId] = msg.sender; 
+            _totalSubnetsHeld[msg.sender]++;
+            if (!_enrolledForKing[msg.sender])
+            {
+                _kings.push(msg.sender); 
+                _enrolledForKing[msg.sender] =  true; 
+            } 
+            emit createdSubnet(_subnetId, msg.sender);
+        }
+        
     }
 
     function deleteSubnet(uint88 subnetId) external 
@@ -301,6 +326,11 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         /// @dev sets the status of deleteSubnet(), functionType = 3
         else if (functionType == 3) {
             _deleteSubnets = status;
+        }
+
+        /// @dev sets the status of _createMultipleSubnets, functionType = 4
+        else if (functionType == 4) {
+            _createMultipleSubnets = status;
         }
 
         else {

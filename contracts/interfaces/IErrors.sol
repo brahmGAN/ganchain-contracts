@@ -89,4 +89,9 @@ interface IErrors {
     * @dev Displayed when the subnet is either already deleted or doesn't exist
    */
   error subnetDeletedOrDoesntExist();
+
+  /**
+    * @dev Displayed when the users can't create multiple subnets 
+   */
+  error cannotCreateMultipleSubnets();
 }
