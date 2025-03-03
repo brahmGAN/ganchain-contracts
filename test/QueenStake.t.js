@@ -39,7 +39,7 @@ describe("Queen Staking", () => {
       king2,
       king3,
       king4,
-      king5, 
+      king5,
       helper,
       scheduler,
       validator1,
@@ -394,12 +394,12 @@ describe("Queen Staking", () => {
       });
 
       it("should revert when a user is trying to create more than 1 subnet", async () => {
-          await expect(
-            upgradedQueenStakeProxy.connect(king5).createSubnet(),
-          ).to.be.revertedWithCustomError(
-            upgradedQueenStakeProxy,
-            "cannotCreateMultipleSubnets",
-          );
+        await expect(
+          upgradedQueenStakeProxy.connect(king5).createSubnet(),
+        ).to.be.revertedWithCustomError(
+          upgradedQueenStakeProxy,
+          "cannotCreateMultipleSubnets",
+        );
       });
 
       it("should switch on _createMultipleSubnets", async () => {
@@ -479,14 +479,14 @@ describe("Queen Staking", () => {
         await upgradedQueenStakeProxy.connect(king2).createSubnet();
 
         await upgradedQueenStakeProxy.connect(king3).createSubnet();
-        
-        await   upgradedQueenStakeProxy
-            .connect(owner)
-            .accumulateDailyKingRewards(
-              kings,
-              votesReceived,
-              ethers.parseEther("1000"),
-            );
+
+        await upgradedQueenStakeProxy
+          .connect(owner)
+          .accumulateDailyKingRewards(
+            kings,
+            votesReceived,
+            ethers.parseEther("1000"),
+          );
       });
 
       it("Should check the staked amount of king3 to be $GP 200", async () => {
