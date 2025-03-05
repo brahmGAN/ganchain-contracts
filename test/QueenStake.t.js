@@ -1,5 +1,6 @@
 const { ethers } = require("hardhat");
 const { expect } = require("chai");
+const { bigint } = require("hardhat/internal/core/params/argumentTypes");
 
 describe("Queen Staking", () => {
   let owner;
@@ -192,10 +193,22 @@ describe("Queen Staking", () => {
       ).to.be.equals(stakesBeforeUpgrade);
     });
 
-    it("Should have the same pending rewards as before the upgrade", async () => {
+    it("Should transfer all the queen's pending rewards into the staked pot", async () => {
+      await upgradedQueenStakeProxy
+        .connect(owner)
+        .transferPendingQueenRewardsToStaked();
+    });
+
+    it("Should have zero pending rewards since it's all transferred into the staked pot", async () => {
       await expect(
         await queenStakeProxy.connect(queen1).getMyPendingRewards(),
-      ).to.be.equals(pendingRewardsBeforeUpgrade);
+      ).to.be.equals(0);
+    });
+
+    it("Should have the staked amount as stakesBeforeUpgrade+pendingRewardsBeforeUpgrade", async () => {
+      await expect(
+        await queenStakeProxy.connect(queen1).getMyStakedAmount(),
+      ).to.be.equals(stakesBeforeUpgrade + pendingRewardsBeforeUpgrade);
     });
 
     it("Should fail when staking as the switch is off in the new implementation", async () => {
@@ -222,16 +235,14 @@ describe("Queen Staking", () => {
         .withArgs(queen1, ethers.parseEther("1000"));
     });
 
-    it("Should retain pending rewards after Re-staking as auto-claim is removed", async () => {
-      await expect(
-        await queenStakeProxy.connect(queen1).getMyPendingRewards(),
-      ).to.be.equals(pendingRewardsBeforeUpgrade);
-    });
-
-    it("Staked amount should include the amount before and after the upgrade", async () => {
+    it("Staked amount should include the amount before and after the upgrade plus the pendingRewardsBeforeUpgrade", async () => {
       await expect(
         await queenStakeProxy.connect(queen1).getMyStakedAmount(),
-      ).to.be.equals(ethers.parseEther("1000") + stakesBeforeUpgrade);
+      ).to.be.equals(
+        ethers.parseEther("1000") +
+          stakesBeforeUpgrade +
+          pendingRewardsBeforeUpgrade,
+      );
     });
 
     it("Should be able to stake without having the NFT node key", async () => {
@@ -299,14 +310,14 @@ describe("Queen Staking", () => {
 
     it("Should setCastedVotes()", async () => {
       const queens = [
-        queen1.address,
-        queen2.address,
-        queen3.address,
-        queen4.address,
-        queen5.address,
+        queen1.address, //staked: 1053 : votes : 20
+        queen2.address, //skipped
+        queen3.address, //skipped
+        queen4.address, //staked: 5000 : votes : 30
+        queen5.address, //staked: 50 : votes : 50
       ];
 
-      const castedVotes = [20, 100, 69, 30, 50];
+      const castedVotes = [20, 1000000, 69, 30, 50];
 
       await expect(
         upgradedQueenStakeProxy
@@ -324,13 +335,45 @@ describe("Queen Staking", () => {
     });
 
     it("Should let owner calculate daily queen rewards", async () => {
+      const queen1Beforeaccumulate = await queenStakeProxy
+        .connect(queen1)
+        .getMyStakedAmount();
+      const queen2Beforeaccumulate = await queenStakeProxy
+        .connect(queen2)
+        .getMyStakedAmount();
+      const queen3Beforeaccumulate = await queenStakeProxy
+        .connect(queen3)
+        .getMyStakedAmount();
+      const queen4Beforeaccumulate = await queenStakeProxy
+        .connect(queen4)
+        .getMyStakedAmount();
+      const queen5Beforeaccumulate = await queenStakeProxy
+        .connect(queen5)
+        .getMyStakedAmount();
+
       await queenStakeProxy.connect(owner).accumulateDailyQueenRewards();
+
+      const queen1Afteraccumulate = await upgradedQueenStakeProxy
+        .connect(queen1)
+        .getMyStakedAmount();
+      const queen2Afteraccumulate = await queenStakeProxy
+        .connect(queen2)
+        .getMyStakedAmount();
+      const queen3Afteraccumulate = await queenStakeProxy
+        .connect(queen3)
+        .getMyStakedAmount();
+      const queen4Afteraccumulate = await queenStakeProxy
+        .connect(queen4)
+        .getMyStakedAmount();
+      const queen5Afteraccumulate = await queenStakeProxy
+        .connect(queen5)
+        .getMyStakedAmount();
     });
 
     it("Should check the stakes of queen5 to be $GP 283.33", async () => {
       await expect(
         await queenStakeProxy.connect(queen5).getMyStakedAmount(),
-      ).to.be.equals(ethers.parseEther("288.333333333333333333"));
+      ).to.be.equals(ethers.parseEther("278.8"));
     });
   });
 
@@ -497,7 +540,9 @@ describe("Queen Staking", () => {
 
       it("Should check the rewards of king3 to be $GP 200", async () => {
         await expect(
-          await upgradedQueenStakeProxy.connect(king3)._totalKingRewardsEarned(king3),
+          await upgradedQueenStakeProxy
+            .connect(king3)
+            ._totalKingRewardsEarned(king3),
         ).to.be.equals(ethers.parseEther("200"));
       });
     });

@@ -185,6 +185,18 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         emit deletedSubnet(subnetId, msg.sender);
     }
 
+    /// @dev call this function right after upgrading the queen contract 
+    function transferPendingQueenRewardsToStaked() external onlyOwner
+    {
+        address[] memory queens = _queens; 
+        uint24 totalQueens = uint24(queens.length); 
+        for (uint i = 0; i < totalQueens; i++) 
+        {
+            _stakedAmount[queens[i]] += uint88(_pendingQueenRewards[queens[i]]);
+            _pendingQueenRewards[queens[i]] = 0; 
+        }
+    }
+
     /// @dev call this function first before accumulateDailyQueenRewards is called
     function setCastedVotes(address[] memory queens, uint88[] memory castedVotes) external onlyOwner { 
         
