@@ -96,6 +96,9 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     /// @dev Boolean switch to be checked if a user creates multiple subnets 
     bool _createMultipleSubnets;
 
+    /// @dev Total earned rewards of the king 
+    mapping(address => uint96) public _totalKingRewardsEarned;
+
     /// @dev subnet variables ends
 
     /// @dev Authorizes the upgrade to a new implementation. Only callable by the owner.
@@ -389,7 +392,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
                 if (_enrolledForKing[kings[i]])
                 {
                      kingRewards = uint96((votesReceived[i] * kingRewardsPerDay) / (totalVotes));
-                     _totalRewardsEarned[kings[i]] += kingRewards; 
+                     _totalKingRewardsEarned[kings[i]] += kingRewards; 
                     _totalStakes += kingRewards; 
                     _stakedAmount[kings[i]] += uint88(kingRewards); 
                     _unUsedStakes[kings[i]] += uint88(kingRewards); 

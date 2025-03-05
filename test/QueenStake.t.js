@@ -497,7 +497,7 @@ describe("Queen Staking", () => {
 
       it("Should check the rewards of king3 to be $GP 200", async () => {
         await expect(
-          await queenStakeProxy.connect(king3).getMyTotalRewardsEarned(),
+          await upgradedQueenStakeProxy.connect(king3)._totalKingRewardsEarned(king3),
         ).to.be.equals(ethers.parseEther("200"));
       });
     });
