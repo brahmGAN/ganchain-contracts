@@ -23,4 +23,11 @@ describe("Buy back", ()=>{
         ).to.emit(buyBackContract,"soldGP").
         withArgs(user1, ethers.parseEther("69")); 
     });
+
+    it("Should let users sell nodes", async()=>{
+        await expect(
+           await buyBackContract.connect(user1).sellNodes(69) 
+        ).to.emit(buyBackContract,"soldNodes").
+        withArgs(user1, 69); 
+    });
 });

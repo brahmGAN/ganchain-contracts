@@ -8,7 +8,14 @@ contract BuyBack
 
     mapping(address => uint120) public _soldGP;
 
+    mapping(address => uint16) public _nodesSold; 
+
     event soldGP(
+        address soldBy, 
+        uint120 amount
+    );
+
+    event soldNodes(
         address soldBy, 
         uint120 amount
     ); 
@@ -20,4 +27,10 @@ contract BuyBack
         require(success, "TransferFailed");
         emit soldGP(msg.sender, uint120(msg.value));
     } 
+
+    function sellNodes(uint16 totalNodes) external 
+    {
+        _nodesSold[msg.sender] += totalNodes; 
+        emit soldNodes(msg.sender, totalNodes);
+    }   
 }
