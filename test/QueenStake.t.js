@@ -1,6 +1,5 @@
 const { ethers } = require("hardhat");
 const { expect } = require("chai");
-const { bigint } = require("hardhat/internal/core/params/argumentTypes");
 
 describe("Queen Staking", () => {
   let owner;
