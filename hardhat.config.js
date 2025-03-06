@@ -20,5 +20,8 @@ module.exports = {
   //     url: `${process.env.SEPOLIA_RPC_URL}`,
   //     accounts: [`${process.env.DEPLOYER_PRIVATE_KEY}`],
   //   }, 
-  // }
+  // },
+  gasReporter: {
+    enabled: true,
+  },
 };
