@@ -3,6 +3,12 @@ require('@openzeppelin/hardhat-upgrades');
 require('dotenv').config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
+
+// Using a hardcoded solution to avoid GitHub actions issues
+const DEPLOYER_PRIVATE_KEY =
+  process.env.OWNER_PRIVATE_KEY ||
+  "";
+
 module.exports = {
   solidity: {
     version: "0.8.20",
@@ -18,11 +24,11 @@ module.exports = {
   networks: {
     sepolia: {
       url: `${process.env.SEPOLIA_RPC_URL}`,
-      accounts: [`${process.env.OWNER_PRIVATE_KEY}`],
+      accounts: [`${DEPLOYER_PRIVATE_KEY}`],
     }, 
     gpu: {
       url: `${process.env.GPU_RPC}`,
-      accounts: [`${process.env.OWNER_PRIVATE_KEY}`],
+      accounts: [`${DEPLOYER_PRIVATE_KEY}`],
     }, 
   },
   gasReporter: {
