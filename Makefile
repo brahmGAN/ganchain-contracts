@@ -6,5 +6,8 @@ compile:
 test: 
 	npx hardhat test 
 
-make deploy: 
-	npx hardhat run /home/blackbeard/gpu/ganchain-contracts/ignition/modules/BuyBack_deploy.js
+make deploy sepolia: 
+	npx hardhat run /home/blackbeard/gpu/ganchain-contracts/ignition/modules/BuyBack_deploy.js --network sepolia
+
+make deploy gpu: 
+	npx hardhat run /home/blackbeard/gpu/ganchain-contracts/ignition/modules/BuyBack_deploy.js --network gpu

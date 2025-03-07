@@ -15,12 +15,16 @@ module.exports = {
     },  
   },
   allowUnlimitedContractSize: true,
-  // networks: {
-  //   sepolia: {
-  //     url: `${process.env.SEPOLIA_RPC_URL}`,
-  //     accounts: [`${process.env.DEPLOYER_PRIVATE_KEY}`],
-  //   }, 
-  // },
+  networks: {
+    sepolia: {
+      url: `${process.env.SEPOLIA_RPC_URL}`,
+      accounts: [`${process.env.OWNER_PRIVATE_KEY}`],
+    }, 
+    gpu: {
+      url: `${process.env.GPU_RPC}`,
+      accounts: [`${process.env.OWNER_PRIVATE_KEY}`],
+    }, 
+  },
   gasReporter: {
     enabled: true,
   },
