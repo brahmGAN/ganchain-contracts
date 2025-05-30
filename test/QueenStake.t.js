@@ -82,6 +82,8 @@ describe("Queen Staking", () => {
 
   describe("Staking", () => {
     it("Should be able to stake", async () => {
+      console.log("contract balance initial: "+await ethers.provider.getBalance(await queenStakeProxy.getAddress()));
+      await expect(await ethers.provider.getBalance(await queenStakeProxy.getAddress())).to.be.equals(ethers.parseEther("0"));
       await expect(
         await queenStakeProxy
           .connect(queen1)
@@ -187,6 +189,18 @@ describe("Queen Staking", () => {
 
   describe("Staking after upgrade", () => {
     it("Should have the same staked amount as before the upgrade", async () => {
+      console.log("contract balance after upgrade: "+await ethers.provider.getBalance(await queenStakeProxy.getAddress()));
+      //current contract balance
+      await expect(await ethers.provider.getBalance(await queenStakeProxy.getAddress())).to.be.equals(ethers.parseEther("1551.824490709648533692"));
+      //transfer eth after contract upgrade
+      await owner.sendTransaction({
+        to: await queenStakeProxy.getAddress(),
+        value: ethers.parseEther("10") 
+    });
+    //contract balance should be increased by 10 ETH
+    await expect(await ethers.provider.getBalance(await queenStakeProxy.getAddress())).to.be.equals(ethers.parseEther("1561.824490709648533692"));
+
+
       await expect(
         await queenStakeProxy.connect(queen1).getMyStakedAmount(),
       ).to.be.equals(stakesBeforeUpgrade);
