@@ -115,6 +115,9 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         GPUInstance = GPU(gpuContract);
     }
 
+    /// @dev lets the contract receive native tokens directly
+    receive() external payable {}
+
     /// @notice No minimum staking amount 
     /// @dev Allows the users to stake and become a queen node.
     function stake() external  payable {

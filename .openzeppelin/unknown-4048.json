@@ -1,0 +1,1341 @@
+{
+  "manifestVersion": "3.2",
+  "proxies": [
+    {
+      "address": "0x20Fd364b8E97437De637A772a6b8f95Ba935106B",
+      "txHash": "0x8f9a67474d86f41d403249a1d11d91a2a7d6d1445a66aa5b75b7b29cc33ccb4f",
+      "kind": "uups"
+    },
+    {
+      "address": "0xEa06F765Bc731C0468e093549C13871711312383",
+      "txHash": "0x5e01382d80f39c342db87d54a5d561bf275db61a600ef302c3b18b91f3f81db2",
+      "kind": "uups"
+    },
+    {
+      "address": "0xC96A6f0DAa0EDE1E3D1363273914784B8d8F7c9A",
+      "txHash": "0x59934a6c04836a3b0de9ba830cc008b021b3f94e4861b00a87da0b8d1f78a17a",
+      "kind": "uups"
+    },
+    {
+      "address": "0x86b39eDE2df78403CCF6e0a6F21E83878A16e8Fa",
+      "txHash": "0x3c2e7e28fc193edaed575d8788c08d229f8ff1354ef403e75eff3e4754861af8",
+      "kind": "uups"
+    },
+    {
+      "address": "0xaC746A9288BD07e3db49ACEE1ec7Cb80AE205C56",
+      "txHash": "0x8bc9a39cdbc33a7655a4d603518c8e6ca0439d74b0543258672561c287598567",
+      "kind": "uups"
+    },
+    {
+      "address": "0xF0265A2BFBd243F6Fde81145Cc1356118C0AEC1F",
+      "txHash": "0x501644e952092c22c76190b440a869489704e4e1c6856e05d33f465479f92f79",
+      "kind": "uups"
+    },
+    {
+      "address": "0x777d0ef728946eA6E930c2727C7d14421ddA0fe5",
+      "txHash": "0xf2adaf5a39e5cd1cd0cd13bf07170df33ef7b226a7678569416d493fb786d74e",
+      "kind": "uups"
+    },
+    {
+      "address": "0x0F5d4F0f75301fD9651425d9fad238Ffd4a635CA",
+      "txHash": "0xbee37a4882620d15c2f5bad104cc1eafab976fcd833d3bcfccc7908844763480",
+      "kind": "uups"
+    },
+    {
+      "address": "0x94Ab93e254d6603e1eA1941C907375d90384e747",
+      "txHash": "0xfc3745d8386f5240806913b7958b31865554b5efb6a9f05bb8493895942af29d",
+      "kind": "uups"
+    },
+    {
+      "address": "0xA317006A5855af9110838a63BB7Bbba38794936e",
+      "txHash": "0xe5bdc1c3c2d70a9795b1b7af0694305ea1bcc06063547dc73737c7c8557f3cf1",
+      "kind": "uups"
+    },
+    {
+      "address": "0xF650A1058ec0e7d523a94f00C904E039D1A7633f",
+      "txHash": "0x4d647816f821fe3dab2e0a12ec55114ae078cfdc71160ef389a1d785b136a021",
+      "kind": "uups"
+    },
+    {
+      "address": "0x3626DebA91F7fD92BA78073FF40C3C3888b88F44",
+      "txHash": "0x446383424b83b4032984735d4c17d7625b4ed0a7547e9031b0985c6131ff2d9e",
+      "kind": "uups"
+    },
+    {
+      "address": "0x68d704b816791935a0A085dB527aED935352eD34",
+      "txHash": "0x3026ceaf2a045e7e5f3ade8a25c4ff480f9f2f1b44113151d55f55c2d85209f7",
+      "kind": "uups"
+    },
+    {
+      "address": "0xbAc38b4017883eE62e495B3A657A9f34D6241aBd",
+      "txHash": "0x65e7fdf77d2b2d8808dc6e9dce9e608133a37164364368190bcd657d0cbef594",
+      "kind": "uups"
+    }
+  ],
+  "impls": {
+    "71b17cdba9d8c58bb75ab85683c78cda40eabe08184959d1508990fa456f196b": {
+      "address": "0x2bbFdAaa3EeCFA8cB817D77FA5A8b9f4D8507bb5",
+      "txHash": "0xa402c48dcc205653d8236aeba2a6310ad895e2390160974609efd2cd91fd95c3",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:126"
+          },
+          {
+            "label": "nftAddress",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_address",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:127"
+          },
+          {
+            "label": "tickSeconds",
+            "offset": 21,
+            "slot": "0",
+            "type": "t_uint16",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:128"
+          },
+          {
+            "label": "gpuID",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:129"
+          },
+          {
+            "label": "userID",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:130"
+          },
+          {
+            "label": "machineID",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint256",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:131"
+          },
+          {
+            "label": "machineInfoID",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint256",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:132"
+          },
+          {
+            "label": "jobID",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_uint256",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:133"
+          },
+          {
+            "label": "scheduler",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_address",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:134"
+          },
+          {
+            "label": "helper",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_address",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:135"
+          },
+          {
+            "label": "minDrillTestRange",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_uint256",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:137"
+          },
+          {
+            "label": "minMachineAvailability",
+            "offset": 0,
+            "slot": "9",
+            "type": "t_uint256",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:138"
+          },
+          {
+            "label": "maxMachineUnavailability",
+            "offset": 0,
+            "slot": "10",
+            "type": "t_uint256",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:139"
+          },
+          {
+            "label": "gracePeriod",
+            "offset": 0,
+            "slot": "11",
+            "type": "t_uint256",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:140"
+          },
+          {
+            "label": "queensList",
+            "offset": 0,
+            "slot": "12",
+            "type": "t_array(t_address)dyn_storage",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:142"
+          },
+          {
+            "label": "providersList",
+            "offset": 0,
+            "slot": "13",
+            "type": "t_array(t_address)dyn_storage",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:143"
+          },
+          {
+            "label": "gpus",
+            "offset": 0,
+            "slot": "14",
+            "type": "t_mapping(t_uint256,t_struct(Gpu)2869_storage)",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:145"
+          },
+          {
+            "label": "users",
+            "offset": 0,
+            "slot": "15",
+            "type": "t_mapping(t_uint256,t_struct(User)2875_storage)",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:146"
+          },
+          {
+            "label": "queens",
+            "offset": 0,
+            "slot": "16",
+            "type": "t_mapping(t_address,t_struct(Queen)2888_storage)",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:147"
+          },
+          {
+            "label": "providers",
+            "offset": 0,
+            "slot": "17",
+            "type": "t_mapping(t_address,t_struct(Provider)2896_storage)",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:148"
+          },
+          {
+            "label": "consumers",
+            "offset": 0,
+            "slot": "18",
+            "type": "t_mapping(t_address,t_struct(Consumer)2906_storage)",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:149"
+          },
+          {
+            "label": "machines",
+            "offset": 0,
+            "slot": "19",
+            "type": "t_mapping(t_uint256,t_struct(Machine)2969_storage)",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:150"
+          },
+          {
+            "label": "machineInfo",
+            "offset": 0,
+            "slot": "20",
+            "type": "t_mapping(t_uint256,t_struct(MachineInfo)2938_storage)",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:151"
+          },
+          {
+            "label": "jobs",
+            "offset": 0,
+            "slot": "21",
+            "type": "t_mapping(t_uint256,t_struct(Job)2995_storage)",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:152"
+          },
+          {
+            "label": "queenMachines",
+            "offset": 0,
+            "slot": "22",
+            "type": "t_mapping(t_address,t_array(t_uint256)dyn_storage)",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:153"
+          },
+          {
+            "label": "drillQueenMachines",
+            "offset": 0,
+            "slot": "23",
+            "type": "t_mapping(t_address,t_array(t_uint256)dyn_storage)",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:154"
+          },
+          {
+            "label": "healthCheckQueenMachines",
+            "offset": 0,
+            "slot": "24",
+            "type": "t_mapping(t_address,t_array(t_uint256)dyn_storage)",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:155"
+          },
+          {
+            "label": "isProvider",
+            "offset": 0,
+            "slot": "25",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:156"
+          },
+          {
+            "label": "isValidator",
+            "offset": 0,
+            "slot": "26",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:157"
+          },
+          {
+            "label": "nftAddressToProviderAddress",
+            "offset": 0,
+            "slot": "27",
+            "type": "t_mapping(t_address,t_address)",
+            "contract": "IGPU",
+            "src": "contracts/GPU/IGPU.sol:158"
+          },
+          {
+            "label": "ValidatorNFTAddresses",
+            "offset": 0,
+            "slot": "28",
+            "type": "t_array(t_address)dyn_storage",
+            "contract": "AddValidator",
+            "src": "contracts/GPU/AddValidator.sol:5"
+          },
+          {
+            "label": "validators",
+            "offset": 0,
+            "slot": "29",
+            "type": "t_mapping(t_address,t_struct(ValidatorInfo)2375_storage)",
+            "contract": "AddValidator",
+            "src": "contracts/GPU/AddValidator.sol:10"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)80_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)13_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)dyn_storage": {
+            "label": "uint256[]",
+            "numberOfBytes": "32"
+          },
+          "t_enum(JobStatus)2855": {
+            "label": "enum IGPU.JobStatus",
+            "members": [
+              "VERIFYING",
+              "RUNNING",
+              "COMPLETED",
+              "DISABLED"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_enum(MachineStatus)2847": {
+            "label": "enum IGPU.MachineStatus",
+            "members": [
+              "NEW",
+              "AVAILABLE",
+              "VERIFYING",
+              "PROCESSING",
+              "OFFLINE",
+              "DISABLED"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_enum(QueenStatus)2850": {
+            "label": "enum IGPU.QueenStatus",
+            "members": [
+              "ACTIVE",
+              "DISABLED"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_enum(UserType)2860": {
+            "label": "enum IGPU.UserType",
+            "members": [
+              "Provider",
+              "Consumer",
+              "Queen",
+              "NFTAddress"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_address)": {
+            "label": "mapping(address => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_array(t_uint256)dyn_storage)": {
+            "label": "mapping(address => uint256[])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(Consumer)2906_storage)": {
+            "label": "mapping(address => struct IGPU.Consumer)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(Provider)2896_storage)": {
+            "label": "mapping(address => struct IGPU.Provider)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(Queen)2888_storage)": {
+            "label": "mapping(address => struct IGPU.Queen)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(ValidatorInfo)2375_storage)": {
+            "label": "mapping(address => struct AddValidator.ValidatorInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Gpu)2869_storage)": {
+            "label": "mapping(uint256 => struct IGPU.Gpu)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Job)2995_storage)": {
+            "label": "mapping(uint256 => struct IGPU.Job)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Machine)2969_storage)": {
+            "label": "mapping(uint256 => struct IGPU.Machine)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(MachineInfo)2938_storage)": {
+            "label": "mapping(uint256 => struct IGPU.MachineInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(User)2875_storage)": {
+            "label": "mapping(uint256 => struct IGPU.User)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Consumer)2906_storage": {
+            "label": "struct IGPU.Consumer",
+            "members": [
+              {
+                "label": "userName",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "organisation",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "jobs",
+                "type": "t_array(t_uint256)dyn_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "exists",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_struct(Gpu)2869_storage": {
+            "label": "struct IGPU.Gpu",
+            "members": [
+              {
+                "label": "name",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "price",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "computeUnit",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "exists",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_struct(Job)2995_storage": {
+            "label": "struct IGPU.Job",
+            "members": [
+              {
+                "label": "machineID",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "consumerAddress",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "queenValidationAddress",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "gpuHours",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "startedAt",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "lastChecked",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "completedTicks",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "6"
+              },
+              {
+                "label": "completedHours",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "7"
+              },
+              {
+                "label": "price",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "8"
+              },
+              {
+                "label": "sshPublicKey",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "9"
+              },
+              {
+                "label": "status",
+                "type": "t_enum(JobStatus)2855",
+                "offset": 0,
+                "slot": "10"
+              },
+              {
+                "label": "consumerRating",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "11"
+              }
+            ],
+            "numberOfBytes": "384"
+          },
+          "t_struct(Machine)2969_storage": {
+            "label": "struct IGPU.Machine",
+            "members": [
+              {
+                "label": "machineId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "machineInfoID",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "providerAddress",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "lastDrillResult",
+                "type": "t_uint16",
+                "offset": 20,
+                "slot": "2"
+              },
+              {
+                "label": "lastDrillTime",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "lastChecked",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "completedJobs",
+                "type": "t_array(t_uint256)dyn_storage",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "currentQueen",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "6"
+              },
+              {
+                "label": "currentJobID",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "7"
+              },
+              {
+                "label": "healthScore",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "8"
+              },
+              {
+                "label": "entryTime",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "9"
+              },
+              {
+                "label": "sucessfulConsecutiveHealthChecks",
+                "type": "t_uint8",
+                "offset": 0,
+                "slot": "10"
+              },
+              {
+                "label": "status",
+                "type": "t_enum(MachineStatus)2847",
+                "offset": 1,
+                "slot": "10"
+              },
+              {
+                "label": "exists",
+                "type": "t_bool",
+                "offset": 2,
+                "slot": "10"
+              }
+            ],
+            "numberOfBytes": "352"
+          },
+          "t_struct(MachineInfo)2938_storage": {
+            "label": "struct IGPU.MachineInfo",
+            "members": [
+              {
+                "label": "machineInfoId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "gpuID",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "gpuQuantity",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "gpuMemory",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "connectionType",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "cpuName",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "ram",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "6"
+              },
+              {
+                "label": "cpuCoreCount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "7"
+              },
+              {
+                "label": "uploadBandWidth",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "8"
+              },
+              {
+                "label": "downloadBandWidth",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "9"
+              },
+              {
+                "label": "storageType",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "10"
+              },
+              {
+                "label": "storageAvailable",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "11"
+              },
+              {
+                "label": "portsOpen",
+                "type": "t_array(t_uint256)dyn_storage",
+                "offset": 0,
+                "slot": "12"
+              },
+              {
+                "label": "region",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "13"
+              },
+              {
+                "label": "ipAddress",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "14"
+              }
+            ],
+            "numberOfBytes": "480"
+          },
+          "t_struct(Provider)2896_storage": {
+            "label": "struct IGPU.Provider",
+            "members": [
+              {
+                "label": "nftAddress",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "machineIDs",
+                "type": "t_array(t_uint256)dyn_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "exists",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_struct(Queen)2888_storage": {
+            "label": "struct IGPU.Queen",
+            "members": [
+              {
+                "label": "publicKey",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "userName",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "status",
+                "type": "t_enum(QueenStatus)2850",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "jobs",
+                "type": "t_array(t_uint256)dyn_storage",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "exists",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "4"
+              }
+            ],
+            "numberOfBytes": "160"
+          },
+          "t_struct(User)2875_storage": {
+            "label": "struct IGPU.User",
+            "members": [
+              {
+                "label": "userAddress",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "userType",
+                "type": "t_enum(UserType)2860",
+                "offset": 20,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(ValidatorInfo)2375_storage": {
+            "label": "struct AddValidator.ValidatorInfo",
+            "members": [
+              {
+                "label": "ss58Address",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "NFTCount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "a71f7543f3345cb942252e1d698f59a26db71627a01edef11bca3b820d70bb95": {
+      "address": "0x5b808e3F8eBAf90E13e1691F7499B0d60381aF35",
+      "txHash": "0xc3ec15f7d220c1bb91d1c081daf3c3cf3152051263f8b70fba656e3c0b699378",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "_lastRewardCalculated",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint40",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:14"
+          },
+          {
+            "label": "_rewardsPerDay",
+            "offset": 5,
+            "slot": "0",
+            "type": "t_uint88",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:18"
+          },
+          {
+            "label": "_nftContract",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(IERC721)7365",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:21"
+          },
+          {
+            "label": "_stakedAmount",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_mapping(t_address,t_uint88)",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:24"
+          },
+          {
+            "label": "_totalStakes",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint96",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:28"
+          },
+          {
+            "label": "_pendingQueenRewards",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_address,t_uint96)",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:31"
+          },
+          {
+            "label": "_totalRewardsEarned",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_address,t_uint96)",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:34"
+          },
+          {
+            "label": "_queens",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_array(t_address)dyn_storage",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:37"
+          },
+          {
+            "label": "GPUInstance",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_contract(GPU)7353",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:40"
+          },
+          {
+            "label": "_openRewards",
+            "offset": 20,
+            "slot": "7",
+            "type": "t_bool",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:43"
+          },
+          {
+            "label": "_enrolledForQueen",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:46"
+          },
+          {
+            "label": "_stake",
+            "offset": 0,
+            "slot": "9",
+            "type": "t_bool",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:49"
+          },
+          {
+            "label": "_unStake",
+            "offset": 1,
+            "slot": "9",
+            "type": "t_bool",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:52"
+          },
+          {
+            "label": "_claim",
+            "offset": 2,
+            "slot": "9",
+            "type": "t_bool",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:55"
+          },
+          {
+            "label": "_accumulate",
+            "offset": 3,
+            "slot": "9",
+            "type": "t_bool",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:58"
+          },
+          {
+            "label": "_totalRewardsclaimed",
+            "offset": 0,
+            "slot": "10",
+            "type": "t_mapping(t_address,t_uint96)",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:61"
+          },
+          {
+            "label": "_unUsedStakes",
+            "offset": 0,
+            "slot": "11",
+            "type": "t_mapping(t_address,t_uint88)",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:63"
+          },
+          {
+            "label": "_castedVotes",
+            "offset": 0,
+            "slot": "12",
+            "type": "t_mapping(t_address,t_uint88)",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:65"
+          },
+          {
+            "label": "_subnetId",
+            "offset": 0,
+            "slot": "13",
+            "type": "t_uint88",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:70"
+          },
+          {
+            "label": "_subnetStatus",
+            "offset": 0,
+            "slot": "14",
+            "type": "t_mapping(t_uint88,t_bool)",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:73"
+          },
+          {
+            "label": "_subnetKing",
+            "offset": 0,
+            "slot": "15",
+            "type": "t_mapping(t_uint88,t_address)",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:76"
+          },
+          {
+            "label": "_kings",
+            "offset": 0,
+            "slot": "16",
+            "type": "t_array(t_address)dyn_storage",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:79"
+          },
+          {
+            "label": "_enrolledForKing",
+            "offset": 0,
+            "slot": "17",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:82"
+          },
+          {
+            "label": "_createSubnets",
+            "offset": 0,
+            "slot": "18",
+            "type": "t_bool",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:85"
+          },
+          {
+            "label": "_deleteSubnets",
+            "offset": 1,
+            "slot": "18",
+            "type": "t_bool",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:88"
+          },
+          {
+            "label": "_lastKingRewardsCalculatedAt",
+            "offset": 2,
+            "slot": "18",
+            "type": "t_uint40",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:91"
+          },
+          {
+            "label": "_totalSubnetsHeld",
+            "offset": 0,
+            "slot": "19",
+            "type": "t_mapping(t_address,t_uint16)",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:94"
+          },
+          {
+            "label": "_createMultipleSubnets",
+            "offset": 0,
+            "slot": "20",
+            "type": "t_bool",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:97"
+          },
+          {
+            "label": "_totalKingRewardsEarned",
+            "offset": 0,
+            "slot": "21",
+            "type": "t_mapping(t_address,t_uint96)",
+            "contract": "NewQueenStaking",
+            "src": "contracts/NewQueenStake.sol:100"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)80_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)13_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(ReentrancyGuardStorage)243_storage": {
+            "label": "struct ReentrancyGuardUpgradeable.ReentrancyGuardStorage",
+            "members": [
+              {
+                "label": "_status",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]",
+            "numberOfBytes": "32"
+          },
+          "t_contract(GPU)7353": {
+            "label": "contract GPU",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IERC721)7365": {
+            "label": "contract IERC721",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint16)": {
+            "label": "mapping(address => uint16)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint88)": {
+            "label": "mapping(address => uint88)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint96)": {
+            "label": "mapping(address => uint96)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint88,t_address)": {
+            "label": "mapping(uint88 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint88,t_bool)": {
+            "label": "mapping(uint88 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          },
+          "t_uint88": {
+            "label": "uint88",
+            "numberOfBytes": "11"
+          },
+          "t_uint96": {
+            "label": "uint96",
+            "numberOfBytes": "12"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.ReentrancyGuard": [
+            {
+              "contract": "ReentrancyGuardUpgradeable",
+              "label": "_status",
+              "type": "t_uint256",
+              "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:40",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

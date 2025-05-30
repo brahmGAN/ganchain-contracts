@@ -36,6 +36,9 @@ contract Reward is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeab
         //LOCK_PERIOD = 30 days;
     }
 
+    /// @dev lets the contract receive native tokens directly
+    receive() external payable {}
+
     function withdrawReward() public nonReentrant {
         require(block.timestamp >= lastWithdrawalTime[msg.sender] + LOCK_PERIOD, "Withdrawal locked for 30 days");
         //require(amount <= providerRewards[msg.sender], "Insufficient reward balance");
