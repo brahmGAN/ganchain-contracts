@@ -308,13 +308,26 @@ describe("Queen Staking", () => {
         .setUserFunctionStatus(true, 1);
     });
 
-
     it("Should let queens unstake", async () => {
+      console.log(
+        "contract balance after upgrade and before unstake: " +
+          (await ethers.provider.getBalance(
+            await queenStakeProxy.getAddress(),
+          )),
+      );
+      
       await expect(
         queenStakeProxy.connect(queen1).unStake(ethers.parseEther("1000")),
       )
         .to.emit(queenStakeProxy, "unStaked")
         .withArgs(queen1, ethers.parseEther("1000"));
+      
+        console.log(
+          "contract balance after upgrade and after unstake: " +
+            (await ethers.provider.getBalance(
+              await queenStakeProxy.getAddress(),
+            )),
+        );
     });
 
     it("Should revert when unstaking amount is greater than what's staked", async () => {

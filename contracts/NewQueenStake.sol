@@ -34,7 +34,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     mapping(address => uint96) _totalRewardsEarned;
 
     /// @dev List of queens that stakes
-    address[] _queens; 
+    address[] public _queens; 
 
     /// @dev instance of the GPU contract
     GPU public GPUInstance;
