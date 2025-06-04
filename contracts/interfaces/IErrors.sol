@@ -33,7 +33,7 @@ interface IErrors {
   /**
    * @dev Displayed when un-stake amount exceeds staked amount
    */
-  error ExceedsStakedAmount();
+  error ExceedsAvailableUnUsedStakes();
 
   /**
    * @dev Displayed when un-stake amount is 0

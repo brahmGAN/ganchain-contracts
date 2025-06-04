@@ -137,7 +137,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     function unStake(uint88 amount) public {
         if (!_unStake) revert unStakeNotYetAvailable();
         if (amount == 0) revert ZeroUnstakeAmount();
-        if (_unUsedStakes[msg.sender] < amount) revert ExceedsStakedAmount();
+        if (amount > _unUsedStakes[msg.sender]) revert ExceedsAvailableUnUsedStakes();
         if(address(this).balance < amount) revert insfficientBalanceInTheContract();
         _stakedAmount[msg.sender] -= amount; 
         _unUsedStakes[msg.sender] -= amount;    
@@ -287,7 +287,6 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         emit accumulatedDailyQueenRewards(_lastRewardCalculated);
     }
 
-    ///todo: set directly. calculate outside
     function setQueenRewards(address[] memory queens, uint88[] memory queenRewards) external onlyOwner 
     {
         if (queens.length != queenRewards.length) revert incorrectArraySize(); 
@@ -419,7 +418,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         }
         _lastKingRewardsCalculatedAt = uint40(block.timestamp);
 
-        emit accumulatedDailyKingRewards(skippedKings, _lastKingRewardsCalculatedAt); //TODO: add timestamp : done
+        emit accumulatedDailyKingRewards(skippedKings, _lastKingRewardsCalculatedAt); 
     }
 
     function setKingRewards(address[] memory kings, uint88[] memory kingRewards) external onlyOwner 
@@ -435,7 +434,6 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
             _stakedAmount[kings[i]] += kingRewards[i]; 
             _unUsedStakes[kings[i]] += kingRewards[i]; 
         }
-        //TODO: emit timestamp for both king and queen
 
         _lastKingRewardsCalculatedAt = uint40(block.timestamp);
 

@@ -161,7 +161,7 @@ contract QueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpg
     /// @dev Allows the queens to unstake 
     function unStake(uint88 amount) public {
         if (amount == 0) revert ZeroUnstakeAmount();
-        if (_stakedAmount[msg.sender] < amount) revert ExceedsStakedAmount();
+        if (_stakedAmount[msg.sender] < amount) revert ExceedsAvailableUnUsedStakes();
         if (_pendingQueenRewards[msg.sender] > 0) {
             claimRewards();
         }

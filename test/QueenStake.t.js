@@ -171,7 +171,7 @@ describe("Queen Staking", () => {
     it("Should revert when unstaking amount is greater than what's staked", async () => {
       await expect(
         queenStakeProxy.connect(queen3).unStake(ethers.parseEther("10000")),
-      ).to.be.revertedWithCustomError(queenStakeProxy, "ExceedsStakedAmount");
+      ).to.be.revertedWithCustomError(queenStakeProxy, "ExceedsAvailableUnUsedStakes");
     });
   });
 
@@ -308,6 +308,7 @@ describe("Queen Staking", () => {
         .setUserFunctionStatus(true, 1);
     });
 
+
     it("Should let queens unstake", async () => {
       await expect(
         queenStakeProxy.connect(queen1).unStake(ethers.parseEther("1000")),
@@ -319,7 +320,7 @@ describe("Queen Staking", () => {
     it("Should revert when unstaking amount is greater than what's staked", async () => {
       await expect(
         queenStakeProxy.connect(queen1).unStake(ethers.parseEther("10000")),
-      ).to.be.revertedWithCustomError(queenStakeProxy, "ExceedsStakedAmount");
+      ).to.be.revertedWithCustomError(queenStakeProxy, "ExceedsAvailableUnUsedStakes");
     });
 
     it("Should revert when there's nothing to unstake", async () => {
