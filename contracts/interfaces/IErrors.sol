@@ -94,4 +94,9 @@ interface IErrors {
     * @dev Displayed when the users can't create multiple subnets 
    */
   error cannotCreateMultipleSubnets();
+
+  /**
+    * @dev Displayed when the users can't create multiple subnets 
+   */
+  error insfficientBalanceInTheContract();
 }

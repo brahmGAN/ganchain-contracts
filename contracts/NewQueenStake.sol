@@ -138,6 +138,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         if (!_unStake) revert unStakeNotYetAvailable();
         if (amount == 0) revert ZeroUnstakeAmount();
         if (_unUsedStakes[msg.sender] < amount) revert ExceedsStakedAmount();
+        if(address(this).balance < amount) revert insfficientBalanceInTheContract();
         _stakedAmount[msg.sender] -= amount; 
         _unUsedStakes[msg.sender] -= amount;    
         _totalStakes -= amount; 
@@ -200,6 +201,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         }
     }
 
+    /// todo: add a similar function which calculates the unused stakes outside and just sets in the contract
     /// @dev call this function first before accumulateDailyQueenRewards is called
     function setCastedVotes(address[] memory queens, uint88[] memory castedVotes) external onlyOwner { 
         
@@ -285,6 +287,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         emit accumulatedDailyQueenRewards(_lastRewardCalculated);
     }
 
+    ///todo: set directly. calculate outside
     function setQueenRewards(address[] memory queens, uint88[] memory queenRewards) external onlyOwner 
     {
         if (queens.length != queenRewards.length) revert incorrectArraySize(); 
