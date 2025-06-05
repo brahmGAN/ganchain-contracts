@@ -621,6 +621,11 @@ describe("Queen Staking", () => {
           await queenStakeProxy.connect(king4).getMyTotalRewardsEarned(),
         ).to.be.equals(ethers.parseEther("69000"));
       });
+
+      it("should get the last calculated king rewards at",async ()=>{
+        console.log("King last calculated at:"+ await upgradedQueenStakeProxy._lastKingRewardsCalculatedAt());
+        console.log("\n\nKing last calculated at from getter:"+ await upgradedQueenStakeProxy.getLastKingRewardsCalculatedAt());
+      });
     });
   });
 });

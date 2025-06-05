@@ -11,7 +11,7 @@ import "./GPU/GPU.sol";
 contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable,IErrors,IQueenStake {
 
     /// @dev Timestamp of the last rewards calculated at 
-    uint40 _lastRewardCalculated; 
+    uint40 public _lastRewardCalculated; 
 
     /// @dev The rewards set aside for the entire queen nodes pool per day 
     /// @dev Can hold up to 100 million rewards in GPoints per day, denominated in wei
@@ -21,17 +21,17 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     IERC721 public _nftContract; 
 
     /// @dev Maps the amount staked by a particular queen node 
-    mapping(address => uint88) _stakedAmount;
+    mapping(address => uint88) public _stakedAmount;
 
     /// @dev Total stakes in the staking pool
     /// @dev Can hold upto 10 Billion GPoints in wei 
-    uint96 _totalStakes; 
+    uint96 public _totalStakes; 
 
     /// @dev Pending Queen's rewards 
-    mapping(address => uint96) _pendingQueenRewards;
+    mapping(address => uint96) public _pendingQueenRewards;
 
     /// @dev Total earned rewards of the queen 
-    mapping(address => uint96) _totalRewardsEarned;
+    mapping(address => uint96) public _totalRewardsEarned;
 
     /// @dev List of queens that stakes
     address[] public _queens; 
@@ -43,7 +43,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     bool public _openRewards; 
 
     /// @dev Checkes whether the user has already enrolled for the queen rewards
-    mapping(address => bool) _enrolledForQueen;
+    mapping(address => bool) public _enrolledForQueen;
 
     /// @dev Boolean switch to control the availability of stake() 
     bool public _stake;
@@ -58,7 +58,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     bool public _accumulate; 
 
     /// @dev Mapping that stores the rewards claimed by a user so far
-    mapping(address => uint96) _totalRewardsclaimed; 
+    mapping(address => uint96) public _totalRewardsclaimed; 
 
     mapping(address => uint88) public _unUsedStakes; 
 
@@ -79,7 +79,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     address[] public _kings;
 
     /// @dev Boolean that says whether a user is or isn't a king 
-    mapping(address => bool) _enrolledForKing; 
+    mapping(address => bool) public _enrolledForKing; 
 
     /// @dev Boolean switch to control the availability of setSubnetStatus
     bool public _createSubnets;
@@ -88,13 +88,13 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     bool public _deleteSubnets;
 
     /// @dev Timestamp of the last king rewards calculated at 
-    uint40 _lastKingRewardsCalculatedAt;  
+    uint40 public _lastKingRewardsCalculatedAt;  
 
     /// @dev Keeps track of how many subnets a user has created 
-    mapping(address => uint16) _totalSubnetsHeld; 
+    mapping(address => uint16) public _totalSubnetsHeld; 
 
     /// @dev Boolean switch to be checked if a user creates multiple subnets 
-    bool _createMultipleSubnets;
+    bool public _createMultipleSubnets;
 
     /// @dev Total earned rewards of the king 
     mapping(address => uint96) public _totalKingRewardsEarned;
@@ -442,7 +442,11 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     }
 
     /// @notice Getter functions
-    
+
+    function getLastKingRewardsCalculatedAt() external view onlyOwner returns(uint40) {
+        return _lastKingRewardsCalculatedAt;
+    }
+
     function getLastRewardCalculated() external view onlyOwner returns(uint40) {
         return _lastRewardCalculated;
     }
