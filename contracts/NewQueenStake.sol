@@ -137,7 +137,8 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     function unStake(uint88 amount) public {
         if (!_unStake) revert unStakeNotYetAvailable();
         if (amount == 0) revert ZeroUnstakeAmount();
-        if (amount > _unUsedStakes[msg.sender]) revert ExceedsAvailableUnUsedStakes();
+        //if (amount > _unUsedStakes[msg.sender]) revert ExceedsAvailableUnUsedStakes();
+        if(amount > _stakedAmount[msg.sender]) revert ExceedsAvailableStakedAmount();
         if(address(this).balance < amount) revert insfficientBalanceInTheContract();
         _stakedAmount[msg.sender] -= amount; 
         _unUsedStakes[msg.sender] -= amount;    

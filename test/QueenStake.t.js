@@ -333,7 +333,7 @@ describe("Queen Staking", () => {
     it("Should revert when unstaking amount is greater than what's staked", async () => {
       await expect(
         queenStakeProxy.connect(queen1).unStake(ethers.parseEther("10000")),
-      ).to.be.revertedWithCustomError(queenStakeProxy, "ExceedsAvailableUnUsedStakes");
+      ).to.be.revertedWithCustomError(queenStakeProxy, "ExceedsAvailableStakedAmount");
     });
 
     it("Should revert when there's nothing to unstake", async () => {

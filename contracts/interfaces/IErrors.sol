@@ -99,4 +99,10 @@ interface IErrors {
     * @dev Displayed when the users can't create multiple subnets 
    */
   error insfficientBalanceInTheContract();
+
+   
+  /**
+   * @dev Displayed when un-stake amount exceeds staked amount
+   */
+  error ExceedsAvailableStakedAmount();
 }
