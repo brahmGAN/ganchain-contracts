@@ -24,6 +24,11 @@ interface IQueenStake {
         address queen, 
         uint192 amount
     );
+    event authorizedUnStakedTo(
+        address queen,
+        address receiver, 
+        uint88 amount
+    );
     event skippedQueens(
         uint96 skipped
     );

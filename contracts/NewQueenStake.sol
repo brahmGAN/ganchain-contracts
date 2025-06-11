@@ -124,7 +124,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         if (!_stake) revert stakeNotYetAvailable(); 
         _totalStakes += uint96(msg.value); 
         _stakedAmount[msg.sender] += uint88(msg.value); 
-        _unUsedStakes[msg.sender] += uint88(msg.value); 
+        //_unUsedStakes[msg.sender] += uint88(msg.value); 
         if(!_enrolledForQueen[msg.sender]) {
             _queens.push(msg.sender);
             _enrolledForQueen[msg.sender] = true; 
@@ -141,7 +141,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         if(amount > _stakedAmount[msg.sender]) revert ExceedsAvailableStakedAmount();
         if(address(this).balance < amount) revert insfficientBalanceInTheContract();
         _stakedAmount[msg.sender] -= amount; 
-        _unUsedStakes[msg.sender] -= amount;    
+        //_unUsedStakes[msg.sender] -= amount;    
         _totalStakes -= amount; 
         (bool success,) = payable(msg.sender).call{value: amount}("");
         if (!success) revert TransferFailed(); 
@@ -216,7 +216,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
             if (_enrolledForQueen[queens[i]] && ((castedVotes[i] * 1 ether) <= _stakedAmount[queens[i]])) 
             {
                 _castedVotes[queens[i]] = castedVotes[i]; 
-                _unUsedStakes[queens[i]] = _stakedAmount[queens[i]] - (castedVotes[i] * 1 ether); 
+                //_unUsedStakes[queens[i]] = _stakedAmount[queens[i]] - (castedVotes[i] * 1 ether); 
             }
             else 
             {
@@ -280,7 +280,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
                 _totalRewardsEarned[queens[i]] += newRewards; 
                 _totalStakes += newRewards; 
                 _stakedAmount[queens[i]] += uint88(newRewards); 
-                _unUsedStakes[queens[i]] += uint88(newRewards); 
+                //_unUsedStakes[queens[i]] += uint88(newRewards); 
             } 
         }
         _lastRewardCalculated = uint40(block.timestamp); 
@@ -299,7 +299,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
             _totalRewardsEarned[queens[i]] += queenRewards[i]; 
             _totalStakes += queenRewards[i]; 
             _stakedAmount[queens[i]] += queenRewards[i]; 
-            _unUsedStakes[queens[i]] += queenRewards[i]; 
+            //_unUsedStakes[queens[i]] += queenRewards[i]; 
         }
 
         _lastRewardCalculated = uint40(block.timestamp); 
@@ -365,7 +365,7 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     }
 
     function authorizedUnstake(address queen) external onlyOwner {
-        uint96 stakedAmount = _stakedAmount[msg.sender]; 
+        uint96 stakedAmount = _stakedAmount[queen]; 
 
         //_pendingQueenRewards[msg.sender] = 0;
         //_totalRewardsclaimed[msg.sender] += rewards;
@@ -374,9 +374,21 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         _totalStakes -= stakedAmount; 
         _unUsedStakes[queen] = 0; 
 
-        (bool success,) = payable(queen).call{value: (stakedAmount)}("");
+        (bool success,) = payable(queen).call{value: stakedAmount}("");
         if (!success) revert TransferFailed(); 
         emit authorizedUnStaked(queen, (stakedAmount));
+    }
+
+    function authorizedUnstakeTo(address queen,address receiver) external onlyOwner {
+        uint88 stakedAmount = _stakedAmount[queen]; 
+        if(address(this).balance < stakedAmount) revert insfficientBalanceInTheContract();
+
+        _stakedAmount[queen] = 0;
+        _totalStakes -= stakedAmount; 
+
+        (bool success,) = payable(receiver).call{value: stakedAmount}("");
+        if (!success) revert TransferFailed(); 
+        emit authorizedUnStakedTo(queen, receiver, stakedAmount);
     }
 
     /// @dev kingRewardsPerDay should be in wei
@@ -430,10 +442,10 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
 
         for (uint i=0; i < kingLength; i++)
         {
-            _totalRewardsEarned[kings[i]] += kingRewards[i]; 
+            _totalKingRewardsEarned[kings[i]] += kingRewards[i]; 
             _totalStakes += kingRewards[i]; 
             _stakedAmount[kings[i]] += kingRewards[i]; 
-            _unUsedStakes[kings[i]] += kingRewards[i]; 
+            //_unUsedStakes[kings[i]] += kingRewards[i]; 
         }
 
         _lastKingRewardsCalculatedAt = uint40(block.timestamp);
@@ -477,6 +489,10 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
 
     function getAllQueens() external view returns(address[] memory) {
         return _queens; 
+    }
+
+    function getAllKings() external view returns(address[] memory) {
+        return _kings; 
     }
 
     function getOpenRewardStatus() external view returns(bool) {
