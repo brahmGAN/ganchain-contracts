@@ -99,6 +99,9 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     /// @dev Total earned rewards of the king 
     mapping(address => uint96) public _totalKingRewardsEarned;
 
+    /// @dev Total unstaking fees collected
+    uint88 public _totalUnstakingFee; 
+
     /// @dev subnet variables ends
 
     /// @dev Authorizes the upgrade to a new implementation. Only callable by the owner.
@@ -137,13 +140,13 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
     function unStake(uint88 amount) public {
         if (!_unStake) revert unStakeNotYetAvailable();
         if (amount == 0) revert ZeroUnstakeAmount();
-        //if (amount > _unUsedStakes[msg.sender]) revert ExceedsAvailableUnUsedStakes();
         if(amount > _stakedAmount[msg.sender]) revert ExceedsAvailableStakedAmount();
         if(address(this).balance < amount) revert insfficientBalanceInTheContract();
         _stakedAmount[msg.sender] -= amount; 
-        //_unUsedStakes[msg.sender] -= amount;    
         _totalStakes -= amount; 
-        (bool success,) = payable(msg.sender).call{value: amount}("");
+        uint88 unstakeAmount = (993 * amount) / 1000; 
+        _totalUnstakingFee += amount - unstakeAmount;
+        (bool success,) = payable(msg.sender).call{value: unstakeAmount}("");
         if (!success) revert TransferFailed(); 
         emit unStaked(msg.sender, amount);
     }
@@ -364,17 +367,16 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
         _totalRewardsclaimed[queen] = rewardsClaimed; 
     }
 
-    function authorizedUnstake(address queen) external onlyOwner {
+    function authorizedUnstake(address queen) external onlyOwner 
+    {
         uint96 stakedAmount = _stakedAmount[queen]; 
-
-        //_pendingQueenRewards[msg.sender] = 0;
-        //_totalRewardsclaimed[msg.sender] += rewards;
-
         _stakedAmount[queen] = 0;
         _totalStakes -= stakedAmount; 
         _unUsedStakes[queen] = 0; 
+        uint88 unstakeAmount = (993 * uint88(stakedAmount)) / 1000; 
+        _totalUnstakingFee += uint88(stakedAmount) - unstakeAmount;
 
-        (bool success,) = payable(queen).call{value: stakedAmount}("");
+        (bool success,) = payable(queen).call{value: unstakeAmount}("");
         if (!success) revert TransferFailed(); 
         emit authorizedUnStaked(queen, (stakedAmount));
     }
@@ -385,8 +387,10 @@ contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuard
 
         _stakedAmount[queen] = 0;
         _totalStakes -= stakedAmount; 
+        uint88 unstakeAmount = (993 * stakedAmount) / 1000; 
+        _totalUnstakingFee += stakedAmount - unstakeAmount;
 
-        (bool success,) = payable(receiver).call{value: stakedAmount}("");
+        (bool success,) = payable(receiver).call{value: unstakeAmount}("");
         if (!success) revert TransferFailed(); 
         emit authorizedUnStakedTo(queen, receiver, stakedAmount);
     }
