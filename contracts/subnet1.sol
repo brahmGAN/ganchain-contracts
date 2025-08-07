@@ -8,7 +8,7 @@ import "./interfaces/IErrors.sol";
 import "./interfaces/IQueenStake.sol"; 
 import "./GPU/GPU.sol";
 
-contract NewQueenStaking is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable,IErrors,IQueenStake {
+contract Subnet1 is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable,IErrors,IQueenStake {
 
     /// @dev Timestamp of the last rewards calculated at 
     uint40 public _lastRewardCalculated; 

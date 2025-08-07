@@ -27,6 +27,8 @@ describe("Queen Staking", () => {
   let upgradedQueenStakeProxy;
   let stakesBeforeUpgrade;
   let pendingRewardsBeforeUpgrade;
+  let subnet1Proxy; 
+  let dummyReceiver1;
   before(async () => {
     [
       owner,
@@ -45,7 +47,8 @@ describe("Queen Staking", () => {
       scheduler,
       validator1,
       validator2,
-      guru 
+      guru,
+      dummyReceiver1
     ] = await ethers.getSigners();
     NFTFactory = await ethers.getContractFactory("GANNode");
     nftContract = await NFTFactory.deploy(owner);
@@ -649,4 +652,40 @@ describe("Queen Staking", () => {
       });
     });
   });
+
+  describe("subnet1 upgrade:",()=>{
+      it("Should upgrade to the Subnet1 contract", async () => {
+      
+        await upgradedQueenStakeProxy.connect(king4).stake({value: ethers.parseEther("200")});
+        let stakedAmountBeforeUpgrade = await upgradedQueenStakeProxy.connect(king4)._stakedAmount(king4);
+
+        let subnet1Factory = await ethers.getContractFactory("Subnet1");
+
+        subnet1Proxy = await upgrades.upgradeProxy(
+          upgradedQueenStakeProxy.target,
+          subnet1Factory,
+        );
+
+        await expect(await subnet1Proxy.connect(king4)._stakedAmount(king4)).to.be.equals(stakedAmountBeforeUpgrade);
+      });
+
+      it("should let users unstake just 99.3% of the asked amount",async ()=>{
+        let balanceBeforeReceiving = await ethers.provider.getBalance(dummyReceiver1); 
+        console.log("dummyReceiver1 balance before unstake with fee:"+dummyReceiver1);
+
+        await expect(await subnet1Proxy.connect(king4).unStake(ethers.parseEther("100"))).
+        to.emit(subnet1Proxy,"unStaked").withArgs(king4,ethers.parseEther("100"));
+
+        let balanceAfterUnstake = await ethers.provider.getBalance(king4); 
+        console.log("king4 balance after unstake with fee:"+balanceAfterUnstake);
+
+        await subnet1Proxy.connect(owner).authorizedUnstakeTo(king4,dummyReceiver1);
+        await expect(await ethers.provider.getBalance(dummyReceiver1)). to.be.equals(balanceBeforeReceiving+ethers.parseEther("99.3"));
+      });
+
+      it("should ensure the totalUnstakingFee collected is 0.7 percentage with a total of 1.4 GP",async ()=>{
+        await expect(await subnet1Proxy._totalUnstakingFee()).to.be.equals(ethers.parseEther("1.4"));
+        console.log("total unstake fee collected:"+await subnet1Proxy._totalUnstakingFee());
+      });
+    });
 });
